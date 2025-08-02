@@ -1,0 +1,13 @@
+.decrypted-text {
+  color: #64ffda;
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+}
+
+.decrypted-text.encrypted {
+  color: #666;
+}
+
+.decrypted-text.revealed {
+  color: #64ffda;
+} 
