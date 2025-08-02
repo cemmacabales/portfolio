@@ -20,6 +20,7 @@ import MagnetLines from './components/MagnetLines'
 import Dock from './components/Dock'
 import DecryptedText from './components/DecryptedText'
 import './App.css'
+import Lanyard from './components/Lanyard'
 
 function App() {
   const [activeSection, setActiveSection] = useState('home')
@@ -128,9 +129,7 @@ function App() {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="hero-image"
         >
-          <div className="profile-placeholder">
-            <Code size={80} />
-          </div>
+          <Lanyard position={[0, 0, 20]} gravity={[0, -40, 0]} />
         </motion.div>
         </div>
       </section>
