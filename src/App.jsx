@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { 
   Github, 
@@ -13,20 +13,49 @@ import {
   Globe,
   User, 
   Briefcase, 
-  Award
+  Award,
+  Brain,
+  Monitor
 } from 'lucide-react'
 import TextType from './components/TextType'
 import MagnetLines from './components/MagnetLines'
 import Dock from './components/Dock'
 import DecryptedText from './components/DecryptedText'
 import './App.css'
+import SpotlightCard from './components/SpotlightCard'
+import ScrambledText from './components/ScrambledText'
+import { CareerTimeline } from './components/CareerTimeline'
+import EarfquakeImage from './assets/earfquake.png';
+import PetchinguImage from './assets/petchingu.png';
+import MyAptImage from './assets/myapt.png';
+import HeartRiskImage from './assets/heartrisk.png';
+import JobPostingsImage from './assets/jobpostings.png';
+import Loader from './components/Loader';
+import TechStack from './components/TechStack';
+import Certificates from './components/Certificates';
+
+
 
 function App() {
   const [activeSection, setActiveSection] = useState('home')
+  const [openCategory, setOpenCategory] = useState('ml')
+  const [isLoading, setIsLoading] = useState(true)
 
   const scrollToSection = (sectionId) => {
     setActiveSection(sectionId)
     document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false)
+    }, 3000) // 3 seconds loading time
+
+    return () => clearTimeout(timer)
+  }, [])
+
+  if (isLoading) {
+    return <Loader />
   }
 
   return (
@@ -98,7 +127,7 @@ function App() {
                 loop={true}
                 showCursor={true}
                 cursorCharacter="|"
-                textColors={["#64ffda", "#ff6b6b", "#4ecdc4"]}
+                textColors={["#64ffda", "#8b5cf6", "#4ecdc4"]}
               />
             </span></h1>
             <h2>Computer Science Student</h2>
@@ -130,7 +159,12 @@ function App() {
         >
           <div className="profile-placeholder">
             <img src="src/assets/me.jpeg" alt="Profile" className="profile-image"
-            style={{ width: '100%', height: '100%', borderRadius: '50%'}} 
+            style={{ 
+              width: '100%', 
+              height: '100%', 
+              borderRadius: '50%',
+              transition: 'all 0.3s ease'
+            }} 
             />
           </div>
         </motion.div>
@@ -147,8 +181,25 @@ function App() {
             viewport={{ once: true }}
             className="section-header"
           >
-            <h2>About Me</h2>
-            <p>Get to know me better</p>
+            <div className="section-title-group">
+              <DecryptedText
+                text="About Me"
+                speed={50}
+                maxIterations={999999}
+                sequential={false}
+                className="section-title-decrypted"
+                parentClassName="section-title-wrapper"
+              />
+              <ScrambledText
+                className="scrambled-text-demo"
+                radius={100}
+                duration={1.2}
+                speed={0.5}
+                scrambleChars=".:"
+              >
+                Get to know me better
+              </ScrambledText>
+            </div>
           </motion.div>
           <div className="about-content">
             <motion.div
@@ -158,46 +209,62 @@ function App() {
               viewport={{ once: true }}
               className="about-text"
             >
-              <h3>Who I Am</h3>
-            <p>
-              I'm a 3rd-year student at Mapúa University specializing in Artificial Intelligence.  
-              I enjoy working with machine learning and have experience in both backend and frontend 
-              development, allowing me to build complete and functional digital solutions.  
-            </p>
-            <p>
-              Outside of academics, I enjoy playing video games, coding, making things from scratch, 
-              and solving challenging problems. I’m also passionate about exploring new technologies, 
-              contributing to open-source projects, and sharing knowledge with the developer community.  
-            </p>
-              <div className="about-stats">
-                <div className="stat">
-                  <h4>400+</h4>
-                  <p>Hours of Learning</p>
-                </div>
-                <div className="stat">
-                  <h4>4</h4>
-                  <p>Projects Completed</p>
-                </div>
-                <div className="stat">
-                  <h4>20+</h4>
-                  <p>Certificates Earned</p>
-                </div>
+              <div className="about-text-group">
+                <DecryptedText
+                  text="Who I am"
+                  speed={50}
+                  maxIterations={999999}
+                  sequential={false}
+                  className="about-subtitle-decrypted"
+                  parentClassName="about-subtitle-wrapper"
+                />
+                <ScrambledText
+                  className="scrambled-text-demo"
+                  radius={100}
+                  duration={1.2}
+                  speed={0.5}
+                  scrambleChars=".:"
+                >
+                  I'm a 3rd-year student at Mapúa University specializing in Artificial Intelligence. I enjoy working with machine learning and have experience in both backend and frontend development, allowing me to build complete and functional digital solutions.
+                </ScrambledText>
               </div>
+              <ScrambledText
+                className="scrambled-text-demo"
+                radius={100}
+                duration={1.2}
+                speed={0.5}
+                scrambleChars=".:"
+              >
+                Outside of academics, I enjoy playing video games, coding, making things from scratch, and solving challenging problems. I’m also passionate about exploring new technologies, contributing to open-source projects, and sharing knowledge with the developer community.
+              </ScrambledText>
+                <div className="about-stats">
+                  <SpotlightCard className="stat" spotlightColor="rgba(0, 229, 255, 0.2)">
+                    <h4>400+</h4>
+                    <p>Hours of Learning</p>
+                  </SpotlightCard>
+                  <SpotlightCard className="stat" spotlightColor="rgba(0, 229, 255, 0.2)">
+                    <h4>4</h4>
+                    <p>Projects Completed</p>
+                  </SpotlightCard>
+                  <SpotlightCard className="stat" spotlightColor="rgba(0, 229, 255, 0.2)">
+                    <h4>20+</h4>
+                    <p>Certificates Earned</p>
+                  </SpotlightCard>
+                </div>
             </motion.div>
             <motion.div
               initial={{ opacity: 0, x: 50 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
               viewport={{ once: true }}
-              className="about-image"
+              className="about-journey"
             >
-              <div className="about-placeholder">
-                <Palette size={60} />
-              </div>
+              <CareerTimeline />
             </motion.div>
           </div>
         </div>
       </section>
+
 
       {/* Projects Section */}
       <section id="projects" className="projects">
@@ -209,81 +276,257 @@ function App() {
             viewport={{ once: true }}
             className="section-header"
           >
-            <h2>My Projects</h2>
-            <p>Some of my recent work</p>
-          </motion.div>
-          <div className="projects-grid">
-            {[
-              {
-                title: "E-Commerce Platform",
-                description: "A full-stack e-commerce solution with React, Node.js, and MongoDB",
-                tech: ["React", "Node.js", "MongoDB", "Stripe"],
-                image: "🛒"
-              },
-              {
-                title: "Task Management App",
-                description: "A collaborative task management application with real-time updates",
-                tech: ["React", "Firebase", "Material-UI"],
-                image: "📋"
-              },
-              {
-                title: "Weather Dashboard",
-                description: "A beautiful weather application with location-based forecasts",
-                tech: ["React", "OpenWeather API", "Chart.js"],
-                image: "🌤️"
-              },
-              {
-                title: "Portfolio Website",
-                description: "A modern, responsive portfolio built with React and Framer Motion",
-                tech: ["React", "Framer Motion", "CSS3"],
-                image: "💼"
-              },
-              {
-                title: "Chat Application",
-                description: "Real-time chat application with user authentication",
-                tech: ["React", "Socket.io", "Express"],
-                image: "💬"
-              },
-              {
-                title: "Blog Platform",
-                description: "A content management system for bloggers and writers",
-                tech: ["React", "GraphQL", "PostgreSQL"],
-                image: "✍️"
-              }
-            ].map((project, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="project-card"
-                whileHover={{ y: -10 }}
+            <div className="section-title-group">
+              <DecryptedText
+                text="My Projects"
+                speed={50}
+                maxIterations={999999}
+                sequential={false}
+                className="section-title-decrypted"
+                parentClassName="section-title-wrapper"
+              />
+              <ScrambledText
+                className="scrambled-text-demo"
+                radius={100}
+                duration={1.2}
+                speed={0.5}
+                scrambleChars=".:"
               >
-                <div className="project-image">
-                  <span className="project-emoji">{project.image}</span>
-                </div>
-                <div className="project-content">
-                  <h3>{project.title}</h3>
-                  <p>{project.description}</p>
-                  <div className="project-tech">
-                    {project.tech.map((tech, techIndex) => (
-                      <span key={techIndex} className="tech-tag">{tech}</span>
-                    ))}
-                  </div>
-                  <div className="project-links">
-                    <button className="btn btn-small">
-                      <ExternalLink size={16} />
-                      Live Demo
-                    </button>
-                    <button className="btn btn-small btn-secondary">
-                      <Github size={16} />
-                      Code
-                    </button>
-                  </div>
+                Some of my recent work
+              </ScrambledText>
+            </div>
+          </motion.div>
+                    <div className="projects-section">
+            <div className="category-buttons">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className={`category-btn ${openCategory === 'ml' ? 'active' : ''}`}
+                onClick={() => setOpenCategory('ml')}
+              >
+                <Brain size={24} />
+                <span>Machine Learning</span>
+              </motion.button>
+              
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className={`category-btn ${openCategory === 'software' ? 'active' : ''}`}
+                onClick={() => setOpenCategory('software')}
+              >
+                <Monitor size={24} />
+                <span>Software Development</span>
+              </motion.button>
+            </div>
+
+            {/* Software Development Projects */}
+            {openCategory === 'software' && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5 }}
+                className="project-category"
+              >
+                <div className="projects-grid">
+                  {[
+                    {
+                      title: "Apartment Dashboard Management App",
+                      description: "A comprehensive dashboard for managing apartment properties with real-time data visualization and tenant management features.",
+                      tech: ["Firebase", "React", "JavaScript", "SCSS", "HTML"],
+                      image: MyAptImage,
+                      category: "software",
+                      githubUrl: "https://github.com/clivebixby0/myapt-july8-2025-main.git"
+                    },
+                    {
+                      title: "Petchingu (Pet Management App)",
+                      description: "A complete pet management application for tracking pet health, appointments, and daily care routines.",
+                      tech: ["Appwrite", "React", "TypeScript", "JavaScript", "CSS"],
+                      image: PetchinguImage,
+                      category: "software",
+                      githubUrl: "https://github.com/clivebixby0/petchinguuu.git"
+                    }
+                  ].map((project, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 50 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.8, delay: index * 0.1 }}
+                      viewport={{ once: true }}
+                      className="project-card"
+                      whileHover={{ y: -10 }}
+                    >
+                      <div className="project-image">
+                        <img 
+                          src={project.image} 
+                          alt={project.title}
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover'
+                          }}
+                        />
+                      </div>
+                      <div className="project-content">
+                        <h3>{project.title}</h3>
+                        <p>{project.description}</p>
+                        <div className="project-tech">
+                          {project.tech.map((tech, techIndex) => (
+                            <span 
+                              key={techIndex} 
+                              className={`tech-tag ${tech.toLowerCase()}`}
+                            >
+                              {tech}
+                            </span>
+                          ))}
+                        </div>
+                        <div className="project-links">
+                          <button 
+                            className="btn btn-small"
+                            onClick={() => alert('🚧 This project is currently under maintenance. Please check back later!')}
+                          >
+                            <ExternalLink size={16} />
+                            Live Demo
+                          </button>
+                          <a 
+                            href={project.githubUrl} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="btn btn-small btn-secondary"
+                            style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
+                          >
+                            <Github size={16} />
+                            Code
+                          </a>
+                          {project.paperUrl && (
+                            <a 
+                              href={project.paperUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="btn btn-small btn-secondary"
+                              style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
+                            >
+                              📄 Paper
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
                 </div>
               </motion.div>
-            ))}
+            )}
+
+            {/* Machine Learning Projects */}
+            {openCategory === 'ml' && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5 }}
+                className="project-category"
+              >
+                <div className="projects-grid">
+                  {[
+                    {
+                      title: "Earfquake (Earthquake Prediction Analysis Tool)",
+                      description: "A machine learning tool for analyzing earthquake data and predicting seismic activities using advanced algorithms and data visualization.",
+                      tech: ["Streamlit", "Python"],
+                      image: EarfquakeImage,
+                      category: "ml",
+                      githubUrl: "https://github.com/clivebixby0/EARFQUAKE.git"
+                    },
+                    {
+                      title: "Heart Disease Risk Detection",
+                      description: "A machine learning model for predicting heart disease risk using various medical parameters and features.",
+                      tech: ["Python", "IEEE"],
+                      image: HeartRiskImage,
+                      category: "ml",
+                      githubUrl: "#",
+                      paperUrl: "#"
+                    },
+                    {
+                      title: "Job Trends Analysis from Google Postings",
+                      description: "Analysis of job market trends and patterns using machine learning on Google job posting data.",
+                      tech: ["Python"],
+                      image: JobPostingsImage,
+                      category: "ml",
+                      githubUrl: "#",
+                      paperUrl: "#"
+                    }
+                  ].map((project, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 50 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.8, delay: index * 0.1 }}
+                      viewport={{ once: true }}
+                      className="project-card"
+                      whileHover={{ y: -10 }}
+                    >
+                      <div className="project-image">
+                        {typeof project.image === 'string' && project.image.length <= 2 ? (
+                          <div style={{
+                            width: '100%',
+                            height: '100%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '4rem',
+                            background: 'rgba(255, 255, 255, 0.05)'
+                          }}>
+                            {project.image}
+                          </div>
+                        ) : (
+                          <img 
+                            src={project.image} 
+                            alt={project.title}
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              objectFit: 'cover'
+                            }}
+                          />
+                        )}
+                      </div>
+                      <div className="project-content">
+                        <h3>{project.title}</h3>
+                        <p>{project.description}</p>
+                        <div className="project-tech">
+                          {project.tech.map((tech, techIndex) => (
+                            <span 
+                              key={techIndex} 
+                              className={`tech-tag ${tech.toLowerCase()}`}
+                            >
+                              {tech}
+                            </span>
+                          ))}
+                        </div>
+                        <div className="project-links">
+                          <button 
+                            className="btn btn-small"
+                            onClick={() => alert('🚧 This project is currently under maintenance. Please check back later!')}
+                          >
+                            <ExternalLink size={16} />
+                            Live Demo
+                          </button>
+                          <a 
+                            href={project.githubUrl} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="btn btn-small btn-secondary"
+                            style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
+                          >
+                            <Github size={16} />
+                            Code
+                          </a>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
           </div>
         </div>
       </section>
@@ -298,32 +541,45 @@ function App() {
             viewport={{ once: true }}
             className="section-header"
           >
-            <h2>Skills & Technologies</h2>
-            <p>Technologies I work with</p>
-          </motion.div>
-          <div className="skills-grid">
-            {[
-              { category: "Frontend", skills: ["React", "JavaScript", "TypeScript", "HTML/CSS", "Tailwind CSS", "Material-UI"] },
-              { category: "Backend", skills: ["Node.js", "Express", "Python", "Django", "PostgreSQL", "MongoDB"] },
-              { category: "Tools", skills: ["Git", "Docker", "AWS", "Firebase", "Figma", "Postman"] },
-              { category: "Other", skills: ["REST APIs", "GraphQL", "Jest", "CI/CD", "Agile", "Responsive Design"] }
-            ].map((category, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="skill-category"
+            <div className="section-title-group">
+              <DecryptedText
+                text="Skills & Technologies"
+                speed={50}
+                maxIterations={999999}
+                sequential={false}
+                className="section-title-decrypted"
+                parentClassName="section-title-wrapper"
+              />
+              <ScrambledText
+                className="scrambled-text-demo"
+                radius={100}
+                duration={1.2}
+                speed={0.5}
+                scrambleChars=".:"
               >
-                <h3>{category.category}</h3>
-                <div className="skill-tags">
-                  {category.skills.map((skill, skillIndex) => (
-                    <span key={skillIndex} className="skill-tag">{skill}</span>
-                  ))}
-                </div>
-              </motion.div>
-            ))}
+                My technical expertise and achievements
+              </ScrambledText>
+            </div>
+          </motion.div>
+          <div className="skills-content">
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              viewport={{ once: true }}
+              className="skills-column"
+            >
+              <TechStack />
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              viewport={{ once: true }}
+              className="skills-column"
+            >
+              <Certificates />
+            </motion.div>
           </div>
         </div>
       </section>

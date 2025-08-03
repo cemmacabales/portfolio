@@ -2,6 +2,8 @@
   color: #64ffda;
   font-family: 'Courier New', monospace;
   font-weight: 600;
+  font-size: 2.5rem;
+  font-weight: bold;
 }
 
 .decrypted-text.encrypted {
@@ -11,3 +13,13 @@
 .decrypted-text.revealed {
   color: #64ffda;
 } 
+
+.about-header-large {
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+.about-subheader {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
