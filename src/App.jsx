@@ -20,7 +20,6 @@ import MagnetLines from './components/MagnetLines'
 import Dock from './components/Dock'
 import DecryptedText from './components/DecryptedText'
 import './App.css'
-import Lanyard from './components/Lanyard'
 
 function App() {
   const [activeSection, setActiveSection] = useState('home')
@@ -102,8 +101,8 @@ function App() {
                 textColors={["#64ffda", "#ff6b6b", "#4ecdc4"]}
               />
             </span></h1>
-            <h2>Full Stack Developer</h2>
-            <p>I create beautiful, functional, and user-centered digital experiences.</p>
+            <h2>Computer Science Student</h2>
+            <p>I specialize in Artificial Intelligence and Machine Learning, with a strong foundation in Software Engineering.</p>
             <div className="hero-buttons">
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -129,7 +128,11 @@ function App() {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="hero-image"
         >
-          <Lanyard position={[0, 0, 20]} gravity={[0, -40, 0]} />
+          <div className="profile-placeholder">
+            <img src="src/assets/me.jpeg" alt="Profile" className="profile-image"
+            style={{ width: '100%', height: '100%', borderRadius: '50%'}} 
+            />
+          </div>
         </motion.div>
         </div>
       </section>
@@ -168,16 +171,16 @@ function App() {
             </p>
               <div className="about-stats">
                 <div className="stat">
-                  <h4>3+</h4>
-                  <p>Years Experience</p>
+                  <h4>400+</h4>
+                  <p>Hours of Learning</p>
                 </div>
                 <div className="stat">
-                  <h4>50+</h4>
+                  <h4>4</h4>
                   <p>Projects Completed</p>
                 </div>
                 <div className="stat">
                   <h4>20+</h4>
-                  <p>Happy Clients</p>
+                  <p>Certificates Earned</p>
                 </div>
               </div>
             </motion.div>
