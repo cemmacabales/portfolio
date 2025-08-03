@@ -3,49 +3,57 @@ import { motion } from 'framer-motion';
 import { ExternalLink, Award } from 'lucide-react';
 import './Certificates.css';
 
+// Import certificate images
+import ComputerSimulationsImage from '../assets/Computer Simulations.png';
+import CyberPhysicalSystemsImage from '../assets/Cyber-Physical Systems: Modeling and Simulation.png';
+import DataWarehouseImage from '../assets/Data Warehouse Concepts, Design, and Data Integration.png';
+import EngineeringPracticesImage from '../assets/Engineering Practices for Building Quality Software.png';
+import MathematicsImage from '../assets/Mathematics for Computer Science.png';
+import VisualElementsImage from '../assets/Visual Elements of User Interface Design.png';
+
 const Certificates = () => {
   const certificates = [
     {
-      title: "Machine Learning for All",
-      issuer: "Coursera",
-      date: "2024",
-      url: "#",
-      image: "https://images.credly.com/size/680x680/images/0e284e3f-5164-4b21-8660-0d84737941bc/image.png"
+      title: "Computer Simulations",
+      issuer: "University of California, Davis",
+      date: "July 28, 2025",
+      url: "https://coursera.org/share/a95589f4ec752a9847970d52171374e6",
+      image: ComputerSimulationsImage
     },
     {
-      title: "Python for Everybody",
-      issuer: "Coursera",
-      date: "2024",
-      url: "#",
-      image: "https://images.credly.com/size/680x680/images/0e284e3f-5164-4b21-8660-0d84737941bc/image.png"
+      title: "Cyber-Physical Systems: Modeling and Simulation",
+      issuer: "University of California, Santa Cruz",
+      date: "July 24, 2025",
+      url: "https://coursera.org/share/44bb5e2ecfbc300c65243276e490b43d",
+      image: CyberPhysicalSystemsImage
     },
     {
-      title: "Data Science Fundamentals",
-      issuer: "Coursera",
-      date: "2024",
-      url: "#",
-      image: "https://images.credly.com/size/680x680/images/0e284e3f-5164-4b21-8660-0d84737941bc/image.png"
+      title: "Data Warehouse Concepts, Design, and Data Integration",
+      issuer: "University of Colorado System",
+      date: "July 18, 2025",
+      url: "https://coursera.org/share/f19cb1587ae281697b6409b32d091ab8",
+      image: DataWarehouseImage
     },
     {
-      title: "Web Development Bootcamp",
-      issuer: "Coursera",
-      date: "2024",
-      url: "#",
-      image: "https://images.credly.com/size/680x680/images/0e284e3f-5164-4b21-8660-0d84737941bc/image.png"
+      title: "Engineering Practices for Building Quality Software",
+      issuer: "University of Minnesota",
+      date: "July 18, 2025",
+      url: "https://coursera.org/share/3ec74c9e80af33781f9c9ca8af54d8bb",
+      image: EngineeringPracticesImage
     },
     {
-      title: "React Development",
-      issuer: "Coursera",
-      date: "2024",
-      url: "#",
-      image: "https://images.credly.com/size/680x680/images/0e284e3f-5164-4b21-8660-0d84737941bc/image.png"
+      title: "Mathematics for Computer Science",
+      issuer: "University of London",
+      date: "September 25, 2023",
+      url: "https://coursera.org/share/a2cda3e2b82c71567fed50a1d7035fdb",
+      image: MathematicsImage
     },
     {
-      title: "Node.js Backend Development",
-      issuer: "Coursera",
-      date: "2024",
-      url: "#",
-      image: "https://images.credly.com/size/680x680/images/0e284e3f-5164-4b21-8660-0d84737941bc/image.png"
+      title: "Visual Elements of User Interface Design",
+      issuer: "California Institute of the Arts",
+      date: "July 18, 2025",
+      url: "https://coursera.org/share/320f344082a94923a71bceae3cb36e8d",
+      image: VisualElementsImage
     }
   ];
 

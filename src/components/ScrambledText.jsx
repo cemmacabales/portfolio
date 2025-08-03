@@ -23,10 +23,10 @@ const ScrambledText = ({
     if (!rootRef.current) return;
 
     const split = SplitText.create(rootRef.current.querySelector("p"), {
-      type: "chars",
-      charsClass: "char",
+      type: "words",
+      wordsClass: "word",
     });
-    charsRef.current = split.chars;
+    charsRef.current = split.words;
 
     charsRef.current.forEach((c) => {
       gsap.set(c, {

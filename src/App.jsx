@@ -31,8 +31,9 @@ import MyAptImage from './assets/myapt.png';
 import HeartRiskImage from './assets/heartrisk.png';
 import JobPostingsImage from './assets/jobpostings.png';
 import Loader from './components/Loader';
-import TechStack from './components/TechStack';
 import Certificates from './components/Certificates';
+import ProfileImage from './assets/me.jpeg';
+import TechStack from './components/TechStack'; 
 
 
 
@@ -40,10 +41,53 @@ function App() {
   const [activeSection, setActiveSection] = useState('home')
   const [openCategory, setOpenCategory] = useState('ml')
   const [isLoading, setIsLoading] = useState(true)
+  const [formStep, setFormStep] = useState(1)
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: '',
+    projectType: '',
+    budget: '',
+    timeline: ''
+  })
 
   const scrollToSection = (sectionId) => {
     setActiveSection(sectionId)
     document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  const handleFormInput = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }))
+  }
+
+  const nextStep = () => {
+    if (formStep < 4) {
+      setFormStep(formStep + 1)
+    }
+  }
+
+  const prevStep = () => {
+    if (formStep > 1) {
+      setFormStep(formStep - 1)
+    }
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    // Handle form submission here
+    console.log('Form submitted:', formData)
+    alert('Thank you for your message! I\'ll get back to you soon.')
+    setFormData({
+      name: '',
+      email: '',
+      subject: '',
+      message: '',
+      projectType: '',
+      budget: '',
+      timeline: ''
+    })
+    setFormStep(1)
   }
 
   useEffect(() => {
@@ -158,7 +202,7 @@ function App() {
           className="hero-image"
         >
           <div className="profile-placeholder">
-            <img src="src/assets/me.jpeg" alt="Profile" className="profile-image"
+            <img src={ProfileImage} alt="Profile" className="profile-image"
             style={{ 
               width: '100%', 
               height: '100%', 
@@ -243,7 +287,7 @@ function App() {
                     <p>Hours of Learning</p>
                   </SpotlightCard>
                   <SpotlightCard className="stat" spotlightColor="rgba(0, 229, 255, 0.2)">
-                    <h4>4</h4>
+                    <h4>10</h4>
                     <p>Projects Completed</p>
                   </SpotlightCard>
                   <SpotlightCard className="stat" spotlightColor="rgba(0, 229, 255, 0.2)">
@@ -442,8 +486,8 @@ function App() {
                       tech: ["Python", "IEEE"],
                       image: HeartRiskImage,
                       category: "ml",
-                      githubUrl: "#",
-                      paperUrl: "#"
+                      githubUrl: "https://docs.google.com/document/d/1ebPPdUOa1kIigPMNj5VT8ZQLbPQN_qA6TuOsBJkDGPc/edit?usp=sharing",
+                      paperUrl: "https://docs.google.com/document/d/1ebPPdUOa1kIigPMNj5VT8ZQLbPQN_qA6TuOsBJkDGPc/edit?usp=sharing"
                     },
                     {
                       title: "Job Trends Analysis from Google Postings",
@@ -451,8 +495,8 @@ function App() {
                       tech: ["Python"],
                       image: JobPostingsImage,
                       category: "ml",
-                      githubUrl: "#",
-                      paperUrl: "#"
+                      githubUrl: "https://docs.google.com/document/d/1QzUtiWnslEQZGL-OhD9xSigACunkt0uV/edit?usp=sharing&ouid=101381750453907377125&rtpof=true&sd=true",
+                      paperUrl: "https://docs.google.com/document/d/1QzUtiWnslEQZGL-OhD9xSigACunkt0uV/edit?usp=sharing&ouid=101381750453907377125&rtpof=true&sd=true"
                     }
                   ].map((project, index) => (
                     <motion.div
@@ -594,8 +638,25 @@ function App() {
             viewport={{ once: true }}
             className="section-header"
           >
-            <h2>Get In Touch</h2>
-            <p>Let's work together</p>
+            <div className="section-title-group">
+              <DecryptedText
+                text="Get In Touch"
+                speed={50}
+                maxIterations={999999}
+                sequential={false}
+                className="section-title-decrypted"
+                parentClassName="section-title-wrapper"
+              />
+              <ScrambledText
+                className="scrambled-text-demo"
+                radius={100}
+                duration={1.2}
+                speed={0.5}
+                scrambleChars=".:"
+              >
+                Let's work together
+              </ScrambledText>
+            </div>
           </motion.div>
           <div className="contact-content">
             <motion.div
@@ -605,43 +666,76 @@ function App() {
               viewport={{ once: true }}
               className="contact-info"
             >
-              <h3>Let's Connect</h3>
-              <p>
-                I'm always interested in new opportunities and exciting projects. 
-                Whether you have a question or just want to say hi, feel free to reach out!
-              </p>
+              <div className="contact-text-group">
+                <DecryptedText
+                  text="Let's Connect"
+                  speed={50}
+                  maxIterations={999999}
+                  sequential={false}
+                  className="contact-title-decrypted"
+                  parentClassName="contact-title-wrapper"
+                />
+                <ScrambledText
+                  className="scrambled-text-demo"
+                  radius={100}
+                  duration={1.2}
+                  speed={0.5}
+                  scrambleChars=".:"
+                >
+                  I'm always interested in new opportunities and exciting projects. 
+                  Whether you have a question or just want to say hi, feel free to reach out!
+                </ScrambledText>
+              </div>
               <div className="contact-details">
-                <div className="contact-item">
+                <motion.div 
+                  className="contact-item"
+                  whileHover={{ scale: 1.05, x: 10 }}
+                  transition={{ duration: 0.2 }}
+                >
                   <Mail size={20} />
-                  <span>your.email@example.com</span>
-                </div>
-                <div className="contact-item">
+                  <a href="mailto:carlmacabales31@gmail.com" className="contact-link">
+                    carlmacabales31@gmail.com
+                  </a>
+                </motion.div>
+                <motion.div 
+                  className="contact-item"
+                  whileHover={{ scale: 1.05, x: 10 }}
+                  transition={{ duration: 0.2 }}
+                >
                   <Phone size={20} />
-                  <span>+1 (555) 123-4567</span>
-                </div>
-                <div className="contact-item">
+                  <a href="tel:+639563893104" className="contact-link">
+                    +63 956 389 3104
+                  </a>
+                </motion.div>
+                <motion.div 
+                  className="contact-item"
+                  whileHover={{ scale: 1.05, x: 10 }}
+                  transition={{ duration: 0.2 }}
+                >
                   <MapPin size={20} />
-                  <span>San Francisco, CA</span>
-                </div>
+                  <span>Valenzuela, PH</span>
+                </motion.div>
               </div>
               <div className="social-links">
                 <motion.a
-                  whileHover={{ scale: 1.1 }}
+                  whileHover={{ scale: 1.1, y: -5 }}
                   whileTap={{ scale: 0.9 }}
-                  href="https://github.com"
+                  href="https://github.com/clivebixby0"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="social-link"
+                  title="GitHub Profile"
                 >
                   <Github size={24} />
                 </motion.a>
                 <motion.a
-                  whileHover={{ scale: 1.1 }}
+                  whileHover={{ scale: 1.1, y: -5 }}
                   whileTap={{ scale: 0.9 }}
-                  href="https://linkedin.com"
+                  href="https://www.linkedin.com/in/carl-emmanuel-macabales-a78742311/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="social-link"
+                  title="LinkedIn Profile"
                 >
                   <Linkedin size={24} />
                 </motion.a>
@@ -654,27 +748,255 @@ function App() {
               viewport={{ once: true }}
               className="contact-form"
             >
-              <form>
-                <div className="form-group">
-                  <input type="text" placeholder="Your Name" required />
-                </div>
-                <div className="form-group">
-                  <input type="email" placeholder="Your Email" required />
-                </div>
-                <div className="form-group">
-                  <input type="text" placeholder="Subject" required />
-                </div>
-                <div className="form-group">
-                  <textarea placeholder="Your Message" rows="5" required></textarea>
-                </div>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  type="submit"
-                  className="btn btn-primary"
-                >
-                  Send Message
-                </motion.button>
+              {/* Stepper Progress */}
+              <div className="stepper-progress">
+                {[1, 2, 3, 4].map((step) => (
+                  <div key={step} className={`stepper-step ${formStep >= step ? 'active' : ''}`}>
+                    <div className="step-number">{step}</div>
+                    <div className="step-label">
+                      {step === 1 && 'Basic Info'}
+                      {step === 2 && 'Project Details'}
+                      {step === 3 && 'Timeline & Budget'}
+                      {step === 4 && 'Message'}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <form onSubmit={handleSubmit}>
+                {/* Step 1: Basic Information */}
+                {formStep === 1 && (
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.3 }}
+                    className="form-step"
+                  >
+                    <h3>Let's start with your basic information</h3>
+                    <div className="form-group">
+                      <input 
+                        type="text" 
+                        placeholder="Your Name" 
+                        value={formData.name}
+                        onChange={(e) => handleFormInput('name', e.target.value)}
+                        required 
+                      />
+                    </div>
+                    <div className="form-group">
+                      <input 
+                        type="email" 
+                        placeholder="Your Email" 
+                        value={formData.email}
+                        onChange={(e) => handleFormInput('email', e.target.value)}
+                        required 
+                      />
+                    </div>
+                    <div className="form-group">
+                      <input 
+                        type="text" 
+                        placeholder="Subject" 
+                        value={formData.subject}
+                        onChange={(e) => handleFormInput('subject', e.target.value)}
+                        required 
+                      />
+                    </div>
+                    <div className="form-actions">
+                      <motion.button
+                        type="button"
+                        onClick={nextStep}
+                        className="btn btn-primary"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        disabled={!formData.name || !formData.email || !formData.subject}
+                      >
+                        Next Step
+                      </motion.button>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Step 2: Project Details */}
+                {formStep === 2 && (
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.3 }}
+                    className="form-step"
+                  >
+                    <h3>Tell me about your project</h3>
+                    <div className="form-group">
+                      <select 
+                        value={formData.projectType}
+                        onChange={(e) => handleFormInput('projectType', e.target.value)}
+                        required
+                      >
+                        <option value="">Select Project Type</option>
+                        <option value="web-development">Web Development</option>
+                        <option value="mobile-app">Mobile App</option>
+                        <option value="machine-learning">Machine Learning</option>
+                        <option value="data-analysis">Data Analysis</option>
+                        <option value="consultation">Consultation</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </div>
+                    <div className="form-group">
+                      <textarea 
+                        placeholder="Describe your project requirements..." 
+                        rows="4"
+                        value={formData.message}
+                        onChange={(e) => handleFormInput('message', e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="form-actions">
+                      <motion.button
+                        type="button"
+                        onClick={prevStep}
+                        className="btn btn-secondary"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        Previous
+                      </motion.button>
+                      <motion.button
+                        type="button"
+                        onClick={nextStep}
+                        className="btn btn-primary"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        disabled={!formData.projectType || !formData.message}
+                      >
+                        Next Step
+                      </motion.button>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Step 3: Timeline & Budget */}
+                {formStep === 3 && (
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.3 }}
+                    className="form-step"
+                  >
+                    <h3>Timeline and Budget</h3>
+                    <div className="form-group">
+                      <select 
+                        value={formData.timeline}
+                        onChange={(e) => handleFormInput('timeline', e.target.value)}
+                        required
+                      >
+                        <option value="">Select Timeline</option>
+                        <option value="1-2-weeks">1-2 weeks</option>
+                        <option value="1-month">1 month</option>
+                        <option value="2-3-months">2-3 months</option>
+                        <option value="3-6-months">3-6 months</option>
+                        <option value="6-months-plus">6+ months</option>
+                        <option value="flexible">Flexible</option>
+                      </select>
+                    </div>
+                    <div className="form-group">
+                      <select 
+                        value={formData.budget}
+                        onChange={(e) => handleFormInput('budget', e.target.value)}
+                        required
+                      >
+                        <option value="">Select Budget Range</option>
+                        <option value="under-5k">Under ₱5,000</option>
+                        <option value="5k-10k">₱5,000 - ₱10,000</option>
+                        <option value="10k-25k">₱10,000 - ₱25,000</option>
+                        <option value="25k-50k">₱25,000 - ₱50,000</option>
+                        <option value="50k-100k">₱50,000 - ₱100,000</option>
+                        <option value="100k-plus">₱100,000+</option>
+                        <option value="free-collab">Free Collaboration</option>
+                        <option value="discuss">Let's discuss</option>
+                      </select>
+                    </div>
+                    <div className="form-actions">
+                      <motion.button
+                        type="button"
+                        onClick={prevStep}
+                        className="btn btn-secondary"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        Previous
+                      </motion.button>
+                      <motion.button
+                        type="button"
+                        onClick={nextStep}
+                        className="btn btn-primary"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        disabled={!formData.timeline || !formData.budget}
+                      >
+                        Next Step
+                      </motion.button>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Step 4: Final Message */}
+                {formStep === 4 && (
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.3 }}
+                    className="form-step"
+                  >
+                    <h3>Additional Message (Optional)</h3>
+                    <div className="form-group">
+                      <textarea 
+                        placeholder="Any additional details, questions, or specific requirements..." 
+                        rows="4"
+                        value={formData.message}
+                        onChange={(e) => handleFormInput('message', e.target.value)}
+                      />
+                    </div>
+                    <div className="form-summary">
+                      <h4>Summary</h4>
+                      <div className="summary-item">
+                        <strong>Name:</strong> {formData.name}
+                      </div>
+                      <div className="summary-item">
+                        <strong>Email:</strong> {formData.email}
+                      </div>
+                      <div className="summary-item">
+                        <strong>Project:</strong> {formData.projectType}
+                      </div>
+                      <div className="summary-item">
+                        <strong>Timeline:</strong> {formData.timeline}
+                      </div>
+                      <div className="summary-item">
+                        <strong>Budget:</strong> {formData.budget}
+                      </div>
+                    </div>
+                    <div className="form-actions">
+                      <motion.button
+                        type="button"
+                        onClick={prevStep}
+                        className="btn btn-secondary"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        Previous
+                      </motion.button>
+                      <motion.button
+                        type="submit"
+                        className="btn btn-primary"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        Send Message
+                      </motion.button>
+                    </div>
+                  </motion.div>
+                )}
               </form>
             </motion.div>
           </div>
@@ -684,7 +1006,7 @@ function App() {
       {/* Footer */}
       <footer className="footer">
         <div className="container">
-          <p>&copy; 2024 Your Name. All rights reserved.</p>
+          <p>if you made it this far, you deserve a cookie</p>
         </div>
       </footer>
     </div>
