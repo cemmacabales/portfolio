@@ -21,3 +21,28 @@
   white-space: nowrap;
   margin-right: 0.2em;
 }
+
+/* Mobile optimizations for scrambled text */
+@media (max-width: 768px) {
+  .text-block {
+    opacity: 1 !important;
+    pointer-events: none !important;
+  }
+  
+  .text-block p {
+    opacity: 1 !important;
+    pointer-events: none !important;
+  }
+  
+  .word {
+    opacity: 1 !important;
+    pointer-events: none !important;
+    transform: none !important;
+  }
+  
+  /* Disable any GSAP animations on mobile */
+  .text-block * {
+    pointer-events: none !important;
+    transform: none !important;
+  }
+}

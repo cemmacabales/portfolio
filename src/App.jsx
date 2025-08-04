@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import emailjs from '@emailjs/browser'
 import { 
   Github, 
   Linkedin, 
@@ -33,7 +34,8 @@ import JobPostingsImage from './assets/jobpostings.png';
 import Loader from './components/Loader';
 import Certificates from './components/Certificates';
 import ProfileImage from './assets/me.jpeg';
-import TechStack from './components/TechStack'; 
+import TechStack from './components/TechStack';
+import { EMAILJS_CONFIG } from './config/emailjs.js';
 
 
 
@@ -42,6 +44,8 @@ function App() {
   const [openCategory, setOpenCategory] = useState('ml')
   const [isLoading, setIsLoading] = useState(true)
   const [formStep, setFormStep] = useState(1)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSuccess, setIsSuccess] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -75,19 +79,52 @@ function App() {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    // Handle form submission here
-    console.log('Form submitted:', formData)
-    alert('Thank you for your message! I\'ll get back to you soon.')
-    setFormData({
-      name: '',
-      email: '',
-      subject: '',
-      message: '',
-      projectType: '',
-      budget: '',
-      timeline: ''
-    })
-    setFormStep(1)
+    
+    // EmailJS configuration
+    const serviceId = EMAILJS_CONFIG.SERVICE_ID
+    const templateId = EMAILJS_CONFIG.TEMPLATE_ID
+    const publicKey = EMAILJS_CONFIG.PUBLIC_KEY
+    
+    // Prepare template parameters
+    const templateParams = {
+      name: formData.name,
+      email: formData.email,
+      reply_to: formData.email, // Add reply-to header
+      subject: formData.subject,
+      projectType: formData.projectType,
+      timeline: formData.timeline,
+      budget: formData.budget,
+      message: formData.message
+    }
+    
+    // Send email using EmailJS
+    setIsSubmitting(true)
+    emailjs.send(serviceId, templateId, templateParams, publicKey)
+      .then((response) => {
+        console.log('Email sent successfully:', response)
+        setIsSubmitting(false)
+        setIsSuccess(true)
+        
+        // Reset form after showing success
+        setTimeout(() => {
+          setFormData({
+            name: '',
+            email: '',
+            subject: '',
+            message: '',
+            projectType: '',
+            budget: '',
+            timeline: ''
+          })
+          setFormStep(1)
+          setIsSuccess(false)
+        }, 3000) // Reset after 3 seconds
+      })
+      .catch((error) => {
+        console.error('Email send failed:', error)
+        setIsSubmitting(false)
+        alert('Sorry, there was an error sending your message. Please try again.')
+      })
   }
 
   useEffect(() => {
@@ -941,7 +978,7 @@ function App() {
                 )}
 
                 {/* Step 4: Final Message */}
-                {formStep === 4 && (
+                {formStep === 4 && !isSuccess && (
                   <motion.div
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -991,9 +1028,43 @@ function App() {
                         className="btn btn-primary"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
+                        disabled={isSubmitting}
                       >
-                        Send Message
+                        {isSubmitting ? 'Sending...' : 'Send Message'}
                       </motion.button>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Success Step */}
+                {isSuccess && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5 }}
+                    className="form-step success-step"
+                  >
+                    <div className="success-content">
+                      <div className="success-icon">
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                          className="success-check"
+                        >
+                          ✓
+                        </motion.div>
+                      </div>
+                      <h3>Message Sent Successfully!</h3>
+                      <p>Thank you for your message. I'll get back to you soon!</p>
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.5 }}
+                        className="success-details"
+                      >
+                        <p>You'll receive a confirmation email shortly.</p>
+                      </motion.div>
                     </div>
                   </motion.div>
                 )}

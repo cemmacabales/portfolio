@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { SplitText } from "gsap/SplitText";
 import { ScrambleTextPlugin } from "gsap/ScrambleTextPlugin";
@@ -18,9 +18,26 @@ const ScrambledText = ({
 }) => {
   const rootRef = useRef(null);
   const charsRef = useRef([]);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     if (!rootRef.current) return;
+
+    // If mobile, don't initialize scramble effect
+    if (isMobile) {
+      return;
+    }
 
     const split = SplitText.create(rootRef.current.querySelector("p"), {
       type: "words",
@@ -62,9 +79,9 @@ const ScrambledText = ({
 
     return () => {
       el.removeEventListener("pointermove", handleMove);
-      split.revert();
+      if (split) split.revert();
     };
-  }, [radius, duration, speed, scrambleChars]);
+  }, [radius, duration, speed, scrambleChars, isMobile]);
 
   return (
     <div ref={rootRef} className={`text-block ${className}`} style={style}>

@@ -17,4 +17,11 @@
   transform: rotate(var(--rotate));
   opacity: 0.4;
   background-color: #ffffff !important;
+}
+
+/* Hide magnet lines on mobile devices */
+@media (max-width: 768px) {
+  .magnetLines-container {
+    display: none !important;
+  }
 } 

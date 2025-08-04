@@ -37,7 +37,24 @@ export default function DecryptedText({
   const [isScrambling, setIsScrambling] = useState(false);
   const [revealedIndices, setRevealedIndices] = useState(new Set());
   const [hasAnimated, setHasAnimated] = useState(false);
+  const [mobileTimeoutId, setMobileTimeoutId] = useState(null);
   const containerRef = useRef(null);
+
+  // Determine animation mode based on screen size
+  const [isMobile, setIsMobile] = useState(false);
+  
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  
+  const effectiveAnimateOn = isMobile ? 'view' : animateOn;
 
   useEffect(() => {
     let interval
@@ -163,13 +180,28 @@ export default function DecryptedText({
   ])
 
   useEffect(() => {
-    if (animateOn !== 'view') return
+    if (effectiveAnimateOn !== 'view') return
 
     const observerCallback = (entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting && !hasAnimated) {
           setIsHovering(true)
           setHasAnimated(true)
+          
+          // On mobile, return to normal state after 2 seconds
+          if (isMobile) {
+            // Clear any existing timeout
+            if (mobileTimeoutId) {
+              clearTimeout(mobileTimeoutId)
+            }
+            
+            const timeoutId = setTimeout(() => {
+              setIsHovering(false)
+              setMobileTimeoutId(null)
+            }, 1000)
+            
+            setMobileTimeoutId(timeoutId)
+          }
         }
       })
     }
@@ -190,11 +222,24 @@ export default function DecryptedText({
       if (currentRef) {
         observer.unobserve(currentRef)
       }
+      // Clear timeout on cleanup
+      if (mobileTimeoutId) {
+        clearTimeout(mobileTimeoutId)
+      }
     }
-  }, [animateOn, hasAnimated])
+  }, [effectiveAnimateOn, hasAnimated, isMobile, mobileTimeoutId])
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (mobileTimeoutId) {
+        clearTimeout(mobileTimeoutId)
+      }
+    }
+  }, [mobileTimeoutId])
 
   const hoverProps =
-    animateOn === 'hover'
+    effectiveAnimateOn === 'hover'
       ? {
         onMouseEnter: () => setIsHovering(true),
         onMouseLeave: () => setIsHovering(false),

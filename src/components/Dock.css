@@ -36,6 +36,8 @@
   cursor: pointer;
   outline: none;
   transition: all 0.3s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .dock-item:hover {
@@ -73,4 +75,38 @@
   color: #fff;
   transform: translateX(-50%);
   backdrop-filter: blur(10px);
+}
+
+/* Mobile optimizations for Dock */
+@media (max-width: 768px) {
+  .dock-panel {
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 400px;
+    gap: 0.5rem;
+    padding: 0 0.25rem 0.25rem;
+  }
+  
+  .dock-item {
+    min-width: 44px; /* Minimum touch target size */
+    min-height: 44px;
+  }
+  
+  .dock-label {
+    display: none; /* Hide labels on mobile to save space */
+  }
+}
+
+@media (max-width: 480px) {
+  .dock-panel {
+    width: 95%;
+    gap: 0.25rem;
+  }
+  
+  .dock-item {
+    min-width: 40px;
+    min-height: 40px;
+  }
 } 
