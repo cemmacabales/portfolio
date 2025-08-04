@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronDown, ChevronUp, GraduationCap, School, BookOpen } from 'lucide-react';
 import MapuaImage from '../assets/Mapua.png';
@@ -36,8 +36,26 @@ const careerData = [
   }
 ];
 
+// Mobile detection hook
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  return isMobile;
+};
+
 export const CareerTimeline = () => {
-  const [expandedItems, setExpandedItems] = useState(new Set());
+  const [expandedItems, setExpandedItems] = useState(new Set([0, 1, 2])); // Start with all expanded
+  const isMobile = useIsMobile();
 
   const toggleItem = (index) => {
     const newExpanded = new Set(expandedItems);
@@ -49,55 +67,10 @@ export const CareerTimeline = () => {
     setExpandedItems(newExpanded);
   };
 
-  return (
-    <>
-      {/* Desktop Timeline - Original Minimal Design */}
-      <div className="minimal-timeline desktop-timeline">
-        <div className="timeline-list">
-          {careerData.map((item, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              viewport={{ once: true }}
-              className="timeline-entry"
-              whileHover={{ scale: 1.02 }}
-            >
-              <div className="timeline-dot"></div>
-              <div className="timeline-content-minimal">
-                <div className="timeline-year">{item.period.split(' - ')[0]}</div>
-                <div className="timeline-expanded">
-                  <div className="timeline-image-placeholder">
-                    <img 
-                      src={item.image} 
-                      alt={item.title}
-                      className="timeline-image"
-                      style={{
-                        width: '80px',
-                        height: '80px',
-                        objectFit: 'contain',
-                        borderRadius: '12px',
-                        maxWidth: '100%',
-                        maxHeight: '100%'
-                      }}
-                    />
-                  </div>
-                  <div className="timeline-details">
-                    <div className="timeline-period-minimal">{item.period}</div>
-                    <div className="timeline-title-minimal">{item.title}</div>
-                    <div className="timeline-level-minimal">{item.level}</div>
-                    <div className="timeline-description">{item.description}</div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-
-      {/* Mobile Timeline - New Card Design */}
-      <div className="mobile-timeline mobile-timeline-only">
+  // Render only the appropriate timeline based on screen size
+  if (isMobile) {
+    return (
+      <div className="mobile-timeline">
         <div className="timeline-header">
           <DecryptedText
             text="My Educational Journey"
@@ -148,6 +121,9 @@ export const CareerTimeline = () => {
                 }}
                 transition={{ duration: 0.3, ease: 'easeInOut' }}
                 className="timeline-card-content"
+                style={{
+                  overflow: 'hidden'
+                }}
               >
                 <div className="timeline-card-image">
                   <img 
@@ -169,6 +145,53 @@ export const CareerTimeline = () => {
           ))}
         </div>
       </div>
-    </>
+    );
+  }
+
+  // Desktop timeline
+  return (
+    <div className="minimal-timeline desktop-timeline">
+      <div className="timeline-list">
+        {careerData.map((item, index) => (
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: index * 0.1 }}
+            viewport={{ once: true }}
+            className="timeline-entry"
+            whileHover={{ scale: 1.02 }}
+          >
+            <div className="timeline-dot"></div>
+            <div className="timeline-content-minimal">
+              <div className="timeline-year">{item.period.split(' - ')[0]}</div>
+              <div className="timeline-expanded">
+                <div className="timeline-image-placeholder">
+                  <img 
+                    src={item.image} 
+                    alt={item.title}
+                    className="timeline-image"
+                    style={{
+                      width: '80px',
+                      height: '80px',
+                      objectFit: 'contain',
+                      borderRadius: '12px',
+                      maxWidth: '100%',
+                      maxHeight: '100%'
+                    }}
+                  />
+                </div>
+                <div className="timeline-details">
+                  <div className="timeline-period-minimal">{item.period}</div>
+                  <div className="timeline-title-minimal">{item.title}</div>
+                  <div className="timeline-level-minimal">{item.level}</div>
+                  <div className="timeline-description">{item.description}</div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </div>
   );
 }; 

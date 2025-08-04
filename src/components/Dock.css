@@ -87,11 +87,17 @@
     max-width: 400px;
     gap: 0.5rem;
     padding: 0 0.25rem 0.25rem;
+    /* Ensure proper positioning */
+    position: fixed !important;
+    z-index: 1000 !important;
   }
   
   .dock-item {
     min-width: 44px; /* Minimum touch target size */
     min-height: 44px;
+    /* Ensure proper touch handling */
+    touch-action: manipulation !important;
+    -webkit-tap-highlight-color: transparent !important;
   }
   
   .dock-label {

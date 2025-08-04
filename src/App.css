@@ -1,13 +1,16 @@
-/* Reset and Base Styles */
-
+/* Browser compatibility fixes */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
 }
 
 /* Force dark mode - Aggressive override */
@@ -15,6 +18,10 @@ html {
   background-color: #000000 !important;
   color-scheme: dark !important;
   forced-color-adjust: none !important;
+  /* Ensure proper mobile viewport */
+  width: 100% !important;
+  height: 100% !important;
+  overflow-x: hidden !important;
 }
 
 body {
@@ -25,6 +32,10 @@ body {
   margin: 0 !important;
   padding: 0 !important;
   forced-color-adjust: none !important;
+  /* Browser compatibility */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 /* Override any system color scheme - More aggressive */
@@ -41,6 +52,37 @@ body {
     color-scheme: dark !important;
     forced-color-adjust: none !important;
   }
+}
+
+/* Body class-based mobile targeting */
+body.mobile-view .background-container,
+body.mobile-view .magnet-lines-bg,
+body.mobile-view .magnetLines-container {
+  display: none !important;
+}
+
+body.mobile-view .hero-content {
+  grid-template-columns: 1fr !important;
+  text-align: center !important;
+  gap: clamp(1.5rem, 3vw, 2rem) !important;
+  padding: 0 clamp(1rem, 4vw, 2rem) !important;
+}
+
+body.mobile-view .about-content {
+  grid-template-columns: 1fr !important;
+  gap: clamp(1.5rem, 3vw, 2rem) !important;
+  min-height: auto !important;
+  text-align: center !important;
+}
+
+body.mobile-view .contact-content {
+  grid-template-columns: 1fr !important;
+  gap: clamp(1.5rem, 3vw, 2rem) !important;
+}
+
+body.mobile-view .skills-content {
+  grid-template-columns: 1fr !important;
+  gap: 2rem !important;
 }
 
 /* Mobile performance optimizations */
@@ -61,6 +103,54 @@ body {
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
     }
+  }
+  
+  /* Ensure proper viewport handling */
+  html, body {
+    width: 100% !important;
+    height: 100% !important;
+    overflow-x: hidden !important;
+  }
+  
+  /* Fix potential layout shifts */
+  .App {
+    width: 100% !important;
+    min-height: 100vh !important;
+    overflow-x: hidden !important;
+  }
+  
+  /* Force mobile layout overrides */
+  .hero-content {
+    grid-template-columns: 1fr !important;
+    text-align: center !important;
+    gap: clamp(1.5rem, 3vw, 2rem) !important;
+    padding: 0 clamp(1rem, 4vw, 2rem) !important;
+  }
+  
+  .about-content {
+    grid-template-columns: 1fr !important;
+    gap: clamp(1.5rem, 3vw, 2rem) !important;
+    min-height: auto !important;
+    text-align: center !important;
+  }
+  
+  .contact-content {
+    grid-template-columns: 1fr !important;
+    gap: clamp(1.5rem, 3vw, 2rem) !important;
+  }
+  
+  .skills-content {
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+  }
+  
+
+  
+  /* Force mobile background hiding */
+  .background-container,
+  .magnet-lines-bg,
+  .magnetLines-container {
+    display: none !important;
   }
 }
 
@@ -102,6 +192,9 @@ body[data-theme="light"],
   margin: 0  !important;
   padding: 0 !important;
   -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  /* Prevent horizontal scroll on mobile */
+  max-width: 100vw !important;
+  box-sizing: border-box !important;
 }
 
 /* Container */
@@ -111,6 +204,8 @@ body[data-theme="light"],
   margin: 0 auto;
   padding: 0 4vw;
   box-sizing: border-box;
+  /* Prevent overflow issues */
+  overflow-x: hidden;
 }
 
 
@@ -407,6 +502,7 @@ section {
 .mobile-timeline {
   width: 100%;
   padding: 1rem 0;
+  display: block; /* Show by default */
 }
 
 .timeline-header {
@@ -547,23 +643,179 @@ section {
   justify-content: center;
 }
 
-/* Responsive Timeline Display */
+/* Timeline Display - Now handled by conditional rendering */
 .desktop-timeline {
   display: block;
 }
 
-.mobile-timeline-only {
-  display: none;
+.mobile-timeline {
+  display: block;
+  width: 100%;
+  padding: 1rem 0;
 }
 
-@media (max-width: 768px) {
-  .desktop-timeline {
-    display: none;
-  }
-  
-  .mobile-timeline-only {
-    display: block;
-  }
+/* Ensure mobile timeline cards are visible */
+.mobile-timeline .timeline-cards {
+  display: -webkit-flex !important;
+  display: -ms-flexbox !important;
+  display: flex !important;
+  -webkit-flex-direction: column !important;
+  -ms-flex-direction: column !important;
+  flex-direction: column !important;
+  gap: 1rem !important;
+  width: 100% !important;
+  min-height: 200px !important; /* Debug: ensure minimum height */
+}
+
+.mobile-timeline .timeline-card {
+  display: block !important;
+  width: 100% !important;
+  margin-bottom: 0 !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-transition: all 0.3s ease !important;
+  -moz-transition: all 0.3s ease !important;
+  -o-transition: all 0.3s ease !important;
+  transition: all 0.3s ease !important;
+  min-height: 80px !important; /* Debug: ensure minimum height */
+  /* Browser compatibility */
+  -webkit-transform: translateZ(0);
+  -moz-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+.mobile-timeline .timeline-card:hover {
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Mobile timeline card layout */
+.timeline-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+.timeline-card {
+  width: 100%;
+  margin-bottom: 0;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.timeline-card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.timeline-card-header {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  -webkit-transition: all 0.3s ease;
+  -moz-transition: all 0.3s ease;
+  -o-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+}
+
+.timeline-card-header:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.timeline-card-icon {
+  width: 45px;
+  height: 45px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid;
+}
+
+.timeline-card-icon svg {
+  color: #ffffff;
+}
+
+.timeline-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.timeline-card-period {
+  font-size: 0.8rem;
+  color: #64ffda;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.25rem;
+}
+
+.timeline-card-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 0.25rem;
+  line-height: 1.2;
+}
+
+.timeline-card-level {
+  font-size: 0.9rem;
+  color: #a0a0a0;
+  font-weight: 500;
+}
+
+.timeline-card-toggle {
+  color: #a0a0a0;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.timeline-card:hover .timeline-card-toggle {
+  color: #64ffda;
+}
+
+.timeline-card-content {
+  padding: 0 1rem;
+  overflow: hidden;
+  max-height: 500px; /* Ensure content can expand */
+}
+
+.timeline-card-image {
+  margin: 1rem 0;
+}
+
+.timeline-card-image img {
+  height: 120px;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.timeline-card-description {
+  font-size: 0.95rem;
+  color: #a0a0a0;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
 }
 
 .timeline-list {
@@ -1604,6 +1856,44 @@ section {
     display: none !important;
   }
   
+  /* Add mobile background fallback */
+  .App::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+    z-index: -1;
+    pointer-events: none;
+  }
+  
+  /* Ensure proper mobile layout */
+  .hero-content {
+    grid-template-columns: 1fr !important;
+    text-align: center !important;
+    gap: clamp(1.5rem, 3vw, 2rem) !important;
+    padding: 0 clamp(1rem, 4vw, 2rem) !important;
+  }
+  
+  .about-content {
+    grid-template-columns: 1fr !important;
+    gap: clamp(1.5rem, 3vw, 2rem) !important;
+    min-height: auto !important;
+    text-align: center !important;
+  }
+  
+  .contact-content {
+    grid-template-columns: 1fr !important;
+    gap: clamp(1.5rem, 3vw, 2rem) !important;
+  }
+  
+  .skills-content {
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+  }
+  
   .hero-content {
     grid-template-columns: 1fr;
     text-align: center;
@@ -1615,6 +1905,17 @@ section {
     gap: clamp(1.5rem, 3vw, 2rem);
     min-height: auto;
     text-align: center;
+  }
+  
+  /* Ensure timeline displays properly on mobile */
+  .about-journey {
+    width: 100% !important;
+    padding: 1rem 0 !important;
+  }
+  
+  .mobile-timeline {
+    display: block !important;
+    width: 100% !important;
   }
   
   .section-title-group {
@@ -1749,6 +2050,74 @@ section {
     font-size: 0.9rem;
   }
   
+  /* Ensure proper mobile timeline display */
+  .mobile-timeline {
+    display: block !important;
+    width: 100% !important;
+    padding: 1rem 0 !important;
+  }
+  
+  /* Ensure mobile timeline cards are visible */
+  .mobile-timeline .timeline-cards {
+    display: -webkit-flex !important;
+    display: -ms-flexbox !important;
+    display: flex !important;
+    -webkit-flex-direction: column !important;
+    -ms-flex-direction: column !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
+    width: 100% !important;
+  }
+  
+  .mobile-timeline .timeline-card {
+    display: block !important;
+    width: 100% !important;
+    margin-bottom: 1rem !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    backdrop-filter: blur(10px) !important;
+    min-height: 120px !important; /* Ensure minimum height for collapsed state */
+  }
+  
+  .mobile-timeline .timeline-card-content {
+    padding: 0 1rem !important;
+    overflow: hidden !important;
+    max-height: 500px !important;
+  }
+  
+  .mobile-timeline .timeline-card-image {
+    margin: 1rem 0 !important;
+  }
+  
+  .mobile-timeline .timeline-card-image img {
+    height: 120px !important;
+    width: 100% !important;
+    object-fit: cover !important;
+    border-radius: 8px !important;
+  }
+  
+  .mobile-timeline .timeline-card-description {
+    font-size: 0.95rem !important;
+    color: #a0a0a0 !important;
+    line-height: 1.6 !important;
+    margin-bottom: 1rem !important;
+    padding-bottom: 1rem !important;
+  }
+  
+  .timeline-cards {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
+    width: 100% !important;
+  }
+  
+  .timeline-card {
+    width: 100% !important;
+    margin-bottom: 0 !important;
+  }
+  
   /* Mobile Minimal Timeline */
   .about-content {
     grid-template-columns: 1fr;
@@ -1836,6 +2205,35 @@ section {
   
   .hero {
     padding: clamp(60px, 8vw, 80px) 3vw clamp(40px, 6vw, 60px);
+  }
+  
+  /* Extra small screen fixes */
+  .hero-content {
+    padding: 0 1rem !important;
+  }
+  
+  .about-content {
+    padding: 0 1rem !important;
+  }
+  
+  .contact-content {
+    padding: 0 1rem !important;
+  }
+  
+  .skills-content {
+    padding: 0 1rem !important;
+  }
+  
+  /* Ensure proper touch targets */
+  .btn, .category-btn, .dock-item {
+    min-height: 44px !important;
+    min-width: 44px !important;
+  }
+  
+  /* Fix potential overflow issues */
+  .projects-grid, .skills-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
   }
   
   .btn {

@@ -8,8 +8,15 @@ export default defineConfig({
     assetsDir: 'assets',
     rollupOptions: {
       output: {
-        assetFileNames: 'assets/[name].[ext]'
+        assetFileNames: 'assets/[name].[ext]',
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          animations: ['framer-motion'],
+          icons: ['lucide-react']
+        }
       }
-    }
+    },
+    chunkSizeWarningLimit: 1000,
+    target: 'es2015'
   }
 })

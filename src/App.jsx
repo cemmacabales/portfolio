@@ -35,9 +35,34 @@ import Loader from './components/Loader';
 import Certificates from './components/Certificates';
 import ProfileImage from './assets/me.jpeg';
 import TechStack from './components/TechStack';
-import { EMAILJS_CONFIG } from './config/emailjs.js';
+import { debugMobileView } from './debug-mobile';
 
+// Mobile detection hook
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(false);
 
+  useEffect(() => {
+    const checkMobile = () => {
+      const mobile = window.innerWidth <= 768;
+      setIsMobile(mobile);
+      
+      // Add/remove CSS class to body for additional CSS targeting
+      if (mobile) {
+        document.body.classList.add('mobile-view');
+        document.body.classList.remove('desktop-view');
+      } else {
+        document.body.classList.add('desktop-view');
+        document.body.classList.remove('mobile-view');
+      }
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  return isMobile;
+};
 
 function App() {
   const [activeSection, setActiveSection] = useState('home')
@@ -55,6 +80,8 @@ function App() {
     budget: '',
     timeline: ''
   })
+
+  const isMobile = useIsMobile();
 
   const scrollToSection = (sectionId) => {
     setActiveSection(sectionId)
@@ -81,9 +108,9 @@ function App() {
     e.preventDefault()
     
     // EmailJS configuration
-    const serviceId = EMAILJS_CONFIG.SERVICE_ID
-    const templateId = EMAILJS_CONFIG.TEMPLATE_ID
-    const publicKey = EMAILJS_CONFIG.PUBLIC_KEY
+    const serviceId = 'service_6c1oek2'
+    const templateId = 'template_czcbg15'
+    const publicKey = 'LIWlUI0y2YhwQo4p_'
     
     // Prepare template parameters
     const templateParams = {
@@ -135,25 +162,50 @@ function App() {
     return () => clearTimeout(timer)
   }, [])
 
+  // Debug mobile view issues
+  useEffect(() => {
+    if (!isLoading) {
+      setTimeout(debugMobileView, 1000);
+    }
+  }, [isLoading, isMobile])
+
   if (isLoading) {
     return <Loader />
   }
 
   return (
     <div className="App">
-      {/* Background */}
-      <div className="background-container">
-        <MagnetLines 
-          rows={20}
-          columns={20}
-          containerSize="100vw"
-          lineColor="#ffffff"
-          lineWidth="1px"
-          lineHeight="clamp(25px, 2.5vw, 40px)"
-          baseAngle={-10}
-          className="magnet-lines-bg"
+      {/* Background - Only show on desktop */}
+      {!isMobile && (
+        <div className="background-container">
+          <MagnetLines 
+            rows={20}
+            columns={20}
+            containerSize="100vw"
+            lineColor="#ffffff"
+            lineWidth="1px"
+            lineHeight="clamp(25px, 2.5vw, 40px)"
+            baseAngle={-10}
+            className="magnet-lines-bg"
+          />
+        </div>
+      )}
+
+      {/* Mobile Background Fallback */}
+      {isMobile && (
+        <div 
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            background: 'linear-gradient(135deg, #000000 0%, #1a1a1a 100%)',
+            zIndex: -1,
+            pointerEvents: 'none'
+          }}
         />
-      </div>
+      )}
       
 
       
@@ -316,7 +368,7 @@ function App() {
                 speed={0.5}
                 scrambleChars=".:"
               >
-                Outside of academics, I enjoy playing video games, coding, making things from scratch, and solving challenging problems. I’m also passionate about exploring new technologies, contributing to open-source projects, and sharing knowledge with the developer community.
+                Outside of academics, I enjoy playing video games, coding, making things from scratch, and solving challenging problems. I'm also passionate about exploring new technologies, contributing to open-source projects, and sharing knowledge with the developer community.
               </ScrambledText>
                 <div className="about-stats">
                   <SpotlightCard className="stat" spotlightColor="rgba(0, 229, 255, 0.2)">
