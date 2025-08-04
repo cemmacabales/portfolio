@@ -70,7 +70,11 @@ export const CareerTimeline = () => {
   // Render only the appropriate timeline based on screen size
   if (isMobile) {
     return (
-      <div className="mobile-timeline">
+      <div className="mobile-timeline" style={{
+        display: 'block',
+        width: '100%',
+        padding: '1rem 0'
+      }}>
         <div className="timeline-header">
           <DecryptedText
             text="My Educational Journey"
@@ -83,7 +87,12 @@ export const CareerTimeline = () => {
           <p>From primary education to university studies</p>
         </div>
         
-        <div className="timeline-cards">
+        <div className="timeline-cards" style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1rem',
+          width: '100%'
+        }}>
           {careerData.map((item, index) => (
             <motion.div
               key={index}
@@ -92,23 +101,73 @@ export const CareerTimeline = () => {
               transition={{ duration: 0.6, delay: index * 0.1 }}
               viewport={{ once: true }}
               className="timeline-card"
+              style={{
+                display: 'block',
+                width: '100%',
+                marginBottom: '1rem',
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: '12px',
+                overflow: 'hidden',
+                minHeight: '120px'
+              }}
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.98 }}
             >
               <div 
                 className="timeline-card-header"
                 onClick={() => toggleItem(index)}
-                style={{ cursor: 'pointer' }}
+                style={{ 
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '1rem',
+                  gap: '1rem',
+                  borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+                }}
               >
-                <div className="timeline-card-icon" style={{ backgroundColor: item.color + '20', borderColor: item.color }}>
+                <div className="timeline-card-icon" style={{ 
+                  backgroundColor: item.color + '20', 
+                  borderColor: item.color,
+                  width: '48px',
+                  height: '48px',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: '2px solid',
+                  flexShrink: 0
+                }}>
                   {item.icon}
                 </div>
-                <div className="timeline-card-info">
-                  <div className="timeline-card-period">{item.period}</div>
-                  <div className="timeline-card-title">{item.title}</div>
-                  <div className="timeline-card-level">{item.level}</div>
+                <div className="timeline-card-info" style={{
+                  flex: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.25rem'
+                }}>
+                  <div className="timeline-card-period" style={{
+                    fontSize: '0.8rem',
+                    color: item.color,
+                    fontWeight: '600'
+                  }}>{item.period}</div>
+                  <div className="timeline-card-title" style={{
+                    fontSize: '1rem',
+                    fontWeight: '600',
+                    color: '#ffffff'
+                  }}>{item.title}</div>
+                  <div className="timeline-card-level" style={{
+                    fontSize: '0.85rem',
+                    color: '#a0a0a0'
+                  }}>{item.level}</div>
                 </div>
-                <div className="timeline-card-toggle">
+                <div className="timeline-card-toggle" style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#a0a0a0',
+                  transition: 'color 0.3s ease'
+                }}>
                   {expandedItems.has(index) ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                 </div>
               </div>
@@ -122,10 +181,12 @@ export const CareerTimeline = () => {
                 transition={{ duration: 0.3, ease: 'easeInOut' }}
                 className="timeline-card-content"
                 style={{
-                  overflow: 'hidden'
+                  overflow: 'hidden',
+                  padding: '0 1rem',
+                  maxHeight: '500px'
                 }}
               >
-                <div className="timeline-card-image">
+                <div className="timeline-card-image" style={{ margin: '1rem 0' }}>
                   <img 
                     src={item.image} 
                     alt={item.title}
@@ -137,7 +198,13 @@ export const CareerTimeline = () => {
                     }}
                   />
                 </div>
-                <div className="timeline-card-description">
+                <div className="timeline-card-description" style={{
+                  fontSize: '0.95rem',
+                  color: '#a0a0a0',
+                  lineHeight: '1.6',
+                  marginBottom: '1rem',
+                  paddingBottom: '1rem'
+                }}>
                   {item.description}
                 </div>
               </motion.div>

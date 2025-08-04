@@ -1,0 +1,248 @@
+/* CSS Compatibility Fixes for Production Builds */
+/* This file overrides problematic CSS properties that don't work after deployment */
+
+/* Remove all backdrop-filter properties */
+* {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Remove will-change properties */
+* {
+  will-change: auto !important;
+}
+
+/* Simplify complex transforms */
+.profile-placeholder,
+.timeline-card,
+.stepper-step,
+.form-actions,
+.mobile-timeline,
+.mobile-timeline .timeline-cards,
+.mobile-timeline .timeline-card,
+.mobile-timeline .timeline-card-content,
+.mobile-timeline .timeline-card-image img {
+  transform: none !important;
+  -webkit-transform: none !important;
+  -moz-transform: none !important;
+  -ms-transform: none !important;
+}
+
+/* Force proper display for mobile elements */
+@media (max-width: 768px) {
+  .mobile-timeline {
+    display: block !important;
+    width: 100% !important;
+    padding: 1rem 0 !important;
+  }
+  
+  .mobile-timeline .timeline-cards {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
+    width: 100% !important;
+  }
+  
+  .mobile-timeline .timeline-card {
+    display: block !important;
+    width: 100% !important;
+    margin-bottom: 1rem !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    min-height: 120px !important;
+  }
+  
+  .mobile-timeline .timeline-card-content {
+    padding: 0 1rem !important;
+    overflow: hidden !important;
+    max-height: 500px !important;
+  }
+  
+  .mobile-timeline .timeline-card-image {
+    margin: 1rem 0 !important;
+  }
+  
+  .mobile-timeline .timeline-card-image img {
+    height: 120px !important;
+    width: 100% !important;
+    object-fit: cover !important;
+    border-radius: 8px !important;
+  }
+  
+  .mobile-timeline .timeline-card-description {
+    font-size: 0.95rem !important;
+    color: #a0a0a0 !important;
+    line-height: 1.6 !important;
+    margin-bottom: 1rem !important;
+    padding-bottom: 1rem !important;
+  }
+  
+  /* Force stepper form mobile layout */
+  .stepper-progress {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
+  }
+  
+  .stepper-progress::before {
+    display: none !important;
+  }
+  
+  .stepper-step {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 1rem !important;
+    text-align: left !important;
+  }
+  
+  .step-label {
+    font-size: 0.9rem !important;
+  }
+  
+  .form-actions {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  
+  .form-actions .btn {
+    width: 100% !important;
+  }
+  
+  /* Force mobile layout overrides */
+  .hero-content {
+    grid-template-columns: 1fr !important;
+    text-align: center !important;
+    gap: clamp(1.5rem, 3vw, 2rem) !important;
+    padding: 0 clamp(1rem, 4vw, 2rem) !important;
+  }
+  
+  .about-content {
+    grid-template-columns: 1fr !important;
+    gap: clamp(1.5rem, 3vw, 2rem) !important;
+    min-height: auto !important;
+    text-align: center !important;
+  }
+  
+  .contact-content {
+    grid-template-columns: 1fr !important;
+    gap: clamp(1.5rem, 3vw, 2rem) !important;
+  }
+  
+  .skills-content {
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+  }
+  
+  /* Hide background elements on mobile */
+  .background-container,
+  .magnet-lines-bg,
+  .magnetLines-container {
+    display: none !important;
+  }
+}
+
+/* Ensure proper hover states without transforms */
+.btn:hover,
+.category-btn:hover,
+.social-link:hover {
+  transform: none !important;
+  -webkit-transform: none !important;
+}
+
+/* Fix any remaining backdrop-filter issues */
+.project-card,
+.skill-category,
+.contact-form,
+.timeline-card {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Ensure proper z-index stacking */
+.mobile-timeline,
+.stepper-progress,
+.form-actions {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* Success step fixes */
+.success-step {
+  text-align: center !important;
+  padding: 2rem !important;
+  display: block !important;
+}
+
+.success-content {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 1.5rem !important;
+}
+
+.success-icon {
+  width: 80px !important;
+  height: 80px !important;
+  border-radius: 50% !important;
+  background: rgba(100, 255, 218, 0.1) !important;
+  border: 3px solid #64ffda !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-bottom: 1rem !important;
+}
+
+.success-check {
+  font-size: 2rem !important;
+  font-weight: bold !important;
+  color: #64ffda !important;
+}
+
+.success-step h3 {
+  color: #ffffff !important;
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.success-step p {
+  color: #a0a0a0 !important;
+  font-size: 1rem !important;
+  line-height: 1.6 !important;
+}
+
+.success-details {
+  margin-top: 1rem !important;
+  padding: 1rem !important;
+  background: rgba(100, 255, 218, 0.05) !important;
+  border-radius: 8px !important;
+  border: 1px solid rgba(100, 255, 218, 0.2) !important;
+}
+
+.success-details p {
+  color: #64ffda !important;
+  font-size: 0.9rem !important;
+  margin: 0 !important;
+}
+
+/* Mobile success step fixes */
+@media (max-width: 768px) {
+  .success-icon {
+    width: 60px !important;
+    height: 60px !important;
+  }
+  
+  .success-check {
+    font-size: 1.5rem !important;
+  }
+  
+  .success-step h3 {
+    font-size: 1.3rem !important;
+  }
+  
+  .success-step p {
+    font-size: 0.9rem !important;
+  }
+} 

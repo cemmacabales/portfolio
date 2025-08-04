@@ -36,33 +36,10 @@ import Certificates from './components/Certificates';
 import ProfileImage from './assets/me.jpeg';
 import TechStack from './components/TechStack';
 import { debugMobileView } from './debug-mobile';
+import { useMobileDetection } from './mobile-detection';
 
-// Mobile detection hook
-const useIsMobile = () => {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => {
-      const mobile = window.innerWidth <= 768;
-      setIsMobile(mobile);
-      
-      // Add/remove CSS class to body for additional CSS targeting
-      if (mobile) {
-        document.body.classList.add('mobile-view');
-        document.body.classList.remove('desktop-view');
-      } else {
-        document.body.classList.add('desktop-view');
-        document.body.classList.remove('mobile-view');
-      }
-    };
-
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  return isMobile;
-};
+// Use the new mobile detection hook
+const useIsMobile = useMobileDetection;
 
 function App() {
   const [activeSection, setActiveSection] = useState('home')
@@ -162,10 +139,13 @@ function App() {
     return () => clearTimeout(timer)
   }, [])
 
-  // Debug mobile view issues
+  // Debug mobile view issues and apply Safari fixes
   useEffect(() => {
     if (!isLoading) {
-      setTimeout(debugMobileView, 1000);
+      setTimeout(() => {
+        debugMobileView();
+        applySafariFixes();
+      }, 1000);
     }
   }, [isLoading, isMobile])
 
@@ -838,11 +818,25 @@ function App() {
               className="contact-form"
             >
               {/* Stepper Progress */}
-              <div className="stepper-progress">
+              <div className="stepper-progress" style={isMobile ? {
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '1rem'
+              } : {}}>
+                {isMobile && <style>{`
+                  .stepper-progress::before {
+                    display: none !important;
+                  }
+                `}</style>}
                 {[1, 2, 3, 4].map((step) => (
-                  <div key={step} className={`stepper-step ${formStep >= step ? 'active' : ''}`}>
+                  <div key={step} className={`stepper-step ${formStep >= step ? 'active' : ''}`} style={isMobile ? {
+                    display: 'flex',
+                    flexDirection: 'row',
+                    gap: '1rem',
+                    textAlign: 'left'
+                  } : {}}>
                     <div className="step-number">{step}</div>
-                    <div className="step-label">
+                    <div className="step-label" style={isMobile ? { fontSize: '0.9rem' } : {}}>
                       {step === 1 && 'Basic Info'}
                       {step === 2 && 'Project Details'}
                       {step === 3 && 'Timeline & Budget'}
@@ -890,11 +884,15 @@ function App() {
                         required 
                       />
                     </div>
-                    <div className="form-actions">
+                    <div className="form-actions" style={isMobile ? {
+                      display: 'flex',
+                      flexDirection: 'column'
+                    } : {}}>
                       <motion.button
                         type="button"
                         onClick={nextStep}
                         className="btn btn-primary"
+                        style={isMobile ? { width: '100%' } : {}}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         disabled={!formData.name || !formData.email || !formData.subject}
@@ -939,11 +937,15 @@ function App() {
                         required
                       />
                     </div>
-                    <div className="form-actions">
+                    <div className="form-actions" style={isMobile ? {
+                      display: 'flex',
+                      flexDirection: 'column'
+                    } : {}}>
                       <motion.button
                         type="button"
                         onClick={prevStep}
                         className="btn btn-secondary"
+                        style={isMobile ? { width: '100%' } : {}}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
@@ -953,6 +955,7 @@ function App() {
                         type="button"
                         onClick={nextStep}
                         className="btn btn-primary"
+                        style={isMobile ? { width: '100%' } : {}}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         disabled={!formData.projectType || !formData.message}
@@ -1005,11 +1008,15 @@ function App() {
                         <option value="discuss">Let's discuss</option>
                       </select>
                     </div>
-                    <div className="form-actions">
+                    <div className="form-actions" style={isMobile ? {
+                      display: 'flex',
+                      flexDirection: 'column'
+                    } : {}}>
                       <motion.button
                         type="button"
                         onClick={prevStep}
                         className="btn btn-secondary"
+                        style={isMobile ? { width: '100%' } : {}}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
@@ -1019,6 +1026,7 @@ function App() {
                         type="button"
                         onClick={nextStep}
                         className="btn btn-primary"
+                        style={isMobile ? { width: '100%' } : {}}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         disabled={!formData.timeline || !formData.budget}
@@ -1065,11 +1073,15 @@ function App() {
                         <strong>Budget:</strong> {formData.budget}
                       </div>
                     </div>
-                    <div className="form-actions">
+                    <div className="form-actions" style={isMobile ? {
+                      display: 'flex',
+                      flexDirection: 'column'
+                    } : {}}>
                       <motion.button
                         type="button"
                         onClick={prevStep}
                         className="btn btn-secondary"
+                        style={isMobile ? { width: '100%' } : {}}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
@@ -1078,6 +1090,7 @@ function App() {
                       <motion.button
                         type="submit"
                         className="btn btn-primary"
+                        style={isMobile ? { width: '100%' } : {}}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         disabled={isSubmitting}
@@ -1095,27 +1108,72 @@ function App() {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.5 }}
                     className="form-step success-step"
+                    style={{
+                      textAlign: 'center',
+                      padding: '2rem',
+                      display: 'block'
+                    }}
                   >
-                    <div className="success-content">
-                      <div className="success-icon">
+                    <div className="success-content" style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: '1.5rem'
+                    }}>
+                      <div className="success-icon" style={{
+                        width: isMobile ? '60px' : '80px',
+                        height: isMobile ? '60px' : '80px',
+                        borderRadius: '50%',
+                        background: 'rgba(100, 255, 218, 0.1)',
+                        border: '3px solid #64ffda',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginBottom: '1rem'
+                      }}>
                         <motion.div
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
                           transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
                           className="success-check"
+                          style={{
+                            fontSize: isMobile ? '1.5rem' : '2rem',
+                            fontWeight: 'bold',
+                            color: '#64ffda'
+                          }}
                         >
                           ✓
                         </motion.div>
                       </div>
-                      <h3>Message Sent Successfully!</h3>
-                      <p>Thank you for your message. I'll get back to you soon!</p>
+                      <h3 style={{
+                        color: '#ffffff',
+                        fontSize: isMobile ? '1.3rem' : '1.5rem',
+                        fontWeight: '700',
+                        marginBottom: '0.5rem'
+                      }}>Message Sent Successfully!</h3>
+                      <p style={{
+                        color: '#a0a0a0',
+                        fontSize: isMobile ? '0.9rem' : '1rem',
+                        lineHeight: '1.6'
+                      }}>Thank you for your message. I'll get back to you soon!</p>
                       <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.5 }}
                         className="success-details"
+                        style={{
+                          marginTop: '1rem',
+                          padding: '1rem',
+                          background: 'rgba(100, 255, 218, 0.05)',
+                          borderRadius: '8px',
+                          border: '1px solid rgba(100, 255, 218, 0.2)'
+                        }}
                       >
-                        <p>You'll receive a confirmation email shortly.</p>
+                        <p style={{
+                          color: '#64ffda',
+                          fontSize: '0.9rem',
+                          margin: '0'
+                        }}>You'll receive a confirmation email shortly.</p>
                       </motion.div>
                     </div>
                   </motion.div>

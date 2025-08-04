@@ -1,0 +1,115 @@
+/* Mobile fixes that bypass Vite's CSS processing */
+@media (max-width: 768px) {
+  /* Force mobile timeline display */
+  .mobile-timeline {
+    display: block !important;
+    width: 100% !important;
+    padding: 1rem 0 !important;
+  }
+  
+  .mobile-timeline .timeline-cards {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
+    width: 100% !important;
+  }
+  
+  .mobile-timeline .timeline-card {
+    display: block !important;
+    width: 100% !important;
+    margin-bottom: 1rem !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    min-height: 120px !important;
+  }
+  
+  .mobile-timeline .timeline-card-content {
+    padding: 0 1rem !important;
+    overflow: hidden !important;
+    max-height: 500px !important;
+  }
+  
+  .mobile-timeline .timeline-card-image {
+    margin: 1rem 0 !important;
+  }
+  
+  .mobile-timeline .timeline-card-image img {
+    height: 120px !important;
+    width: 100% !important;
+    object-fit: cover !important;
+    border-radius: 8px !important;
+  }
+  
+  .mobile-timeline .timeline-card-description {
+    font-size: 0.95rem !important;
+    color: #a0a0a0 !important;
+    line-height: 1.6 !important;
+    margin-bottom: 1rem !important;
+    padding-bottom: 1rem !important;
+  }
+  
+  /* Force stepper form mobile layout */
+  .stepper-progress {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
+  }
+  
+  .stepper-progress::before {
+    display: none !important;
+  }
+  
+  .stepper-step {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 1rem !important;
+    text-align: left !important;
+  }
+  
+  .step-label {
+    font-size: 0.9rem !important;
+  }
+  
+  .form-actions {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  
+  .form-actions .btn {
+    width: 100% !important;
+  }
+  
+  /* Force mobile layout overrides */
+  .hero-content {
+    grid-template-columns: 1fr !important;
+    text-align: center !important;
+    gap: clamp(1.5rem, 3vw, 2rem) !important;
+    padding: 0 clamp(1rem, 4vw, 2rem) !important;
+  }
+  
+  .about-content {
+    grid-template-columns: 1fr !important;
+    gap: clamp(1.5rem, 3vw, 2rem) !important;
+    min-height: auto !important;
+    text-align: center !important;
+  }
+  
+  .contact-content {
+    grid-template-columns: 1fr !important;
+    gap: clamp(1.5rem, 3vw, 2rem) !important;
+  }
+  
+  .skills-content {
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+  }
+  
+  /* Hide background elements on mobile */
+  .background-container,
+  .magnet-lines-bg,
+  .magnetLines-container {
+    display: none !important;
+  }
+} 

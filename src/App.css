@@ -54,6 +54,8 @@ body {
   }
 }
 
+
+
 /* Body class-based mobile targeting */
 body.mobile-view .background-container,
 body.mobile-view .magnet-lines-bg,
@@ -93,7 +95,8 @@ body.mobile-view .skills-content {
   
   /* Optimize animations for mobile */
   .motion-div {
-    will-change: auto;
+    /* Remove will-change for better compatibility */
+    /* will-change: auto; */
   }
   
   /* Reduce motion for better performance */
@@ -144,7 +147,85 @@ body.mobile-view .skills-content {
     gap: 2rem !important;
   }
   
-
+  /* Mobile timeline fixes */
+  .mobile-timeline {
+    display: block !important;
+    width: 100% !important;
+  }
+  
+  .mobile-timeline .timeline-cards {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
+    width: 100% !important;
+  }
+  
+  .mobile-timeline .timeline-card {
+    display: block !important;
+    width: 100% !important;
+    margin-bottom: 1rem !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    min-height: 120px !important;
+  }
+  
+  .mobile-timeline .timeline-card-content {
+    padding: 0 1rem !important;
+    overflow: hidden !important;
+    max-height: 500px !important;
+  }
+  
+  .mobile-timeline .timeline-card-image {
+    margin: 1rem 0 !important;
+  }
+  
+  .mobile-timeline .timeline-card-image img {
+    height: 120px !important;
+    width: 100% !important;
+    object-fit: cover !important;
+    border-radius: 8px !important;
+  }
+  
+  .mobile-timeline .timeline-card-description {
+    font-size: 0.95rem !important;
+    color: #a0a0a0 !important;
+    line-height: 1.6 !important;
+    margin-bottom: 1rem !important;
+    padding-bottom: 1rem !important;
+  }
+  
+  /* Stepper form mobile fixes */
+  .stepper-progress {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
+  }
+  
+  .stepper-progress::before {
+    display: none !important;
+  }
+  
+  .stepper-step {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 1rem !important;
+    text-align: left !important;
+  }
+  
+  .step-label {
+    font-size: 0.9rem !important;
+  }
+  
+  .form-actions {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  
+  .form-actions .btn {
+    width: 100% !important;
+  }
   
   /* Force mobile background hiding */
   .background-container,
@@ -2055,6 +2136,10 @@ section {
     display: block !important;
     width: 100% !important;
     padding: 1rem 0 !important;
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
   }
   
   /* Ensure mobile timeline cards are visible */
@@ -2067,6 +2152,8 @@ section {
     flex-direction: column !important;
     gap: 1rem !important;
     width: 100% !important;
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
   }
   
   .mobile-timeline .timeline-card {
@@ -2077,14 +2164,21 @@ section {
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
     border-radius: 12px !important;
     overflow: hidden !important;
-    backdrop-filter: blur(10px) !important;
+    /* Remove backdrop-filter for Safari compatibility */
+    /* backdrop-filter: blur(10px) !important; */
     min-height: 120px !important; /* Ensure minimum height for collapsed state */
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
   }
   
   .mobile-timeline .timeline-card-content {
     padding: 0 1rem !important;
     overflow: hidden !important;
     max-height: 500px !important;
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
   }
   
   .mobile-timeline .timeline-card-image {
@@ -2096,6 +2190,8 @@ section {
     width: 100% !important;
     object-fit: cover !important;
     border-radius: 8px !important;
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
   }
   
   .mobile-timeline .timeline-card-description {
@@ -2140,30 +2236,51 @@ section {
   }
 
   .stepper-progress {
-    flex-direction: column;
-    gap: 1rem;
+    display: -webkit-flex !important;
+    display: -ms-flexbox !important;
+    display: flex !important;
+    -webkit-flex-direction: column !important;
+    -ms-flex-direction: column !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
   }
 
   .stepper-progress::before {
-    display: none;
+    display: none !important;
   }
 
   .stepper-step {
-    flex-direction: row;
-    gap: 1rem;
-    text-align: left;
+    display: -webkit-flex !important;
+    display: -ms-flexbox !important;
+    display: flex !important;
+    -webkit-flex-direction: row !important;
+    -ms-flex-direction: row !important;
+    flex-direction: row !important;
+    gap: 1rem !important;
+    text-align: left !important;
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
   }
 
   .step-label {
-    font-size: 0.9rem;
+    font-size: 0.9rem !important;
   }
 
   .form-actions {
-    flex-direction: column;
+    display: -webkit-flex !important;
+    display: -ms-flexbox !important;
+    display: flex !important;
+    -webkit-flex-direction: column !important;
+    -ms-flex-direction: column !important;
+    flex-direction: column !important;
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
   }
 
   .form-actions .btn {
-    width: 100%;
+    width: 100% !important;
   }
   
   .projects-grid {

@@ -17,6 +17,8 @@ export default defineConfig({
       }
     },
     chunkSizeWarningLimit: 1000,
-    target: 'es2015'
+    target: 'es2015',
+    // Ensure CSS is not minified in a way that breaks properties
+    cssCodeSplit: true
   }
 })
