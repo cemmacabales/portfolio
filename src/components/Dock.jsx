@@ -27,6 +27,7 @@ function DockItem({
   distance,
   magnification,
   baseItemSize,
+  isMobile = false,
 }) {
   const ref = useRef(null);
   const isHovered = useMotionValue(0);
@@ -46,15 +47,18 @@ function DockItem({
   );
   const size = useSpring(targetSize, spring);
 
+  // Disable magnification on mobile for better performance
+  const finalSize = isMobile ? baseItemSize : size;
+
   return (
     <motion.div
       ref={ref}
       style={{
-        width: size,
-        height: size,
+        width: finalSize,
+        height: finalSize,
       }}
-      onHoverStart={() => isHovered.set(1)}
-      onHoverEnd={() => isHovered.set(0)}
+      onHoverStart={() => !isMobile && isHovered.set(1)}
+      onHoverEnd={() => !isMobile && isHovered.set(0)}
       onFocus={() => isHovered.set(1)}
       onBlur={() => isHovered.set(0)}
       onClick={onClick}
@@ -62,6 +66,8 @@ function DockItem({
       tabIndex={0}
       role="button"
       aria-haspopup="true"
+      whileTap={{ scale: isMobile ? 0.95 : 1 }}
+      transition={{ duration: 0.1 }}
     >
       {Children.map(children, (child) =>
         cloneElement(child, { isHovered })
@@ -116,6 +122,20 @@ export default function Dock({
 }) {
   const mouseX = useMotionValue(Infinity);
   const isHovered = useMotionValue(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile device
+  useEffect(() => {
+    const checkMobile = () => {
+      const isMobileDevice = window.innerWidth <= 768 || 
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      setIsMobile(isMobileDevice);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const maxHeight = useMemo(
     () => Math.max(dockHeight, magnification + magnification / 2 + 4),
@@ -124,19 +144,38 @@ export default function Dock({
   const heightRow = useTransform(isHovered, [0, 1], [panelHeight, maxHeight]);
   const height = useSpring(heightRow, spring);
 
+  // Use fixed height on mobile for better performance
+  const finalHeight = isMobile ? panelHeight : height;
+
   return (
     <motion.div
-      style={{ height, scrollbarWidth: "none" }}
+      style={{ height: finalHeight, scrollbarWidth: "none" }}
       className="dock-outer"
     >
       <motion.div
         onMouseMove={({ pageX }) => {
-          isHovered.set(1);
-          mouseX.set(pageX);
+          if (!isMobile) {
+            isHovered.set(1);
+            mouseX.set(pageX);
+          }
         }}
         onMouseLeave={() => {
-          isHovered.set(0);
-          mouseX.set(Infinity);
+          if (!isMobile) {
+            isHovered.set(0);
+            mouseX.set(Infinity);
+          }
+        }}
+        onTouchStart={() => {
+          // Handle touch start for mobile
+          if (isMobile) {
+            isHovered.set(1);
+          }
+        }}
+        onTouchEnd={() => {
+          // Handle touch end for mobile
+          if (isMobile) {
+            isHovered.set(0);
+          }
         }}
         className={`dock-panel ${className}`}
         style={{ height: panelHeight }}
@@ -153,6 +192,7 @@ export default function Dock({
             distance={distance}
             magnification={magnification}
             baseItemSize={baseItemSize}
+            isMobile={isMobile}
           >
             <DockIcon>{item.icon}</DockIcon>
             <DockLabel>{item.label}</DockLabel>

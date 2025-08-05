@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import emailjs from '@emailjs/browser'
 import { 
   Github, 
@@ -16,7 +16,8 @@ import {
   Briefcase, 
   Award,
   Brain,
-  Monitor
+  Monitor,
+  FolderOpen
 } from 'lucide-react'
 import TextType from './components/TextType'
 import MagnetLines from './components/MagnetLines'
@@ -31,12 +32,112 @@ import PetchinguImage from './assets/petchingu.png';
 import MyAptImage from './assets/myapt.png';
 import HeartRiskImage from './assets/heartrisk.png';
 import JobPostingsImage from './assets/jobpostings.png';
+import ReadMyFaceImage from './assets/readmyface.png';
 import Loader from './components/Loader';
 import Certificates from './components/Certificates';
 import ProfileImage from './assets/me.jpeg';
 import TechStack from './components/TechStack';
 import { debugMobileView } from './debug-mobile';
 import { useMobileDetection } from './mobile-detection';
+
+// Custom hook for modern project card animations
+const useProjectAnimations = () => {
+  const projectGridRef = useRef(null)
+  const projectCardsRef = useRef([])
+  const isTransitioning = useRef(false)
+
+  const clearCardRefs = () => {
+    projectCardsRef.current = []
+  }
+
+  const animateProjectCards = (category) => {
+    // Wait a bit for DOM to update
+    setTimeout(() => {
+      const cards = projectCardsRef.current
+      console.log('Animating cards for category:', category, 'Cards found:', cards?.length)
+      if (!cards || cards.length === 0) {
+        console.log('No cards found, skipping animation')
+        return
+      }
+
+      // Reset cards to initial state
+      gsap.set(cards, {
+        opacity: 0,
+        y: 30,
+        scale: 0.95,
+        rotationY: -5
+      })
+
+      // Fast staggered entrance animation
+      gsap.to(cards, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        rotationY: 0,
+        duration: 0.5,
+        stagger: 0.08,
+        ease: "power2.out",
+        onComplete: () => {
+          isTransitioning.current = false
+          console.log('Animation completed for category:', category)
+        }
+      })
+    }, 100)
+  }
+
+  const animateCategoryTransition = (oldCategory, newCategory) => {
+    const cards = projectCardsRef.current
+    console.log('Starting transition from', oldCategory, 'to', newCategory, 'Cards found:', cards?.length)
+    
+    if (!cards || cards.length === 0) {
+      // If no cards to animate out, just animate in new ones
+      console.log('No cards to animate out, animating new ones directly')
+      setTimeout(() => {
+        animateProjectCards(newCategory)
+      }, 200)
+      return
+    }
+
+    isTransitioning.current = true
+    console.log('Animating out', cards.length, 'cards')
+
+    // Quick exit animation for old cards
+    gsap.to(cards, {
+      opacity: 0,
+      y: -20,
+      scale: 0.95,
+      rotationY: 5,
+      duration: 0.3,
+      stagger: 0.03,
+      ease: "power2.in",
+      onComplete: () => {
+        // Clear the refs after exit animation
+        console.log('Exit animation completed, clearing refs')
+        clearCardRefs()
+        // Wait longer to ensure new content is rendered
+        setTimeout(() => {
+          console.log('Starting entrance animation for', newCategory)
+          animateProjectCards(newCategory)
+        }, 200)
+      }
+    })
+  }
+
+  const addCardRef = (el) => {
+    if (el && !projectCardsRef.current.includes(el)) {
+      projectCardsRef.current.push(el)
+      console.log('Added card ref, total cards:', projectCardsRef.current.length)
+    }
+  }
+
+  return {
+    projectGridRef,
+    addCardRef,
+    animateProjectCards,
+    animateCategoryTransition,
+    isTransitioning: isTransitioning.current
+  }
+}
 
 // Use the new mobile detection hook
 const useIsMobile = useMobileDetection;
@@ -59,6 +160,16 @@ function App() {
   })
 
   const isMobile = useIsMobile();
+
+  // Error boundary for debugging
+  useEffect(() => {
+    console.log('App component mounted');
+    console.log('ReadMyFaceImage imported:', !!ReadMyFaceImage);
+  }, []);
+
+  const handleCategoryChange = (newCategory) => {
+    setOpenCategory(newCategory)
+  }
 
   const scrollToSection = (sectionId) => {
     setActiveSection(sectionId)
@@ -415,17 +526,17 @@ function App() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className={`category-btn ${openCategory === 'ml' ? 'active' : ''}`}
-                onClick={() => setOpenCategory('ml')}
+                onClick={() => handleCategoryChange('ml')}
               >
                 <Brain size={24} />
-                <span>Machine Learning</span>
+                <span>Artificial Intelligence</span>
               </motion.button>
               
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className={`category-btn ${openCategory === 'software' ? 'active' : ''}`}
-                onClick={() => setOpenCategory('software')}
+                onClick={() => handleCategoryChange('software')}
               >
                 <Monitor size={24} />
                 <span>Software Development</span>
@@ -433,42 +544,51 @@ function App() {
             </div>
 
             {/* Software Development Projects */}
-            {openCategory === 'software' && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.5 }}
-                className="project-category"
-              >
-                <div className="projects-grid">
-                  {[
-                    {
-                      title: "Apartment Dashboard Management App",
-                      description: "A comprehensive dashboard for managing apartment properties with real-time data visualization and tenant management features.",
-                      tech: ["Firebase", "React", "JavaScript", "SCSS", "HTML"],
-                      image: MyAptImage,
-                      category: "software",
-                      githubUrl: "https://github.com/clivebixby0/myapt-july8-2025-main.git"
-                    },
-                    {
-                      title: "Petchingu (Pet Management App)",
-                      description: "A complete pet management application for tracking pet health, appointments, and daily care routines.",
-                      tech: ["Appwrite", "React", "TypeScript", "JavaScript", "CSS"],
-                      image: PetchinguImage,
-                      category: "software",
-                      githubUrl: "https://github.com/clivebixby0/petchinguuu.git"
-                    }
-                  ].map((project, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, y: 50 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.8, delay: index * 0.1 }}
-                      viewport={{ once: true }}
-                      className="project-card"
-                      whileHover={{ y: -10 }}
-                    >
+            <AnimatePresence mode="wait">
+              {openCategory === 'software' && (
+                <motion.div
+                  key="software"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.4, ease: "easeInOut" }}
+                  className="project-category"
+                >
+                  <div className="projects-grid">
+                    {[
+                      {
+                        title: "Apartment Dashboard Management App",
+                        description: "A comprehensive dashboard for managing apartment properties with real-time data visualization and tenant management features.",
+                        tech: ["Firebase", "React", "JavaScript", "SCSS", "HTML"],
+                        image: MyAptImage,
+                        category: "software",
+                        githubUrl: "https://github.com/clivebixby0/myapt-july8-2025-main.git"
+                      },
+                      {
+                        title: "Petchingu (Pet Management App)",
+                        description: "A complete pet management application for tracking pet health, appointments, and daily care routines.",
+                        tech: ["Appwrite", "React", "TypeScript", "JavaScript", "CSS"],
+                        image: PetchinguImage,
+                        category: "software",
+                        githubUrl: "https://github.com/clivebixby0/petchinguuu.git"
+                      }
+                    ].map((project, index) => (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ 
+                          duration: 0.5, 
+                          delay: index * 0.1,
+                          ease: "easeOut"
+                        }}
+                        className="project-card modern-card"
+                        whileHover={{ 
+                          y: -8, 
+                          scale: 1.02,
+                          transition: { duration: 0.2 }
+                        }}
+                      >
                       <div className="project-image">
                         <img 
                           src={project.image} 
@@ -530,53 +650,71 @@ function App() {
               </motion.div>
             )}
 
-            {/* Machine Learning Projects */}
-            {openCategory === 'ml' && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.5 }}
-                className="project-category"
-              >
-                <div className="projects-grid">
-                  {[
-                    {
-                      title: "Earfquake (Earthquake Prediction Analysis Tool)",
-                      description: "A machine learning tool for analyzing earthquake data and predicting seismic activities using advanced algorithms and data visualization.",
-                      tech: ["Streamlit", "Python"],
-                      image: EarfquakeImage,
-                      category: "ml",
-                      githubUrl: "https://github.com/clivebixby0/EARFQUAKE.git"
-                    },
-                    {
-                      title: "Heart Disease Risk Detection",
-                      description: "A machine learning model for predicting heart disease risk using various medical parameters and features.",
-                      tech: ["Python", "IEEE"],
-                      image: HeartRiskImage,
-                      category: "ml",
-                      githubUrl: "https://docs.google.com/document/d/1ebPPdUOa1kIigPMNj5VT8ZQLbPQN_qA6TuOsBJkDGPc/edit?usp=sharing",
-                      paperUrl: "https://docs.google.com/document/d/1ebPPdUOa1kIigPMNj5VT8ZQLbPQN_qA6TuOsBJkDGPc/edit?usp=sharing"
-                    },
-                    {
-                      title: "Job Trends Analysis from Google Postings",
-                      description: "Analysis of job market trends and patterns using machine learning on Google job posting data.",
-                      tech: ["Python"],
-                      image: JobPostingsImage,
-                      category: "ml",
-                      githubUrl: "https://docs.google.com/document/d/1QzUtiWnslEQZGL-OhD9xSigACunkt0uV/edit?usp=sharing&ouid=101381750453907377125&rtpof=true&sd=true",
-                      paperUrl: "https://docs.google.com/document/d/1QzUtiWnslEQZGL-OhD9xSigACunkt0uV/edit?usp=sharing&ouid=101381750453907377125&rtpof=true&sd=true"
-                    }
-                  ].map((project, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, y: 50 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.8, delay: index * 0.1 }}
-                      viewport={{ once: true }}
-                      className="project-card"
-                      whileHover={{ y: -10 }}
-                    >
+            {/* Artificial Intelligence Projects */}
+            <AnimatePresence mode="wait">
+              {openCategory === 'ml' && (
+                <motion.div
+                  key="ml"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.4, ease: "easeInOut" }}
+                  className="project-category"
+                >
+                  <div className="projects-grid">
+                    {[
+                      {
+                        title: "Read My Face (Real-time Emotion Detector)",
+                        description: "AI emotion detector built with face-api.js, React, and GSAP featuring dynamic visual feedback.",
+                        tech: ["React", "face-api.js", "GSAP", "JavaScript"],
+                        image: ReadMyFaceImage,
+                        category: "ml",
+                        githubUrl: "https://github.com/clivebixby0/emotion-detector.git",
+                        demoUrl: "https://slateblue-lapwing-732929.hostingersite.com/"
+                      },
+                      {
+                        title: "Earfquake (Earthquake Prediction Analysis Tool)",
+                        description: "A machine learning tool for analyzing earthquake data and predicting seismic activities using advanced algorithms and data visualization.",
+                        tech: ["Streamlit", "Python"],
+                        image: EarfquakeImage,
+                        category: "ml",
+                        githubUrl: "https://github.com/clivebixby0/EARFQUAKE.git"
+                      },
+                      {
+                        title: "Heart Disease Risk Detection",
+                        description: "A machine learning model for predicting heart disease risk using various medical parameters and features.",
+                        tech: ["Python", "IEEE"],
+                        image: HeartRiskImage,
+                        category: "ml",
+                        githubUrl: "https://colab.research.google.com/drive/1WWMiKOgj0mgGbMcYkxGDD1R4AI16Up3e?usp=sharing",
+                        paperUrl: "https://docs.google.com/document/d/1ebPPdUOa1kIigPMNj5VT8ZQLbPQN_qA6TuOsBJkDGPc/edit?usp=sharing"
+                      },
+                      {
+                        title: "Job Trends Analysis from Google Postings",
+                        description: "Analysis of job market trends and patterns using machine learning on Google job posting data.",
+                        tech: ["Python"],
+                        image: JobPostingsImage,
+                        category: "ml",
+                        githubUrl: "https://docs.google.com/document/d/1QzUtiWnslEQZGL-OhD9xSigACunkt0uV/edit?usp=sharing&ouid=101381750453907377125&rtpof=true&sd=true",
+                        paperUrl: "https://docs.google.com/document/d/1QzUtiWnslEQZGL-OhD9xSigACunkt0uV/edit?usp=sharing&ouid=101381750453907377125&rtpof=true&sd=true"
+                      }
+                    ].map((project, index) => (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ 
+                          duration: 0.5, 
+                          delay: index * 0.1,
+                          ease: "easeOut"
+                        }}
+                        className="project-card modern-card"
+                        whileHover={{ 
+                          y: -8, 
+                          scale: 1.02,
+                          transition: { duration: 0.2 }
+                        }}
+                      >
                       <div className="project-image">
                         {typeof project.image === 'string' && project.image.length <= 2 ? (
                           <div style={{
@@ -616,13 +754,26 @@ function App() {
                           ))}
                         </div>
                         <div className="project-links">
-                          <button 
-                            className="btn btn-small"
-                            onClick={() => alert('🚧 This project is currently under maintenance. Please check back later!')}
-                          >
-                            <ExternalLink size={16} />
-                            Live Demo
-                          </button>
+                          {project.demoUrl ? (
+                            <a 
+                              href={project.demoUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="btn btn-small"
+                              style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
+                            >
+                              <ExternalLink size={16} />
+                              Live Demo
+                            </a>
+                          ) : (
+                            <button 
+                              className="btn btn-small"
+                              onClick={() => alert('🚧 This project is currently under maintenance. Please check back later!')}
+                            >
+                              <ExternalLink size={16} />
+                              Live Demo
+                            </button>
+                          )}
                           <a 
                             href={project.githubUrl} 
                             target="_blank" 
@@ -640,6 +791,8 @@ function App() {
                 </div>
               </motion.div>
             )}
+            </AnimatePresence>
+            </AnimatePresence>
           </div>
         </div>
       </section>
