@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import emailjs from '@emailjs/browser'
+import { gsap } from 'gsap'
 import { 
   Github, 
   Linkedin, 
@@ -39,12 +40,13 @@ import ProfileImage from './assets/me.jpeg';
 import TechStack from './components/TechStack';
 import { debugMobileView } from './debug-mobile';
 import { useMobileDetection } from './mobile-detection';
+import { validateFormData, sanitizeFormData, checkRateLimit } from './utils/validation';
 
 // Custom hook for modern project card animations
 const useProjectAnimations = () => {
   const projectGridRef = useRef(null)
   const projectCardsRef = useRef([])
-  const isTransitioning = useRef(false)
+  const [isTransitioning, setIsTransitioning] = useState(false)
 
   const clearCardRefs = () => {
     projectCardsRef.current = []
@@ -57,6 +59,29 @@ const useProjectAnimations = () => {
       console.log('Animating cards for category:', category, 'Cards found:', cards?.length)
       if (!cards || cards.length === 0) {
         console.log('No cards found, skipping animation')
+        return
+      }
+
+      // Check if GSAP is available
+      if (typeof gsap === 'undefined') {
+        console.log('GSAP not available, using fallback animation')
+        // Fallback: simple CSS transition
+        cards.forEach((card, index) => {
+          if (card) {
+            card.style.opacity = '0'
+            card.style.transform = 'translateY(30px) scale(0.95)'
+            setTimeout(() => {
+              card.style.transition = 'all 0.5s ease-out'
+              card.style.opacity = '1'
+              card.style.transform = 'translateY(0) scale(1)'
+            }, index * 100)
+          }
+        })
+        // Reset transitioning state after fallback animation
+        setTimeout(() => {
+          setIsTransitioning(false)
+          console.log('Fallback animation completed, transitioning state reset')
+        }, cards.length * 100 + 500)
         return
       }
 
@@ -78,8 +103,12 @@ const useProjectAnimations = () => {
         stagger: 0.08,
         ease: "power2.out",
         onComplete: () => {
-          isTransitioning.current = false
           console.log('Animation completed for category:', category)
+          // Ensure transitioning state is reset
+          setTimeout(() => {
+            setIsTransitioning(false)
+            console.log('Transitioning state reset to false')
+          }, 100)
         }
       })
     }, 100)
@@ -98,8 +127,28 @@ const useProjectAnimations = () => {
       return
     }
 
-    isTransitioning.current = true
+    setIsTransitioning(true)
     console.log('Animating out', cards.length, 'cards')
+
+    // Check if GSAP is available
+    if (typeof gsap === 'undefined') {
+      console.log('GSAP not available, using fallback transition')
+      // Fallback: simple CSS transition
+      cards.forEach((card, index) => {
+        if (card) {
+          card.style.transition = 'all 0.3s ease-in'
+          card.style.opacity = '0'
+          card.style.transform = 'translateY(-20px) scale(0.95)'
+        }
+      })
+      setTimeout(() => {
+        clearCardRefs()
+        setTimeout(() => {
+          animateProjectCards(newCategory)
+        }, 200)
+      }, 300)
+      return
+    }
 
     // Quick exit animation for old cards
     gsap.to(cards, {
@@ -135,7 +184,8 @@ const useProjectAnimations = () => {
     addCardRef,
     animateProjectCards,
     animateCategoryTransition,
-    isTransitioning: isTransitioning.current
+    isTransitioning,
+    setIsTransitioning
   }
 }
 
@@ -158,8 +208,20 @@ function App() {
     budget: '',
     timeline: ''
   })
+  const [formErrors, setFormErrors] = useState({})
+  const [isValidating, setIsValidating] = useState(false)
 
   const isMobile = useIsMobile();
+  
+  // Initialize project animations
+  const {
+    projectGridRef,
+    addCardRef,
+    animateProjectCards,
+    animateCategoryTransition,
+    isTransitioning,
+    setIsTransitioning
+  } = useProjectAnimations();
 
   // Error boundary for debugging
   useEffect(() => {
@@ -167,8 +229,53 @@ function App() {
     console.log('ReadMyFaceImage imported:', !!ReadMyFaceImage);
   }, []);
 
+  // Trigger initial animation for current category
+  useEffect(() => {
+    if (!isLoading) {
+      setTimeout(() => {
+        animateProjectCards(openCategory);
+      }, 500);
+    }
+  }, [isLoading, openCategory, animateProjectCards]);
+
+  // Clear refs when category changes to prevent stale references
+  useEffect(() => {
+    return () => {
+      // Cleanup function to clear refs when component unmounts
+      // Note: projectCardsRef is managed inside the hook, so no cleanup needed here
+    };
+  }, []);
+
+  // Reset transitioning state when category changes
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (isTransitioning) {
+        console.log('Resetting stuck transitioning state')
+        setIsTransitioning(false)
+      }
+    }, 2000) // Reset after 2 seconds if stuck
+
+    return () => clearTimeout(timer)
+  }, [openCategory, isTransitioning])
+
   const handleCategoryChange = (newCategory) => {
-    setOpenCategory(newCategory)
+    console.log('Category change requested:', newCategory, 'Current:', openCategory, 'Is transitioning:', isTransitioning)
+    if (newCategory !== openCategory && !isTransitioning) {
+      console.log('Starting category transition')
+      animateCategoryTransition(openCategory, newCategory)
+      setOpenCategory(newCategory)
+    } else if (newCategory !== openCategory && isTransitioning) {
+      // Force reset if transitioning state is stuck
+      console.log('Category change blocked by transitioning state, forcing reset')
+      setIsTransitioning(false)
+      setTimeout(() => {
+        console.log('Forcing category transition after reset')
+        animateCategoryTransition(openCategory, newCategory)
+        setOpenCategory(newCategory)
+      }, 100)
+    } else {
+      console.log('Category change blocked - same category or transitioning')
+    }
   }
 
   const scrollToSection = (sectionId) => {
@@ -176,8 +283,80 @@ function App() {
     document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' })
   }
 
+  const handleRippleEffect = (event) => {
+    const button = event.currentTarget;
+    const ripple = button.querySelector('.ripple-effect');
+    
+    if (ripple) {
+      // Reset ripple
+      ripple.style.width = '0px';
+      ripple.style.height = '0px';
+      ripple.style.opacity = '1';
+      
+      // Get click position
+      const rect = button.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      
+      // Position ripple at click point
+      ripple.style.left = x + 'px';
+      ripple.style.top = y + 'px';
+      
+      // Trigger animation
+      setTimeout(() => {
+        ripple.style.width = '200px';
+        ripple.style.height = '200px';
+        ripple.style.opacity = '0';
+        ripple.style.transform = 'translate(-50%, -50%)';
+      }, 10);
+    }
+  }
+
+  const handleMagneticEffect = (event) => {
+    const button = event.currentTarget;
+    const particles = button.querySelector('.magnetic-particles');
+    
+    if (particles) {
+      // Create additional particles on click
+      for (let i = 0; i < 5; i++) {
+        const particle = document.createElement('div');
+        particle.style.cssText = `
+          position: absolute;
+          width: 6px;
+          height: 6px;
+          background: rgba(255, 255, 255, 0.9);
+          border-radius: 50%;
+          pointer-events: none;
+          animation: magneticParticle 1s ease-out forwards;
+        `;
+        
+        // Random position around the button
+        const x = Math.random() * 100;
+        const y = Math.random() * 100;
+        particle.style.left = x + '%';
+        particle.style.top = y + '%';
+        
+        particles.appendChild(particle);
+        
+        // Remove particle after animation
+        setTimeout(() => {
+          if (particle.parentNode) {
+            particle.parentNode.removeChild(particle);
+          }
+        }, 1000);
+      }
+    }
+  }
+
   const handleFormInput = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
+    // Sanitize input in real-time
+    const sanitizedValue = value.trim()
+    setFormData(prev => ({ ...prev, [field]: sanitizedValue }))
+    
+    // Clear specific field error when user starts typing
+    if (formErrors[field]) {
+      setFormErrors(prev => ({ ...prev, [field]: '' }))
+    }
   }
 
   const nextStep = () => {
@@ -194,26 +373,58 @@ function App() {
 
   const handleSubmit = (e) => {
     e.preventDefault()
+    setIsValidating(true)
     
-    // EmailJS configuration
-    const serviceId = 'service_6c1oek2'
-    const templateId = 'template_czcbg15'
-    const publicKey = 'LIWlUI0y2YhwQo4p_'
+    // Check rate limiting
+    if (!checkRateLimit()) {
+      setIsValidating(false)
+      alert('Too many submissions. Please wait a minute before trying again.')
+      return
+    }
     
-    // Prepare template parameters
+    // Sanitize form data
+    const sanitizedData = sanitizeFormData(formData)
+    
+    // Validate form data
+    const validation = validateFormData(sanitizedData)
+    
+    if (!validation.isValid) {
+      setFormErrors(validation.errors)
+      setIsValidating(false)
+      return
+    }
+    
+    // Clear any existing errors
+    setFormErrors({})
+    
+    // Check environment variables
+    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID
+    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
+    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+    
+    if (!serviceId || !templateId || !publicKey) {
+      console.error('EmailJS configuration missing')
+      setIsValidating(false)
+      alert('Email service is not properly configured. Please try again later.')
+      return
+    }
+    
+    // Prepare template parameters with sanitized data
     const templateParams = {
-      name: formData.name,
-      email: formData.email,
-      reply_to: formData.email, // Add reply-to header
-      subject: formData.subject,
-      projectType: formData.projectType,
-      timeline: formData.timeline,
-      budget: formData.budget,
-      message: formData.message
+      name: sanitizedData.name,
+      email: sanitizedData.email,
+      reply_to: sanitizedData.email,
+      subject: sanitizedData.subject,
+      projectType: sanitizedData.projectType,
+      timeline: sanitizedData.timeline,
+      budget: sanitizedData.budget,
+      message: sanitizedData.message
     }
     
     // Send email using EmailJS
     setIsSubmitting(true)
+    setIsValidating(false)
+    
     emailjs.send(serviceId, templateId, templateParams, publicKey)
       .then((response) => {
         console.log('Email sent successfully:', response)
@@ -231,14 +442,15 @@ function App() {
             budget: '',
             timeline: ''
           })
+          setFormErrors({})
           setFormStep(1)
           setIsSuccess(false)
-        }, 3000) // Reset after 3 seconds
+        }, 3000)
       })
       .catch((error) => {
         console.error('Email send failed:', error)
         setIsSubmitting(false)
-        alert('Sorry, there was an error sending your message. Please try again.')
+        alert('Sorry, there was an error sending your message. Please try again later.')
       })
   }
 
@@ -259,6 +471,30 @@ function App() {
       }, 1000);
     }
   }, [isLoading, isMobile])
+
+  // Safari compatibility fixes
+  const applySafariFixes = () => {
+    // Force hardware acceleration for animations
+    const projectCards = document.querySelectorAll('.project-card');
+    projectCards.forEach(card => {
+      card.style.transform = 'translateZ(0)';
+      card.style.webkitTransform = 'translateZ(0)';
+    });
+
+    // Ensure proper stacking context
+    const projectGrids = document.querySelectorAll('.projects-grid');
+    projectGrids.forEach(grid => {
+      grid.style.position = 'relative';
+      grid.style.zIndex = '1';
+    });
+
+    // Fix any backdrop-filter issues
+    const elementsWithBackdrop = document.querySelectorAll('.project-card, .skill-category, .contact-form');
+    elementsWithBackdrop.forEach(el => {
+      el.style.backdropFilter = 'none';
+      el.style.webkitBackdropFilter = 'none';
+    });
+  };
 
   if (isLoading) {
     return <Loader />
@@ -358,20 +594,132 @@ function App() {
             <p>I specialize in Artificial Intelligence and Machine Learning, with a strong foundation in Software Engineering.</p>
             <div className="hero-buttons">
               <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="btn btn-primary"
-                onClick={() => scrollToSection('projects')}
+                className="btn btn-primary magnetic-btn"
+                onClick={(e) => {
+                  handleMagneticEffect(e);
+                  scrollToSection('projects');
+                }}
+                whileHover={{ 
+                  scale: 1.1,
+                  rotate: [0, -2, 2, 0],
+                  transition: { 
+                    duration: 0.3,
+                    rotate: { duration: 0.2, repeat: 2, ease: "easeInOut" }
+                  }
+                }}
+                whileTap={{ 
+                  scale: 0.95,
+                  rotate: 0
+                }}
+                style={{
+                  position: 'relative',
+                  overflow: 'hidden',
+                  background: 'linear-gradient(135deg, #64ffda 0%, #4ecdc4 100%)',
+                  boxShadow: '0 8px 32px rgba(100, 255, 218, 0.3)',
+                  border: 'none',
+                  transform: 'perspective(1000px)',
+                }}
               >
-                View My Work
+                <motion.span
+                  style={{
+                    position: 'relative',
+                    zIndex: 2,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem'
+                  }}
+                >
+                  <motion.div
+                    animate={{ 
+                      x: [0, 5, 0],
+                      transition: { 
+                        duration: 1.5, 
+                        repeat: Infinity, 
+                        ease: "easeInOut" 
+                      }
+                    }}
+                  >
+                    →
+                  </motion.div>
+                  View My Work
+                </motion.span>
+                <motion.div
+                  className="magnetic-particles"
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    pointerEvents: 'none'
+                  }}
+                />
               </motion.button>
+              
               <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="btn btn-secondary"
-                onClick={() => scrollToSection('contact')}
+                className="btn btn-secondary ripple-btn"
+                onClick={(e) => {
+                  handleRippleEffect(e);
+                  scrollToSection('contact');
+                }}
+                whileHover={{ 
+                  scale: 1.05,
+                  boxShadow: '0 0 30px rgba(100, 255, 218, 0.6)',
+                  color: '#64ffda',
+                  backgroundColor: 'rgba(100, 255, 218, 0.1)',
+                  borderColor: '#4ecdc4',
+                  transition: { duration: 0.2 }
+                }}
+                whileTap={{ 
+                  scale: 0.98,
+                  transition: { duration: 0.1 }
+                }}
+                style={{
+                  position: 'relative',
+                  overflow: 'hidden',
+                  border: '2px solid #64ffda',
+                  backdropFilter: 'blur(10px)',
+                  background: 'rgba(100, 255, 218, 0.05)',
+                  color: '#ffffff'
+                }}
               >
-                Get In Touch
+                <motion.span
+                  style={{
+                    position: 'relative',
+                    zIndex: 2,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem'
+                  }}
+                >
+                  <motion.div
+                    animate={{ 
+                      rotate: [0, 10, -10, 0],
+                      transition: { 
+                        duration: 2, 
+                        repeat: Infinity, 
+                        ease: "easeInOut" 
+                      }
+                    }}
+                  >
+                    ✉️
+                  </motion.div>
+                  Get In Touch
+                </motion.span>
+                <motion.div
+                  className="ripple-effect"
+                  style={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    width: '0px',
+                    height: '0px',
+                    borderRadius: '50%',
+                    background: 'rgba(100, 255, 218, 0.3)',
+                    transform: 'translate(-50%, -50%)',
+                    pointerEvents: 'none'
+                  }}
+                />
               </motion.button>
             </div>
           </motion.div>
@@ -558,11 +906,12 @@ function App() {
                     {[
                       {
                         title: "Apartment Dashboard Management App",
-                        description: "A comprehensive dashboard for managing apartment properties with real-time data visualization and tenant management features.",
+                        description: "A comprehensive dashboard for managing apartment properties with real-time data visualization and tenant management features. Test accounts: test@test.com / test123",
                         tech: ["Firebase", "React", "JavaScript", "SCSS", "HTML"],
                         image: MyAptImage,
                         category: "software",
-                        githubUrl: "https://github.com/clivebixby0/myapt-july8-2025-main.git"
+                        githubUrl: "https://github.com/clivebixby0/myapt-july8-2025-main.git",
+                        demoUrl: "https://myapthome.netlify.app"
                       },
                       {
                         title: "Petchingu (Pet Management App)",
@@ -575,6 +924,7 @@ function App() {
                     ].map((project, index) => (
                       <motion.div
                         key={index}
+                        ref={addCardRef}
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ 
@@ -614,13 +964,26 @@ function App() {
                           ))}
                         </div>
                         <div className="project-links">
-                          <button 
-                            className="btn btn-small"
-                            onClick={() => alert('🚧 This project is currently under maintenance. Please check back later!')}
-                          >
-                            <ExternalLink size={16} />
-                            Live Demo
-                          </button>
+                          {project.demoUrl ? (
+                            <a 
+                              href={project.demoUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="btn btn-small"
+                              style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
+                            >
+                              <ExternalLink size={16} />
+                              Live Demo
+                            </a>
+                          ) : (
+                            <button 
+                              className="btn btn-small"
+                              onClick={() => alert('🚧 This project is currently under maintenance. Please check back later!')}
+                            >
+                              <ExternalLink size={16} />
+                              Live Demo
+                            </button>
+                          )}
                           <a 
                             href={project.githubUrl} 
                             target="_blank" 
@@ -670,7 +1033,7 @@ function App() {
                         image: ReadMyFaceImage,
                         category: "ml",
                         githubUrl: "https://github.com/clivebixby0/emotion-detector.git",
-                        demoUrl: "https://slateblue-lapwing-732929.hostingersite.com/"
+                        demoUrl: "https://readmyfaceai.netlify.app"
                       },
                       {
                         title: "Earfquake (Earthquake Prediction Analysis Tool)",
@@ -701,6 +1064,7 @@ function App() {
                     ].map((project, index) => (
                       <motion.div
                         key={index}
+                        ref={addCardRef}
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ 
@@ -890,7 +1254,7 @@ function App() {
             >
               <div className="contact-text-group">
                 <DecryptedText
-                  text="Let's Connect"
+                  text="Make Projects With Me"
                   speed={50}
                   maxIterations={999999}
                   sequential={false}
@@ -1010,7 +1374,7 @@ function App() {
                     className="form-step"
                   >
                     <h3>Let's start with your basic information</h3>
-                    <div className="form-group">
+                    <div className={`form-group ${formErrors.name ? 'error' : ''}`}>
                       <input 
                         type="text" 
                         placeholder="Your Name" 
@@ -1018,8 +1382,9 @@ function App() {
                         onChange={(e) => handleFormInput('name', e.target.value)}
                         required 
                       />
+                      {formErrors.name && <span className="form-error">{formErrors.name}</span>}
                     </div>
-                    <div className="form-group">
+                    <div className={`form-group ${formErrors.email ? 'error' : ''}`}>
                       <input 
                         type="email" 
                         placeholder="Your Email" 
@@ -1027,8 +1392,9 @@ function App() {
                         onChange={(e) => handleFormInput('email', e.target.value)}
                         required 
                       />
+                      {formErrors.email && <span className="form-error">{formErrors.email}</span>}
                     </div>
-                    <div className="form-group">
+                    <div className={`form-group ${formErrors.subject ? 'error' : ''}`}>
                       <input 
                         type="text" 
                         placeholder="Subject" 
@@ -1036,6 +1402,7 @@ function App() {
                         onChange={(e) => handleFormInput('subject', e.target.value)}
                         required 
                       />
+                      {formErrors.subject && <span className="form-error">{formErrors.subject}</span>}
                     </div>
                     <div className="form-actions" style={isMobile ? {
                       display: 'flex',
@@ -1081,7 +1448,7 @@ function App() {
                         <option value="other">Other</option>
                       </select>
                     </div>
-                    <div className="form-group">
+                    <div className={`form-group ${formErrors.message ? 'error' : ''}`}>
                       <textarea 
                         placeholder="Describe your project requirements..." 
                         rows="4"
@@ -1089,6 +1456,7 @@ function App() {
                         onChange={(e) => handleFormInput('message', e.target.value)}
                         required
                       />
+                      {formErrors.message && <span className="form-error">{formErrors.message}</span>}
                     </div>
                     <div className="form-actions" style={isMobile ? {
                       display: 'flex',
@@ -1200,13 +1568,14 @@ function App() {
                     className="form-step"
                   >
                     <h3>Additional Message (Optional)</h3>
-                    <div className="form-group">
+                    <div className={`form-group ${formErrors.message ? 'error' : ''}`}>
                       <textarea 
                         placeholder="Any additional details, questions, or specific requirements..." 
                         rows="4"
                         value={formData.message}
                         onChange={(e) => handleFormInput('message', e.target.value)}
                       />
+                      {formErrors.message && <span className="form-error">{formErrors.message}</span>}
                     </div>
                     <div className="form-summary">
                       <h4>Summary</h4>
