@@ -1,19 +1,32 @@
 /* CSS Compatibility Fixes for Production Builds */
 /* This file overrides problematic CSS properties that don't work after deployment */
 
-/* Remove all backdrop-filter properties */
-* {
+/* Remove backdrop-filter only for problematic elements, not all elements */
+.timeline-card,
+.stepper-step,
+.form-actions,
+.mobile-timeline,
+.mobile-timeline .timeline-cards,
+.mobile-timeline .timeline-card,
+.mobile-timeline .timeline-card-content,
+.mobile-timeline .timeline-card-image img {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
 
-/* Remove will-change properties */
-* {
+/* Remove will-change properties only for problematic elements */
+.timeline-card,
+.stepper-step,
+.form-actions,
+.mobile-timeline,
+.mobile-timeline .timeline-cards,
+.mobile-timeline .timeline-card,
+.mobile-timeline .timeline-card-content,
+.mobile-timeline .timeline-card-image img {
   will-change: auto !important;
 }
 
-/* Simplify complex transforms */
-.profile-placeholder,
+/* Simplify complex transforms only for problematic elements */
 .timeline-card,
 .stepper-step,
 .form-actions,
@@ -143,18 +156,14 @@
   }
 }
 
-/* Ensure proper hover states without transforms */
-.btn:hover,
-.category-btn:hover,
-.social-link:hover {
+/* Ensure proper hover states without transforms for problematic elements only */
+.timeline-card:hover,
+.stepper-step:hover {
   transform: none !important;
   -webkit-transform: none !important;
 }
 
-/* Fix any remaining backdrop-filter issues */
-.project-card,
-.skill-category,
-.contact-form,
+/* Fix backdrop-filter issues only for problematic elements */
 .timeline-card {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
@@ -201,7 +210,7 @@
 }
 
 .success-step h3 {
-  color: #ffffff !important;
+  color: #fff !important;
   font-size: 1.5rem !important;
   font-weight: 700 !important;
   margin-bottom: 0.5rem !important;
@@ -227,7 +236,6 @@
   margin: 0 !important;
 }
 
-/* Mobile success step fixes */
 @media (max-width: 768px) {
   .success-icon {
     width: 60px !important;

@@ -1041,7 +1041,8 @@ function App() {
                         tech: ["Streamlit", "Python"],
                         image: EarfquakeImage,
                         category: "ml",
-                        githubUrl: "https://github.com/clivebixby0/EARFQUAKE.git"
+                        githubUrl: "https://github.com/clivebixby0/EARFQUAKE.git",
+                        demoUrl: "https://earfquake-atjsxhtyuvwrcjwyfbjyx2.streamlit.app/"
                       },
                       {
                         title: "Heart Disease Risk Detection",
