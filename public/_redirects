@@ -1,0 +1,14 @@
+# SPA fallback for client-side routing
+/*    /index.html   200
+
+# Redirect common variations to canonical URLs
+/home    /#home    301
+/about   /#about   301
+/projects /#projects 301
+/skills  /#skills  301
+/contact /#contact 301
+
+# Redirect old URLs if any (add as needed)
+/portfolio /#projects 301
+/work     /#projects 301
+/resume   /#about    301

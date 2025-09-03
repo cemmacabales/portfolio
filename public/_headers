@@ -1,0 +1,38 @@
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  X-XSS-Protection: 1; mode=block
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.emailjs.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://api.emailjs.com; font-src 'self' data:;
+
+# Cache static assets for better performance
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Cache images
+/*.png
+  Cache-Control: public, max-age=31536000
+/*.jpg
+  Cache-Control: public, max-age=31536000
+/*.jpeg
+  Cache-Control: public, max-age=31536000
+/*.svg
+  Cache-Control: public, max-age=31536000
+/*.ico
+  Cache-Control: public, max-age=31536000
+
+# Cache CSS and JS files
+/*.css
+  Cache-Control: public, max-age=31536000
+/*.js
+  Cache-Control: public, max-age=31536000
+
+# HTML files - shorter cache for updates
+/*.html
+  Cache-Control: public, max-age=3600
+
+# API endpoints rate limiting
+/api/*
+  X-RateLimit-Limit: 5
+  X-RateLimit-Window: 900

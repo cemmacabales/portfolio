@@ -1,0 +1,26 @@
+User-agent: *
+Allow: /
+
+# Disallow crawling of development and build files
+Disallow: /src/
+Disallow: /node_modules/
+Disallow: /.git/
+Disallow: /build/
+Disallow: /dist/
+
+# Allow crawling of important assets
+Allow: /assets/
+Allow: /public/
+Allow: /*.css
+Allow: /*.js
+Allow: /*.png
+Allow: /*.jpg
+Allow: /*.jpeg
+Allow: /*.svg
+Allow: /*.ico
+
+# Sitemap location
+Sitemap: https://cemmacabales.netlify.app/sitemap.xml
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1
