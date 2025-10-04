@@ -29,3 +29,6 @@ dist-ssr
 # Video resume script
 video_resume_script.md
 professional_resume.md
+
+# Local Netlify folder
+.netlify
