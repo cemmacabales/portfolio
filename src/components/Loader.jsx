@@ -14,7 +14,7 @@ const Loader = ({ onLoadingComplete }) => {
       <div className="loader-content">
         <h2 className="loader-title">
           <TextType 
-            text={["brace yourself..."]}
+            text={["hello world..."]}
             typingSpeed={100}
             deletingSpeed={50}
             pauseDuration={2000}
