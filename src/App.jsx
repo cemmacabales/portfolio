@@ -716,7 +716,7 @@ function App() {
     }, 700);
     // Download resume logic
     const link = document.createElement('a');
-    link.href = '/src/assets/MacabalesResume1.pdf';
+    link.href = '/MacabalesResume1.pdf';
     link.download = 'MacabalesResume.pdf';
     document.body.appendChild(link);
     link.click();
