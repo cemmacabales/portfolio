@@ -19,7 +19,7 @@ const careerData = [
   {
     period: "2021 - 2023",
     title: "St. Paul University",
-    level: "Senior High School",
+    level: "Senior High School - STEM",
     description: "Pursued specialized education in senior high school, focusing on academic excellence and preparing for higher education.",
     image: StPaulImage,
     icon: <School size={24} />,
