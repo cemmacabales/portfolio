@@ -25,6 +25,47 @@ import MagnetLines from './components/MagnetLines'
 import Dock from './components/Dock'
 import DecryptedText from './components/DecryptedText'
 import './App.css'
+
+/* Neon ripple effect for getResume button */
+const neonRippleStyle = `
+.neon-ripple {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+  opacity: 0.9;
+  transform: translate(-50%, -50%);
+  animation: neonRippleExpand 0.7s cubic-bezier(0.4,0,0.2,1) forwards;
+  z-index: 1;
+}
+@keyframes neonRippleExpand {
+  0% {
+    width: 0;
+    height: 0;
+    opacity: 0.9;
+    box-shadow: 0 0 0 0 #64ffda, 0 0 10px #4ecdc4;
+  }
+  60% {
+    width: 180px;
+    height: 180px;
+    opacity: 0.7;
+    box-shadow: 0 0 40px 10px #64ffda, 0 0 60px 20px #4ecdc4;
+  }
+  100% {
+    width: 220px;
+    height: 220px;
+    opacity: 0;
+    box-shadow: 0 0 60px 20px #64ffda, 0 0 80px 40px #4ecdc4;
+  }
+}
+`;
+if (typeof document !== 'undefined' && !document.getElementById('neon-ripple-style')) {
+  const style = document.createElement('style');
+  style.id = 'neon-ripple-style';
+  style.innerHTML = neonRippleStyle;
+  document.head.appendChild(style);
+}
 import SpotlightCard from './components/SpotlightCard'
 import ScrambledText from './components/ScrambledText'
 import { CareerTimeline } from './components/CareerTimeline'
@@ -656,71 +697,67 @@ function App() {
                 />
               </motion.button>
               
-              <motion.button
-                className="btn btn-secondary ripple-btn"
-                onClick={(e) => {
-                  handleRippleEffect(e);
-                  scrollToSection('contact');
-                }}
-                whileHover={{ 
-                  scale: 1.05,
-                  boxShadow: '0 0 30px rgba(100, 255, 218, 0.6)',
-                  color: '#64ffda',
-                  backgroundColor: 'rgba(100, 255, 218, 0.1)',
-                  borderColor: '#4ecdc4',
-                  transition: { duration: 0.2 }
-                }}
-                whileTap={{ 
-                  scale: 0.98,
-                  transition: { duration: 0.1 }
-                }}
-                style={{
-                  position: 'relative',
-                  overflow: 'hidden',
-                  border: '2px solid #64ffda',
-                  backdropFilter: 'blur(10px)',
-                  background: 'rgba(100, 255, 218, 0.05)',
-                  color: '#ffffff'
-                }}
-              >
-                <motion.span
-                  style={{
-                    position: 'relative',
-                    zIndex: 2,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem'
-                  }}
-                >
-                  <motion.div
-                    animate={{ 
-                      rotate: [0, 10, -10, 0],
-                      transition: { 
-                        duration: 2, 
-                        repeat: Infinity, 
-                        ease: "easeInOut" 
-                      }
-                    }}
-                  >
-                    ✉️
-                  </motion.div>
-                  Get In Touch
-                </motion.span>
-                <motion.div
-                  className="ripple-effect"
-                  style={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    width: '0px',
-                    height: '0px',
-                    borderRadius: '50%',
-                    background: 'rgba(100, 255, 218, 0.3)',
-                    transform: 'translate(-50%, -50%)',
-                    pointerEvents: 'none'
-                  }}
-                />
-              </motion.button>
+<motion.button
+  className="btn btn-secondary ripple-btn"
+  onClick={async (e) => {
+    // Neon ripple effect
+    const button = e.currentTarget;
+    const rect = button.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const ripple = document.createElement('span');
+    ripple.className = 'neon-ripple';
+    ripple.style.left = `${x}px`;
+    ripple.style.top = `${y}px`;
+    ripple.style.background = 'linear-gradient(135deg, #64ffda 0%, #4ecdc4 100%)';
+    button.appendChild(ripple);
+    setTimeout(() => {
+      ripple.remove();
+    }, 700);
+    // Download resume logic
+    const link = document.createElement('a');
+    link.href = '/src/assets/Macabales Resume (1).pdf';
+    link.download = 'MacabalesResume.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }}
+  whileHover={{ 
+    scale: 1.05,
+    boxShadow: '0 0 30px rgba(100, 255, 218, 0.6)',
+    color: '#64ffda',
+    backgroundColor: 'rgba(100, 255, 218, 0.1)',
+    borderColor: '#4ecdc4',
+    transition: { duration: 0.2 }
+  }}
+  whileTap={{ 
+    scale: 0.98,
+    transition: { duration: 0.1 }
+  }}
+  style={{
+    position: 'relative',
+    overflow: 'hidden',
+    border: '2px solid #64ffda',
+    backdropFilter: 'blur(10px)',
+    background: 'rgba(100, 255, 218, 0.05)',
+    color: '#ffffff'
+  }}
+>
+  <motion.span
+    style={{
+      position: 'relative',
+      zIndex: 2,
+      display: 'flex',
+      alignItems: 'center',
+      gap: '0.5rem'
+    }}
+  >
+    <motion.div>
+      📄
+    </motion.div>
+    getResume()
+  </motion.span>
+</motion.button>
             </div>
           </motion.div>
          <motion.div
