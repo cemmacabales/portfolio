@@ -947,7 +947,7 @@ function App() {
                         tech: ["Firebase", "React", "JavaScript", "SCSS", "HTML"],
                         image: MyAptImage,
                         category: "software",
-                        githubUrl: "https://github.com/clivebixby0/myapt-july8-2025-main.git",
+                        githubUrl: "https://github.com/cemmacabales/myapt-july8-2025-main.git",
                         demoUrl: "https://myapthome.netlify.app"
                       },
                       {
@@ -956,7 +956,7 @@ function App() {
                         tech: ["Appwrite", "React", "TypeScript", "JavaScript", "CSS"],
                         image: PetchinguImage,
                         category: "software",
-                        githubUrl: "https://github.com/clivebixby0/petchinguuu.git"
+                        githubUrl: "https://github.com/cemmacabales/petchinguuu.git"
                       }
                     ].map((project, index) => (
                       <motion.div
@@ -1069,7 +1069,7 @@ function App() {
                         tech: ["React", "face-api.js", "GSAP", "JavaScript"],
                         image: ReadMyFaceImage,
                         category: "ml",
-                        githubUrl: "https://github.com/clivebixby0/emotion-detector.git",
+                        githubUrl: "https://github.com/cemmacabales/emotion-detector.git",
                         demoUrl: "https://readmyfaceai.netlify.app"
                       },
                       {
@@ -1078,7 +1078,7 @@ function App() {
                         tech: ["Streamlit", "Python"],
                         image: EarfquakeImage,
                         category: "ml",
-                        githubUrl: "https://github.com/clivebixby0/EARFQUAKE.git",
+                        githubUrl: "https://github.com/cemmacabales/EARFQUAKE.git",
                         demoUrl: "https://earfquake-atjsxhtyuvwrcjwyfbjyx2.streamlit.app/"
                       },
                       {
@@ -1344,7 +1344,7 @@ function App() {
                 <motion.a
                   whileHover={{ scale: 1.1, y: -5 }}
                   whileTap={{ scale: 0.9 }}
-                  href="https://github.com/clivebixby0"
+                  href="https://github.com/cemmacabales"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="social-link"
