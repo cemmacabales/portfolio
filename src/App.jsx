@@ -73,7 +73,7 @@ import EarfquakeImage from './assets/earfquake.png';
 import PetchinguImage from './assets/petchingu.png';
 import MyAptImage from './assets/myapt.png';
 import HeartRiskImage from './assets/heartrisk.png';
-import JobPostingsImage from './assets/jobpostings.png';
+import AxialModelTestingImage from './assets/axial model testing.png';
 import ReadMyFaceImage from './assets/readmyface.png';
 import Loader from './components/Loader';
 import Certificates from './components/Certificates';
@@ -1064,6 +1064,15 @@ function App() {
                   <div className="projects-grid">
                     {[
                       {
+                        title: "Deep Learning Based Classification of Renal Diseases using YOLOv11",
+                        description: "Real-time detection and classification of renal cysts, stones, and tumors in axial and coronal CT scans using YOLOv11.",
+                        tech: ["YOLOv11", "Python", "Streamlit"],
+                        image: AxialModelTestingImage,
+                        category: "ml",
+                        githubUrl: "https://github.com/cemmacabales/KidneyDetection.git",
+                        demoUrl: "https://kidney-abnormality-detection.streamlit.app/"
+                      },
+                      {
                         title: "Read My Face (Real-time Emotion Detector)",
                         description: "AI emotion detector built with face-api.js, React, and GSAP featuring dynamic visual feedback.",
                         tech: ["React", "face-api.js", "GSAP", "JavaScript"],
@@ -1089,15 +1098,6 @@ function App() {
                         category: "ml",
                         githubUrl: "https://colab.research.google.com/drive/1WWMiKOgj0mgGbMcYkxGDD1R4AI16Up3e?usp=sharing",
                         paperUrl: "https://docs.google.com/document/d/1ebPPdUOa1kIigPMNj5VT8ZQLbPQN_qA6TuOsBJkDGPc/edit?usp=sharing"
-                      },
-                      {
-                        title: "Job Trends Analysis from Google Postings",
-                        description: "Analysis of job market trends and patterns using machine learning on Google job posting data.",
-                        tech: ["Python"],
-                        image: JobPostingsImage,
-                        category: "ml",
-                        githubUrl: "https://docs.google.com/document/d/1QzUtiWnslEQZGL-OhD9xSigACunkt0uV/edit?usp=sharing&ouid=101381750453907377125&rtpof=true&sd=true",
-                        paperUrl: "https://docs.google.com/document/d/1QzUtiWnslEQZGL-OhD9xSigACunkt0uV/edit?usp=sharing&ouid=101381750453907377125&rtpof=true&sd=true"
                       }
                     ].map((project, index) => (
                       <motion.div
