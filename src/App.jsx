@@ -1064,9 +1064,9 @@ function App() {
                   <div className="projects-grid">
                     {[
                       {
-                        title: "Deep Learning Based Classification of Renal Diseases using YOLOv11",
-                        description: "Real-time detection and classification of renal cysts, stones, and tumors in axial and coronal CT scans using YOLOv11.",
-                        tech: ["YOLOv11", "Python", "Streamlit"],
+                        title: "Deep Learning Based Classification of Renal Diseases using YOLOv12",
+                        description: "Real-time detection and classification of renal cysts, stones, and tumors in axial and coronal CT scans using YOLOv12.",
+                        tech: ["YOLOv12", "Python", "Streamlit"],
                         image: AxialModelTestingImage,
                         category: "ml",
                         githubUrl: "https://github.com/cemmacabales/KidneyDetection.git",
