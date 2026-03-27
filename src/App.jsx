@@ -2,19 +2,19 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import emailjs from '@emailjs/browser'
 import { gsap } from 'gsap'
-import { 
-  Github, 
-  Linkedin, 
-  Mail, 
-  Phone, 
-  MapPin, 
+import {
+  Github,
+  Linkedin,
+  Mail,
+  Phone,
+  MapPin,
   ExternalLink,
   Code,
   Palette,
   Database,
   Globe,
-  User, 
-  Briefcase, 
+  User,
+  Briefcase,
   Award,
   Brain,
   Monitor,
@@ -72,7 +72,7 @@ import { CareerTimeline } from './components/CareerTimeline'
 import EarfquakeImage from './assets/earfquake.png';
 import PetchinguImage from './assets/petchingu.png';
 import MyAptImage from './assets/myapt.png';
-import HeartRiskImage from './assets/heartrisk.png';
+import EscImage from './assets/esc.png';
 import AxialModelTestingImage from './assets/axial model testing.png';
 import ReadMyFaceImage from './assets/readmyface.png';
 import Loader from './components/Loader';
@@ -158,7 +158,7 @@ const useProjectAnimations = () => {
   const animateCategoryTransition = (oldCategory, newCategory) => {
     const cards = projectCardsRef.current
     console.log('Starting transition from', oldCategory, 'to', newCategory, 'Cards found:', cards?.length)
-    
+
     if (!cards || cards.length === 0) {
       // If no cards to animate out, just animate in new ones
       console.log('No cards to animate out, animating new ones directly')
@@ -253,7 +253,7 @@ function App() {
   const [isValidating, setIsValidating] = useState(false)
 
   const isMobile = useIsMobile();
-  
+
   // Initialize project animations
   const {
     projectGridRef,
@@ -327,22 +327,22 @@ function App() {
   const handleRippleEffect = (event) => {
     const button = event.currentTarget;
     const ripple = button.querySelector('.ripple-effect');
-    
+
     if (ripple) {
       // Reset ripple
       ripple.style.width = '0px';
       ripple.style.height = '0px';
       ripple.style.opacity = '1';
-      
+
       // Get click position
       const rect = button.getBoundingClientRect();
       const x = event.clientX - rect.left;
       const y = event.clientY - rect.top;
-      
+
       // Position ripple at click point
       ripple.style.left = x + 'px';
       ripple.style.top = y + 'px';
-      
+
       // Trigger animation
       setTimeout(() => {
         ripple.style.width = '200px';
@@ -356,7 +356,7 @@ function App() {
   const handleMagneticEffect = (event) => {
     const button = event.currentTarget;
     const particles = button.querySelector('.magnetic-particles');
-    
+
     if (particles) {
       // Create additional particles on click
       for (let i = 0; i < 5; i++) {
@@ -370,15 +370,15 @@ function App() {
           pointer-events: none;
           animation: magneticParticle 1s ease-out forwards;
         `;
-        
+
         // Random position around the button
         const x = Math.random() * 100;
         const y = Math.random() * 100;
         particle.style.left = x + '%';
         particle.style.top = y + '%';
-        
+
         particles.appendChild(particle);
-        
+
         // Remove particle after animation
         setTimeout(() => {
           if (particle.parentNode) {
@@ -393,7 +393,7 @@ function App() {
     // Sanitize input in real-time
     const sanitizedValue = value.trim()
     setFormData(prev => ({ ...prev, [field]: sanitizedValue }))
-    
+
     // Clear specific field error when user starts typing
     if (formErrors[field]) {
       setFormErrors(prev => ({ ...prev, [field]: '' }))
@@ -415,41 +415,41 @@ function App() {
   const handleSubmit = (e) => {
     e.preventDefault()
     setIsValidating(true)
-    
+
     // Check rate limiting
     if (!checkRateLimit()) {
       setIsValidating(false)
       alert('Too many submissions. Please wait a minute before trying again.')
       return
     }
-    
+
     // Sanitize form data
     const sanitizedData = sanitizeFormData(formData)
-    
+
     // Validate form data
     const validation = validateFormData(sanitizedData)
-    
+
     if (!validation.isValid) {
       setFormErrors(validation.errors)
       setIsValidating(false)
       return
     }
-    
+
     // Clear any existing errors
     setFormErrors({})
-    
+
     // Check environment variables
     const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID
     const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
     const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
-    
+
     if (!serviceId || !templateId || !publicKey) {
       console.error('EmailJS configuration missing')
       setIsValidating(false)
       alert('Email service is not properly configured. Please try again later.')
       return
     }
-    
+
     // Prepare template parameters with sanitized data
     const templateParams = {
       name: sanitizedData.name,
@@ -461,17 +461,17 @@ function App() {
       budget: sanitizedData.budget,
       message: sanitizedData.message
     }
-    
+
     // Send email using EmailJS
     setIsSubmitting(true)
     setIsValidating(false)
-    
+
     emailjs.send(serviceId, templateId, templateParams, publicKey)
       .then((response) => {
         console.log('Email sent successfully:', response)
         setIsSubmitting(false)
         setIsSuccess(true)
-        
+
         // Reset form after showing success
         setTimeout(() => {
           setFormData({
@@ -546,7 +546,7 @@ function App() {
       {/* Background - Only show on desktop */}
       {!isMobile && (
         <div className="background-container">
-          <MagnetLines 
+          <MagnetLines
             rows={20}
             columns={20}
             containerSize="100vw"
@@ -561,7 +561,7 @@ function App() {
 
       {/* Mobile Background Fallback */}
       {isMobile && (
-        <div 
+        <div
           style={{
             position: 'fixed',
             top: 0,
@@ -574,33 +574,33 @@ function App() {
           }}
         />
       )}
-      
 
-      
+
+
       {/* Dock Navigation */}
-      <Dock 
+      <Dock
         items={[
-          { 
-            icon: <User size={20} />, 
-            label: 'About Me', 
+          {
+            icon: <User size={20} />,
+            label: 'About Me',
             onClick: () => scrollToSection('about'),
             className: activeSection === 'about' ? 'active' : ''
           },
-          { 
-            icon: <Briefcase size={20} />, 
-            label: 'Work', 
+          {
+            icon: <Briefcase size={20} />,
+            label: 'Work',
             onClick: () => scrollToSection('projects'),
             className: activeSection === 'projects' ? 'active' : ''
           },
-          { 
-            icon: <Award size={20} />, 
-            label: 'Experience', 
+          {
+            icon: <Award size={20} />,
+            label: 'Experience',
             onClick: () => scrollToSection('skills'),
             className: activeSection === 'skills' ? 'active' : ''
           },
-          { 
-            icon: <Mail size={20} />, 
-            label: 'Contact', 
+          {
+            icon: <Mail size={20} />,
+            label: 'Contact',
             onClick: () => scrollToSection('contact'),
             className: activeSection === 'contact' ? 'active' : ''
           }
@@ -620,7 +620,7 @@ function App() {
             className="hero-text"
           >
             <h1>Hi, I'm <span className="highlight">
-              <TextType 
+              <TextType
                 text={["Carl Emmanuel Macabales", "A Developer"]}
                 typingSpeed={100}
                 deletingSpeed={50}
@@ -640,15 +640,15 @@ function App() {
                   handleMagneticEffect(e);
                   scrollToSection('projects');
                 }}
-                whileHover={{ 
+                whileHover={{
                   scale: 1.1,
                   rotate: [0, -2, 2, 0],
-                  transition: { 
+                  transition: {
                     duration: 0.3,
                     rotate: { duration: 0.2, repeat: 2, ease: "easeInOut" }
                   }
                 }}
-                whileTap={{ 
+                whileTap={{
                   scale: 0.95,
                   rotate: 0
                 }}
@@ -671,12 +671,12 @@ function App() {
                   }}
                 >
                   <motion.div
-                    animate={{ 
+                    animate={{
                       x: [0, 5, 0],
-                      transition: { 
-                        duration: 1.5, 
-                        repeat: Infinity, 
-                        ease: "easeInOut" 
+                      transition: {
+                        duration: 1.5,
+                        repeat: Infinity,
+                        ease: "easeInOut"
                       }
                     }}
                   >
@@ -696,87 +696,87 @@ function App() {
                   }}
                 />
               </motion.button>
-              
-<motion.button
-  className="btn btn-secondary ripple-btn"
-  onClick={async (e) => {
-    // Neon ripple effect
-    const button = e.currentTarget;
-    const rect = button.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    const ripple = document.createElement('span');
-    ripple.className = 'neon-ripple';
-    ripple.style.left = `${x}px`;
-    ripple.style.top = `${y}px`;
-    ripple.style.background = 'linear-gradient(135deg, #64ffda 0%, #4ecdc4 100%)';
-    button.appendChild(ripple);
-    setTimeout(() => {
-      ripple.remove();
-    }, 700);
-    // Download resume logic
-    const link = document.createElement('a');
-    link.href = '/MacabalesResume1.pdf';
-    link.download = 'MacabalesResume.pdf';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }}
-  whileHover={{ 
-    scale: 1.05,
-    boxShadow: '0 0 30px rgba(100, 255, 218, 0.6)',
-    color: '#64ffda',
-    backgroundColor: 'rgba(100, 255, 218, 0.1)',
-    borderColor: '#4ecdc4',
-    transition: { duration: 0.2 }
-  }}
-  whileTap={{ 
-    scale: 0.98,
-    transition: { duration: 0.1 }
-  }}
-  style={{
-    position: 'relative',
-    overflow: 'hidden',
-    border: '2px solid #64ffda',
-    backdropFilter: 'blur(10px)',
-    background: 'rgba(100, 255, 218, 0.05)',
-    color: '#ffffff'
-  }}
->
-  <motion.span
-    style={{
-      position: 'relative',
-      zIndex: 2,
-      display: 'flex',
-      alignItems: 'center',
-      gap: '0.5rem'
-    }}
-  >
-    <motion.div>
-      📄
-    </motion.div>
-    getResume()
-  </motion.span>
-</motion.button>
+
+              <motion.button
+                className="btn btn-secondary ripple-btn"
+                onClick={async (e) => {
+                  // Neon ripple effect
+                  const button = e.currentTarget;
+                  const rect = button.getBoundingClientRect();
+                  const x = e.clientX - rect.left;
+                  const y = e.clientY - rect.top;
+                  const ripple = document.createElement('span');
+                  ripple.className = 'neon-ripple';
+                  ripple.style.left = `${x}px`;
+                  ripple.style.top = `${y}px`;
+                  ripple.style.background = 'linear-gradient(135deg, #64ffda 0%, #4ecdc4 100%)';
+                  button.appendChild(ripple);
+                  setTimeout(() => {
+                    ripple.remove();
+                  }, 700);
+                  // Download resume logic
+                  const link = document.createElement('a');
+                  link.href = '/MacabalesResume1.pdf';
+                  link.download = 'MacabalesResume.pdf';
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                }}
+                whileHover={{
+                  scale: 1.05,
+                  boxShadow: '0 0 30px rgba(100, 255, 218, 0.6)',
+                  color: '#64ffda',
+                  backgroundColor: 'rgba(100, 255, 218, 0.1)',
+                  borderColor: '#4ecdc4',
+                  transition: { duration: 0.2 }
+                }}
+                whileTap={{
+                  scale: 0.98,
+                  transition: { duration: 0.1 }
+                }}
+                style={{
+                  position: 'relative',
+                  overflow: 'hidden',
+                  border: '2px solid #64ffda',
+                  backdropFilter: 'blur(10px)',
+                  background: 'rgba(100, 255, 218, 0.05)',
+                  color: '#ffffff'
+                }}
+              >
+                <motion.span
+                  style={{
+                    position: 'relative',
+                    zIndex: 2,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem'
+                  }}
+                >
+                  <motion.div>
+                    📄
+                  </motion.div>
+                  getResume()
+                </motion.span>
+              </motion.button>
             </div>
           </motion.div>
-         <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="hero-image"
-        >
-          <div className="profile-placeholder">
-            <img src={ProfileImage} alt="Profile" className="profile-image"
-            style={{ 
-              width: '100%', 
-              height: '100%', 
-              borderRadius: '50%',
-              transition: 'all 0.3s ease'
-            }} 
-            />
-          </div>
-        </motion.div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="hero-image"
+          >
+            <div className="profile-placeholder">
+              <img src={ProfileImage} alt="Profile" className="profile-image"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  borderRadius: '50%',
+                  transition: 'all 0.3s ease'
+                }}
+              />
+            </div>
+          </motion.div>
         </div>
       </section>
 
@@ -846,20 +846,20 @@ function App() {
               >
                 Outside of academics, I enjoy playing video games, coding, making things from scratch, and solving challenging problems. I'm also passionate about exploring new technologies, contributing to open-source projects, and sharing knowledge with the developer community.
               </ScrambledText>
-                <div className="about-stats">
-                  <SpotlightCard className="stat" spotlightColor="rgba(0, 229, 255, 0.2)">
-                    <h4>400+</h4>
-                    <p>Hours of Learning</p>
-                  </SpotlightCard>
-                  <SpotlightCard className="stat" spotlightColor="rgba(0, 229, 255, 0.2)">
-                    <h4>10</h4>
-                    <p>Projects Completed</p>
-                  </SpotlightCard>
-                  <SpotlightCard className="stat" spotlightColor="rgba(0, 229, 255, 0.2)">
-                    <h4>20+</h4>
-                    <p>Certificates Earned</p>
-                  </SpotlightCard>
-                </div>
+              <div className="about-stats">
+                <SpotlightCard className="stat" spotlightColor="rgba(0, 229, 255, 0.2)">
+                  <h4>400+</h4>
+                  <p>Hours of Learning</p>
+                </SpotlightCard>
+                <SpotlightCard className="stat" spotlightColor="rgba(0, 229, 255, 0.2)">
+                  <h4>10</h4>
+                  <p>Projects Completed</p>
+                </SpotlightCard>
+                <SpotlightCard className="stat" spotlightColor="rgba(0, 229, 255, 0.2)">
+                  <h4>20+</h4>
+                  <p>Certificates Earned</p>
+                </SpotlightCard>
+              </div>
             </motion.div>
             <motion.div
               initial={{ opacity: 0, x: 50 }}
@@ -905,7 +905,7 @@ function App() {
               </ScrambledText>
             </div>
           </motion.div>
-                    <div className="projects-section">
+          <div className="projects-section">
             <div className="category-buttons">
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -916,7 +916,7 @@ function App() {
                 <Brain size={24} />
                 <span>Artificial Intelligence</span>
               </motion.button>
-              
+
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -964,175 +964,21 @@ function App() {
                         ref={addCardRef}
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ 
-                          duration: 0.5, 
+                        transition={{
+                          duration: 0.5,
                           delay: index * 0.1,
                           ease: "easeOut"
                         }}
                         className="project-card modern-card"
-                        whileHover={{ 
-                          y: -8, 
+                        whileHover={{
+                          y: -8,
                           scale: 1.02,
                           transition: { duration: 0.2 }
                         }}
                       >
-                      <div className="project-image">
-                        <img 
-                          src={project.image} 
-                          alt={project.title}
-                          style={{
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'cover'
-                          }}
-                        />
-                      </div>
-                      <div className="project-content">
-                        <h3>{project.title}</h3>
-                        <p>{project.description}</p>
-                        <div className="project-tech">
-                          {project.tech.map((tech, techIndex) => (
-                            <span 
-                              key={techIndex} 
-                              className={`tech-tag ${tech.toLowerCase()}`}
-                            >
-                              {tech}
-                            </span>
-                          ))}
-                        </div>
-                        <div className="project-links">
-                          {project.demoUrl ? (
-                            <a 
-                              href={project.demoUrl} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="btn btn-small"
-                              style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
-                            >
-                              <ExternalLink size={16} />
-                              Live Demo
-                            </a>
-                          ) : (
-                            <button 
-                              className="btn btn-small"
-                              onClick={() => alert('🚧 This project is currently under maintenance. Please check back later!')}
-                            >
-                              <ExternalLink size={16} />
-                              Live Demo
-                            </button>
-                          )}
-                          <a 
-                            href={project.githubUrl} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="btn btn-small btn-secondary"
-                            style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
-                          >
-                            <Github size={16} />
-                            Code
-                          </a>
-                          {project.paperUrl && (
-                            <a 
-                              href={project.paperUrl} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="btn btn-small btn-secondary"
-                              style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
-                            >
-                              📄 Paper
-                            </a>
-                          )}
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
-            )}
-
-            {/* Artificial Intelligence Projects */}
-            <AnimatePresence mode="wait">
-              {openCategory === 'ml' && (
-                <motion.div
-                  key="ml"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.4, ease: "easeInOut" }}
-                  className="project-category"
-                >
-                  <div className="projects-grid">
-                    {[
-                      {
-                        title: "Deep Learning Based Classification of Renal Diseases using YOLOv12",
-                        description: "Real-time detection and classification of renal cysts, stones, and tumors in axial and coronal CT scans using YOLOv12.",
-                        tech: ["YOLOv12", "Python", "Streamlit"],
-                        image: AxialModelTestingImage,
-                        category: "ml",
-                        githubUrl: "https://github.com/cemmacabales/KidneyDetection.git",
-                        demoUrl: "https://kidney-abnormality-detection.streamlit.app/"
-                      },
-                      {
-                        title: "Read My Face (Real-time Emotion Detector)",
-                        description: "AI emotion detector built with face-api.js, React, and GSAP featuring dynamic visual feedback.",
-                        tech: ["React", "face-api.js", "GSAP", "JavaScript"],
-                        image: ReadMyFaceImage,
-                        category: "ml",
-                        githubUrl: "https://github.com/cemmacabales/emotion-detector.git",
-                        demoUrl: "https://readmyfaceai.netlify.app"
-                      },
-                      {
-                        title: "Earfquake (Earthquake Prediction Analysis Tool)",
-                        description: "A machine learning tool for analyzing earthquake data and predicting seismic activities using advanced algorithms and data visualization.",
-                        tech: ["Streamlit", "Python"],
-                        image: EarfquakeImage,
-                        category: "ml",
-                        githubUrl: "https://github.com/cemmacabales/EARFQUAKE.git",
-                        demoUrl: "https://earfquake-atjsxhtyuvwrcjwyfbjyx2.streamlit.app/"
-                      },
-                      {
-                        title: "Heart Disease Risk Detection",
-                        description: "A machine learning model for predicting heart disease risk using various medical parameters and features.",
-                        tech: ["Python", "IEEE"],
-                        image: HeartRiskImage,
-                        category: "ml",
-                        githubUrl: "https://colab.research.google.com/drive/1WWMiKOgj0mgGbMcYkxGDD1R4AI16Up3e?usp=sharing",
-                        paperUrl: "https://docs.google.com/document/d/1ebPPdUOa1kIigPMNj5VT8ZQLbPQN_qA6TuOsBJkDGPc/edit?usp=sharing"
-                      }
-                    ].map((project, index) => (
-                      <motion.div
-                        key={index}
-                        ref={addCardRef}
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ 
-                          duration: 0.5, 
-                          delay: index * 0.1,
-                          ease: "easeOut"
-                        }}
-                        className="project-card modern-card"
-                        whileHover={{ 
-                          y: -8, 
-                          scale: 1.02,
-                          transition: { duration: 0.2 }
-                        }}
-                      >
-                      <div className="project-image">
-                        {typeof project.image === 'string' && project.image.length <= 2 ? (
-                          <div style={{
-                            width: '100%',
-                            height: '100%',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: '4rem',
-                            background: 'rgba(255, 255, 255, 0.05)'
-                          }}>
-                            {project.image}
-                          </div>
-                        ) : (
-                          <img 
-                            src={project.image} 
+                        <div className="project-image">
+                          <img
+                            src={project.image}
                             alt={project.title}
                             style={{
                               width: '100%',
@@ -1140,60 +986,212 @@ function App() {
                               objectFit: 'cover'
                             }}
                           />
-                        )}
-                      </div>
-                      <div className="project-content">
-                        <h3>{project.title}</h3>
-                        <p>{project.description}</p>
-                        <div className="project-tech">
-                          {project.tech.map((tech, techIndex) => (
-                            <span 
-                              key={techIndex} 
-                              className={`tech-tag ${tech.toLowerCase()}`}
-                            >
-                              {tech}
-                            </span>
-                          ))}
                         </div>
-                        <div className="project-links">
-                          {project.demoUrl ? (
-                            <a 
-                              href={project.demoUrl} 
-                              target="_blank" 
+                        <div className="project-content">
+                          <h3>{project.title}</h3>
+                          <p>{project.description}</p>
+                          <div className="project-tech">
+                            {project.tech.map((tech, techIndex) => (
+                              <span
+                                key={techIndex}
+                                className={`tech-tag ${tech.toLowerCase()}`}
+                              >
+                                {tech}
+                              </span>
+                            ))}
+                          </div>
+                          <div className="project-links">
+                            {project.demoUrl ? (
+                              <a
+                                href={project.demoUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="btn btn-small"
+                                style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
+                              >
+                                <ExternalLink size={16} />
+                                Live Demo
+                              </a>
+                            ) : (
+                              <button
+                                className="btn btn-small"
+                                onClick={() => alert('🚧 This project is currently under maintenance. Please check back later!')}
+                              >
+                                <ExternalLink size={16} />
+                                Live Demo
+                              </button>
+                            )}
+                            <a
+                              href={project.githubUrl}
+                              target="_blank"
                               rel="noopener noreferrer"
-                              className="btn btn-small"
+                              className="btn btn-small btn-secondary"
                               style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
                             >
-                              <ExternalLink size={16} />
-                              Live Demo
+                              <Github size={16} />
+                              Code
                             </a>
-                          ) : (
-                            <button 
-                              className="btn btn-small"
-                              onClick={() => alert('🚧 This project is currently under maintenance. Please check back later!')}
-                            >
-                              <ExternalLink size={16} />
-                              Live Demo
-                            </button>
-                          )}
-                          <a 
-                            href={project.githubUrl} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="btn btn-small btn-secondary"
-                            style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
-                          >
-                            <Github size={16} />
-                            Code
-                          </a>
+                            {project.paperUrl && (
+                              <a
+                                href={project.paperUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="btn btn-small btn-secondary"
+                                style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
+                              >
+                                📄 Paper
+                              </a>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
-            )}
-            </AnimatePresence>
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Artificial Intelligence Projects */}
+              <AnimatePresence mode="wait">
+                {openCategory === 'ml' && (
+                  <motion.div
+                    key="ml"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.4, ease: "easeInOut" }}
+                    className="project-category"
+                  >
+                    <div className="projects-grid">
+                      {[
+                        {
+                          title: "RAG Clinical Chatbot for Atrial Fibrillation Guidelines",
+                          description: "A GenAI-powered chatbot that answers clinical questions using ESC atrial fibrillation guidelines, optimized for accurate retrieval, low latency, and minimal hallucinations.",
+                          tech: ["Llama-3", "Phi-3", "Qwen3", "FAISS", "MedCPT"],
+                          image: EscImage,
+                          category: "ml",
+                        },
+                        {
+                          title: "Deep Learning Based Classification of Renal Diseases using YOLOv12",
+                          description: "Real-time detection and classification of renal cysts, stones, and tumors in axial and coronal CT scans using YOLOv12.",
+                          tech: ["YOLOv12", "Python", "Streamlit"],
+                          image: AxialModelTestingImage,
+                          category: "ml",
+                          githubUrl: "https://github.com/cemmacabales/KidneyDetection.git",
+                          demoUrl: "https://kidney-abnormality-detection.streamlit.app/"
+                        },
+                        {
+                          title: "Read My Face (Real-time Emotion Detector)",
+                          description: "AI emotion detector built with face-api.js, React, and GSAP featuring dynamic visual feedback.",
+                          tech: ["React", "face-api.js", "GSAP", "JavaScript"],
+                          image: ReadMyFaceImage,
+                          category: "ml",
+                          githubUrl: "https://github.com/cemmacabales/emotion-detector.git",
+                          demoUrl: "https://readmyfaceai.netlify.app"
+                        },
+                        {
+                          title: "Earfquake (Earthquake Prediction Analysis Tool)",
+                          description: "A machine learning tool for analyzing earthquake data and predicting seismic activities using advanced algorithms and data visualization.",
+                          tech: ["Streamlit", "Python"],
+                          image: EarfquakeImage,
+                          category: "ml",
+                          githubUrl: "https://github.com/cemmacabales/EARFQUAKE.git",
+                          demoUrl: "https://earfquake-atjsxhtyuvwrcjwyfbjyx2.streamlit.app/"
+                        }
+                      ].map((project, index) => (
+                        <motion.div
+                          key={index}
+                          ref={addCardRef}
+                          initial={{ opacity: 0, y: 30 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{
+                            duration: 0.5,
+                            delay: index * 0.1,
+                            ease: "easeOut"
+                          }}
+                          className="project-card modern-card"
+                          whileHover={{
+                            y: -8,
+                            scale: 1.02,
+                            transition: { duration: 0.2 }
+                          }}
+                        >
+                          <div className="project-image">
+                            {typeof project.image === 'string' && project.image.length <= 2 ? (
+                              <div style={{
+                                width: '100%',
+                                height: '100%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: '4rem',
+                                background: 'rgba(255, 255, 255, 0.05)'
+                              }}>
+                                {project.image}
+                              </div>
+                            ) : (
+                              <img
+                                src={project.image}
+                                alt={project.title}
+                                style={{
+                                  width: '100%',
+                                  height: '100%',
+                                  objectFit: 'cover'
+                                }}
+                              />
+                            )}
+                          </div>
+                          <div className="project-content">
+                            <h3>{project.title}</h3>
+                            <p>{project.description}</p>
+                            <div className="project-tech">
+                              {project.tech.map((tech, techIndex) => (
+                                <span
+                                  key={techIndex}
+                                  className={`tech-tag ${tech.toLowerCase()}`}
+                                >
+                                  {tech}
+                                </span>
+                              ))}
+                            </div>
+                            <div className="project-links">
+                              {project.demoUrl ? (
+                                <a
+                                  href={project.demoUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="btn btn-small"
+                                  style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
+                                >
+                                  <ExternalLink size={16} />
+                                  Live Demo
+                                </a>
+                              ) : (
+                                <button
+                                  className="btn btn-small"
+                                  onClick={() => alert('🚧 This project is currently under maintenance. Please check back later!')}
+                                >
+                                  <ExternalLink size={16} />
+                                  Live Demo
+                                </button>
+                              )}
+                              <a
+                                href={project.githubUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="btn btn-small btn-secondary"
+                                style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
+                              >
+                                <Github size={16} />
+                                Code
+                              </a>
+                            </div>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </AnimatePresence>
           </div>
         </div>
@@ -1306,12 +1304,12 @@ function App() {
                   speed={0.5}
                   scrambleChars=".:"
                 >
-                  I'm always interested in new opportunities and exciting projects. 
+                  I'm always interested in new opportunities and exciting projects.
                   Whether you have a question or just want to say hi, feel free to reach out!
                 </ScrambledText>
               </div>
               <div className="contact-details">
-                <motion.div 
+                <motion.div
                   className="contact-item"
                   whileHover={{ scale: 1.05, x: 10 }}
                   transition={{ duration: 0.2 }}
@@ -1321,7 +1319,7 @@ function App() {
                     carlmacabales31@gmail.com
                   </a>
                 </motion.div>
-                <motion.div 
+                <motion.div
                   className="contact-item"
                   whileHover={{ scale: 1.05, x: 10 }}
                   transition={{ duration: 0.2 }}
@@ -1331,13 +1329,13 @@ function App() {
                     +63 956 389 3104
                   </a>
                 </motion.div>
-                <motion.div 
+                <motion.div
                   className="contact-item"
                   whileHover={{ scale: 1.05, x: 10 }}
                   transition={{ duration: 0.2 }}
                 >
                   <MapPin size={20} />
-                  <span>Valenzuela, PH</span>
+                  <span>Quezon City, PH</span>
                 </motion.div>
               </div>
               <div className="social-links">
@@ -1413,32 +1411,32 @@ function App() {
                   >
                     <h3>Let's start with your basic information</h3>
                     <div className={`form-group ${formErrors.name ? 'error' : ''}`}>
-                      <input 
-                        type="text" 
-                        placeholder="Your Name" 
+                      <input
+                        type="text"
+                        placeholder="Your Name"
                         value={formData.name}
                         onChange={(e) => handleFormInput('name', e.target.value)}
-                        required 
+                        required
                       />
                       {formErrors.name && <span className="form-error">{formErrors.name}</span>}
                     </div>
                     <div className={`form-group ${formErrors.email ? 'error' : ''}`}>
-                      <input 
-                        type="email" 
-                        placeholder="Your Email" 
+                      <input
+                        type="email"
+                        placeholder="Your Email"
                         value={formData.email}
                         onChange={(e) => handleFormInput('email', e.target.value)}
-                        required 
+                        required
                       />
                       {formErrors.email && <span className="form-error">{formErrors.email}</span>}
                     </div>
                     <div className={`form-group ${formErrors.subject ? 'error' : ''}`}>
-                      <input 
-                        type="text" 
-                        placeholder="Subject" 
+                      <input
+                        type="text"
+                        placeholder="Subject"
                         value={formData.subject}
                         onChange={(e) => handleFormInput('subject', e.target.value)}
-                        required 
+                        required
                       />
                       {formErrors.subject && <span className="form-error">{formErrors.subject}</span>}
                     </div>
@@ -1472,7 +1470,7 @@ function App() {
                   >
                     <h3>Tell me about your project</h3>
                     <div className="form-group">
-                      <select 
+                      <select
                         value={formData.projectType}
                         onChange={(e) => handleFormInput('projectType', e.target.value)}
                         required
@@ -1487,8 +1485,8 @@ function App() {
                       </select>
                     </div>
                     <div className={`form-group ${formErrors.message ? 'error' : ''}`}>
-                      <textarea 
-                        placeholder="Describe your project requirements..." 
+                      <textarea
+                        placeholder="Describe your project requirements..."
                         rows="4"
                         value={formData.message}
                         onChange={(e) => handleFormInput('message', e.target.value)}
@@ -1536,7 +1534,7 @@ function App() {
                   >
                     <h3>Timeline and Budget</h3>
                     <div className="form-group">
-                      <select 
+                      <select
                         value={formData.timeline}
                         onChange={(e) => handleFormInput('timeline', e.target.value)}
                         required
@@ -1551,7 +1549,7 @@ function App() {
                       </select>
                     </div>
                     <div className="form-group">
-                      <select 
+                      <select
                         value={formData.budget}
                         onChange={(e) => handleFormInput('budget', e.target.value)}
                         required
@@ -1607,8 +1605,8 @@ function App() {
                   >
                     <h3>Additional Message (Optional)</h3>
                     <div className={`form-group ${formErrors.message ? 'error' : ''}`}>
-                      <textarea 
-                        placeholder="Any additional details, questions, or specific requirements..." 
+                      <textarea
+                        placeholder="Any additional details, questions, or specific requirements..."
                         rows="4"
                         value={formData.message}
                         onChange={(e) => handleFormInput('message', e.target.value)}
