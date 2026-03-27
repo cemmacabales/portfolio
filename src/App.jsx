@@ -1069,6 +1069,7 @@ function App() {
                           tech: ["Llama-3", "Phi-3", "Qwen3", "FAISS", "MedCPT"],
                           image: EscImage,
                           category: "ml",
+                          githubUrl: "https://github.com/cemmacabales/AFIB.git",
                         },
                         {
                           title: "Deep Learning Based Classification of Renal Diseases using YOLOv12",
