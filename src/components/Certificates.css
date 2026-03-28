@@ -11,7 +11,7 @@
 
 .certificates-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 1.5rem;
   max-width: 100%;
 }
@@ -98,6 +98,21 @@
 
 .certificate-link:hover {
   color: #ffffff;
+}
+
+.special-certificate {
+  grid-column: 1 / -1;
+}
+
+.special-certificate .certificate-image {
+  height: 250px;
+}
+
+.special-certificate .certificate-description {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 0.5rem;
+  line-height: 1.5;
 }
 
 @media (max-width: 768px) {

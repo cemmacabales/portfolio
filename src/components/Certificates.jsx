@@ -8,10 +8,16 @@ import ComputerSimulationsImage from '../assets/Computer Simulations.png';
 import CyberPhysicalSystemsImage from '../assets/Cyber-Physical Systems: Modeling and Simulation.png';
 import DataWarehouseImage from '../assets/Data Warehouse Concepts, Design, and Data Integration.png';
 import EngineeringPracticesImage from '../assets/Engineering Practices for Building Quality Software.png';
-import MathematicsImage from '../assets/Mathematics for Computer Science.png';
-import VisualElementsImage from '../assets/Visual Elements of User Interface Design.png';
+import IcipcnImage from '../assets/icipcn.png';
 
 const Certificates = () => {
+  const specialCertificate = {
+    title: "ICIPCN 2026 Presentation",
+    description: "Deep Learning Framework for Multi-Class Kidney Abnormality Segmentation. Presented on January 27-29 at Kathmandu University, Nepal.",
+    url: "https://doi.org/10.1109/ICIPCN67432.2026.11438968",
+    image: IcipcnImage
+  };
+
   const certificates = [
     {
       title: "Computer Simulations",
@@ -40,20 +46,6 @@ const Certificates = () => {
       date: "July 18, 2025",
       url: "https://coursera.org/share/3ec74c9e80af33781f9c9ca8af54d8bb",
       image: EngineeringPracticesImage
-    },
-    {
-      title: "Mathematics for Computer Science",
-      issuer: "University of London",
-      date: "September 25, 2023",
-      url: "https://coursera.org/share/a2cda3e2b82c71567fed50a1d7035fdb",
-      image: MathematicsImage
-    },
-    {
-      title: "Visual Elements of User Interface Design",
-      issuer: "California Institute of the Arts",
-      date: "July 18, 2025",
-      url: "https://coursera.org/share/320f344082a94923a71bceae3cb36e8d",
-      image: VisualElementsImage
     }
   ];
 
@@ -61,6 +53,50 @@ const Certificates = () => {
     <div className="certificates">
       <h3>Certificates</h3>
       <div className="certificates-grid">
+        <motion.div
+          className="certificate-item special-certificate"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          viewport={{ once: true }}
+          whileHover={{ 
+            y: -5,
+            transition: { duration: 0.2 }
+          }}
+        >
+          <div className="certificate-image">
+            <img 
+              src={specialCertificate.image} 
+              alt={specialCertificate.title}
+              onError={(e) => {
+                e.target.style.display = 'none';
+                e.target.nextSibling.style.display = 'flex';
+              }}
+            />
+            <div className="certificate-placeholder">
+              <Award size={60} />
+            </div>
+          </div>
+          <div className="certificate-content">
+            <h4>{specialCertificate.title}</h4>
+            <p className="certificate-description">{specialCertificate.description}</p>
+            {specialCertificate.url && (
+              <motion.a
+                href={specialCertificate.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="certificate-link"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                style={{ marginTop: '0.75rem' }}
+              >
+                <ExternalLink size={16} />
+                View Certificate
+              </motion.a>
+            )}
+          </div>
+        </motion.div>
+
         {certificates.map((cert, index) => (
           <motion.div
             key={index}
