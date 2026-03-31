@@ -37,5 +37,5 @@
   height: 12px;
   background: var(--accent-primary);
   border-radius: 50%;
-  box-shadow: 0 0 20px rgba(100, 255, 218, 0.5);
+  box-shadow: 0 0 20px var(--shadow-primary);
 } 

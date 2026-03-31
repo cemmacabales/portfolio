@@ -84,6 +84,7 @@ import TechStack from './components/TechStack';
 import { debugMobileView } from './debug-mobile';
 import { useMobileDetection } from './mobile-detection';
 import { validateFormData, sanitizeFormData, checkRateLimit } from './utils/validation';
+import ModelSelectionModal from './components/ModelSelectionModal';
 
 // Custom hook for modern project card animations
 const useProjectAnimations = () => {
@@ -236,7 +237,6 @@ const useProjectAnimations = () => {
 const useIsMobile = useMobileDetection;
 
 function App() {
-  const [theme, setTheme] = useState('dark')
   const [activeSection, setActiveSection] = useState('home')
   const [openCategory, setOpenCategory] = useState('ml')
   const [isLoading, setIsLoading] = useState(true)
@@ -254,9 +254,31 @@ function App() {
   })
   const [formErrors, setFormErrors] = useState({})
   const [isValidating, setIsValidating] = useState(false)
-  const [showRAGDemoModal, setShowRAGDemoModal] = useState(false)
+  const [showModelModal, setShowModelModal] = useState(false)
+  const [selectedModelProject, setSelectedModelProject] = useState(null)
 
   const isMobile = useIsMobile();
+  
+  const [isLightMode, setIsLightMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('theme');
+      if (saved) return saved === 'light';
+      return window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    if (isLightMode) {
+      document.documentElement.setAttribute('data-theme', 'light');
+      localStorage.setItem('theme', 'light');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+      localStorage.setItem('theme', 'dark');
+    }
+  }, [isLightMode]);
+
+  const toggleTheme = () => setIsLightMode(!isLightMode);
 
   // Initialize project animations
   const {
@@ -273,11 +295,6 @@ function App() {
     console.log('App component mounted');
     console.log('ReadMyFaceImage imported:', !!ReadMyFaceImage);
   }, []);
-
-  // Apply theme class to html element
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-  }, [theme]);
 
   // Trigger initial animation for current category
   useEffect(() => {
@@ -552,30 +569,12 @@ function App() {
 
   return (
     <div className="App">
-      {/* Theme Toggle Button */}
       <button 
-        className="theme-toggle"
-        onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-        style={{
-          position: 'fixed',
-          top: '20px',
-          right: '25px',
-          zIndex: 1000,
-          background: 'var(--bg-secondary)',
-          border: '1px solid var(--border-color)',
-          borderRadius: '50%',
-          width: '50px',
-          height: '50px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: 'pointer',
-          color: 'var(--text-primary)',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-        }}
-        aria-label="Toggle theme"
+        className="theme-toggle-btn"
+        onClick={toggleTheme}
+        aria-label="Toggle Theme"
       >
-        {theme === 'dark' ? <Sun size={24} /> : <Moon size={24} />}
+        {isLightMode ? <Moon size={24} /> : <Sun size={24} />}
       </button>
 
       {/* Background - Only show on desktop */}
@@ -585,7 +584,7 @@ function App() {
             rows={20}
             columns={20}
             containerSize="100vw"
-            lineColor="var(--border-color)"
+            lineColor="var(--magnet-line)"
             lineWidth="1px"
             lineHeight="clamp(25px, 2.5vw, 40px)"
             baseAngle={-10}
@@ -663,7 +662,7 @@ function App() {
                 loop={true}
                 showCursor={true}
                 cursorCharacter="|"
-                textColors={["var(--accent-primary)", "#8b5cf6", "var(--accent-secondary)"]}
+                textColors={isLightMode ? ["#00897b", "#7c3aed", "#00796b"] : ["#64ffda", "#8b5cf6", "#4ecdc4"]}
               />
             </span></h1>
             <h2>Computer Science Student</h2>
@@ -691,7 +690,7 @@ function App() {
                   position: 'relative',
                   overflow: 'hidden',
                   background: 'linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%)',
-                  boxShadow: '0 8px 32px var(--shadow-color)',
+                  boxShadow: '0 8px 32px var(--shadow-primary)',
                   border: 'none',
                   transform: 'perspective(1000px)',
                 }}
@@ -759,7 +758,7 @@ function App() {
                 }}
                 whileHover={{
                   scale: 1.05,
-                  boxShadow: '0 0 30px var(--shadow-color)',
+                  boxShadow: '0 0 30px var(--shadow-primary)',
                   color: 'var(--accent-primary)',
                   backgroundColor: 'var(--accent-hover)',
                   borderColor: 'var(--accent-secondary)',
@@ -774,7 +773,7 @@ function App() {
                   overflow: 'hidden',
                   border: '2px solid var(--accent-primary)',
                   backdropFilter: 'blur(10px)',
-                  background: 'var(--bg-tertiary)',
+                  background: 'var(--card-bg)',
                   color: 'var(--text-primary)'
                 }}
               >
@@ -793,43 +792,6 @@ function App() {
                   getResume()
                 </motion.span>
               </motion.button>
-
-              <motion.a
-                href="https://github.com/cemmacabales"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-secondary ripple-btn"
-                title="GitHub Profile"
-                whileHover={{
-                  scale: 1.1,
-                  y: -5,
-                  rotate: [0, -10, 10, -10, 0],
-                  boxShadow: '0 0 30px var(--shadow-color)',
-                  color: 'var(--accent-primary)',
-                  backgroundColor: 'var(--accent-hover)',
-                  borderColor: 'var(--accent-secondary)',
-                  transition: { 
-                    duration: 0.3,
-                    rotate: { repeat: Infinity, duration: 0.5, ease: "easeInOut" }
-                  }
-                }}
-                whileTap={{ scale: 0.9 }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '50px',
-                  height: '50px',
-                  padding: 0,
-                  borderRadius: '50%',
-                  border: '2px solid var(--accent-primary)',
-                  backdropFilter: 'blur(10px)',
-                  background: 'var(--bg-tertiary)',
-                  color: 'var(--text-primary)'
-                }}
-              >
-                <Github size={24} />
-              </motion.a>
             </div>
           </motion.div>
           <motion.div
@@ -1142,7 +1104,12 @@ function App() {
                           image: EscImage,
                           category: "ml",
                           githubUrl: "https://github.com/cemmacabales/AFIB.git",
-                          hasDemoOptions: true,
+                          hasModels: true,
+                          models: [
+                            { name: "Llama3", url: "https://huggingface.co/spaces/johnnydang88/Llama3" },
+                            { name: "Qwen3", url: "https://huggingface.co/spaces/johnnydang88/Qwen3" },
+                            { name: "Phi3", url: "https://huggingface.co/spaces/johnnydang88/Phi3" }
+                          ]
                         },
                         {
                           title: "Deep Learning Based Classification of Renal Diseases using YOLOv12",
@@ -1198,7 +1165,7 @@ function App() {
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 fontSize: '4rem',
-                                background: 'var(--bg-tertiary)'
+                                background: 'rgba(255, 255, 255, 0.05)'
                               }}>
                                 {project.image}
                               </div>
@@ -1226,9 +1193,20 @@ function App() {
                                   {tech}
                                 </span>
                               ))}
-                            </div>
-                            <div className="project-links">
-                              {project.demoUrl ? (
+                                                   <div className="project-links">
+                              {project.hasModels ? (
+                                <button
+                                  className="btn btn-small"
+                                  onClick={() => {
+                                    setSelectedModelProject(project);
+                                    setShowModelModal(true);
+                                  }}
+                                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
+                                >
+                                  <ExternalLink size={16} />
+                                  Live Demo
+                                </button>
+                              ) : project.demoUrl ? (
                                 <a
                                   href={project.demoUrl}
                                   target="_blank"
@@ -1239,25 +1217,16 @@ function App() {
                                   <ExternalLink size={16} />
                                   Live Demo
                                 </a>
-                              ) : project.hasDemoOptions ? (
-                                <button
-                                  className="btn btn-small"
-                                  onClick={() => setShowRAGDemoModal(true)}
-                                  style={{ color: 'var(--accent-primary)', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
-                                >
-                                  <ExternalLink size={16} />
-                                  Live Demo
-                                </button>
                               ) : (
                                 <button
                                   className="btn btn-small"
                                   onClick={() => alert('🚧 This project is currently under maintenance. Please check back later!')}
-                                  style={{ color: 'var(--accent-primary)', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
                                 >
                                   <ExternalLink size={16} />
                                   Live Demo
                                 </button>
                               )}
+                            </div>
                               <a
                                 href={project.githubUrl}
                                 target="_blank"
@@ -1826,79 +1795,17 @@ function App() {
         </div>
       </section>
 
-      {/* RAG Demo Modal */}
-      <AnimatePresence>
-        {showRAGDemoModal && (
-          <motion.div
-            className="modal-backdrop"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setShowRAGDemoModal(false)}
-            style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              backgroundColor: 'rgba(0, 0, 0, 0.7)',
-              backdropFilter: 'blur(5px)',
-              zIndex: 9999,
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}
-          >
-            <motion.div
-              className="modal-content"
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-              style={{
-                background: 'var(--bg-secondary)',
-                padding: '2rem',
-                borderRadius: '16px',
-                border: '1px solid var(--border-color)',
-                boxShadow: '0 10px 40px rgba(0,0,0,0.5)',
-                maxWidth: '400px',
-                width: '90%',
-                textAlign: 'center'
-              }}
-            >
-              <h3 style={{ marginBottom: '1.5rem', color: 'var(--text-primary)' }}>Choose a Model</h3>
-              <p style={{ marginBottom: '2rem', color: 'var(--text-secondary)' }}>
-                Select which AI model you'd like to use for the Demo:
-              </p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <a href="https://huggingface.co/spaces/johnnydang88/Llama3" target="_blank" rel="noopener noreferrer" className="btn btn-secondary" onClick={() => setShowRAGDemoModal(false)}>
-                  Llama-3
-                </a>
-                <a href="https://huggingface.co/spaces/johnnydang88/QWEN3" target="_blank" rel="noopener noreferrer" className="btn btn-secondary" onClick={() => setShowRAGDemoModal(false)}>
-                  Qwen3
-                </a>
-                <a href="https://huggingface.co/spaces/johnnydang88/PHI3" target="_blank" rel="noopener noreferrer" className="btn btn-secondary" onClick={() => setShowRAGDemoModal(false)}>
-                  Phi-3
-                </a>
-              </div>
-              <button 
-                onClick={() => setShowRAGDemoModal(false)}
-                className="btn btn-secondary"
-                style={{ marginTop: '2rem', width: '100%' }}
-              >
-                Cancel
-              </button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* Footer */}
       <footer className="footer">
         <div className="container">
           <p>if you made it this far, you deserve a cookie</p>
         </div>
       </footer>
+      <ModelSelectionModal
+        isOpen={showModelModal}
+        onClose={() => setShowModelModal(false)}
+        project={selectedModelProject}
+      />
     </div>
   )
 }
