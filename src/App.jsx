@@ -1201,7 +1201,13 @@ function App() {
                                     setSelectedModelProject(project);
                                     setShowModelModal(true);
                                   }}
-                                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
+                                  style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '0.5rem',
+                                    color: 'var(--accent-primary)',
+                                    background: 'transparent'
+                                  }}
                                 >
                                   <ExternalLink size={16} />
                                   Live Demo
