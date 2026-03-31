@@ -15,8 +15,7 @@
   transform-origin: center;
   will-change: transform;
   transform: rotate(var(--rotate));
-  opacity: 0.4;
-  background-color: #ffffff !important;
+  opacity: 0.6;
 }
 
 /* Mobile optimizations for magnet lines */

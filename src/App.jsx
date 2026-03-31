@@ -18,7 +18,9 @@ import {
   Award,
   Brain,
   Monitor,
-  FolderOpen
+  FolderOpen,
+  Sun,
+  Moon
 } from 'lucide-react'
 import TextType from './components/TextType'
 import MagnetLines from './components/MagnetLines'
@@ -44,19 +46,19 @@ const neonRippleStyle = `
     width: 0;
     height: 0;
     opacity: 0.9;
-    box-shadow: 0 0 0 0 #64ffda, 0 0 10px #4ecdc4;
+    box-shadow: 0 0 0 0 var(--accent-primary), 0 0 10px var(--accent-secondary);
   }
   60% {
     width: 180px;
     height: 180px;
     opacity: 0.7;
-    box-shadow: 0 0 40px 10px #64ffda, 0 0 60px 20px #4ecdc4;
+    box-shadow: 0 0 40px 10px var(--accent-primary), 0 0 60px 20px var(--accent-secondary);
   }
   100% {
     width: 220px;
     height: 220px;
     opacity: 0;
-    box-shadow: 0 0 60px 20px #64ffda, 0 0 80px 40px #4ecdc4;
+    box-shadow: 0 0 60px 20px var(--accent-primary), 0 0 80px 40px var(--accent-secondary);
   }
 }
 `;
@@ -253,6 +255,27 @@ function App() {
   const [isValidating, setIsValidating] = useState(false)
 
   const isMobile = useIsMobile();
+  
+  const [isLightMode, setIsLightMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('theme');
+      if (saved) return saved === 'light';
+      return window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    if (isLightMode) {
+      document.documentElement.setAttribute('data-theme', 'light');
+      localStorage.setItem('theme', 'light');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+      localStorage.setItem('theme', 'dark');
+    }
+  }, [isLightMode]);
+
+  const toggleTheme = () => setIsLightMode(!isLightMode);
 
   // Initialize project animations
   const {
@@ -543,6 +566,14 @@ function App() {
 
   return (
     <div className="App">
+      <button 
+        className="theme-toggle-btn"
+        onClick={toggleTheme}
+        aria-label="Toggle Theme"
+      >
+        {isLightMode ? <Moon size={24} /> : <Sun size={24} />}
+      </button>
+
       {/* Background - Only show on desktop */}
       {!isMobile && (
         <div className="background-container">
@@ -550,7 +581,7 @@ function App() {
             rows={20}
             columns={20}
             containerSize="100vw"
-            lineColor="#ffffff"
+            lineColor="var(--magnet-line)"
             lineWidth="1px"
             lineHeight="clamp(25px, 2.5vw, 40px)"
             baseAngle={-10}
@@ -568,7 +599,7 @@ function App() {
             left: 0,
             width: '100vw',
             height: '100vh',
-            background: 'linear-gradient(135deg, #000000 0%, #1a1a1a 100%)',
+            background: 'var(--bg-primary)',
             zIndex: -1,
             pointerEvents: 'none'
           }}
@@ -628,7 +659,7 @@ function App() {
                 loop={true}
                 showCursor={true}
                 cursorCharacter="|"
-                textColors={["#64ffda", "#8b5cf6", "#4ecdc4"]}
+                textColors={isLightMode ? ["#00897b", "#7c3aed", "#00796b"] : ["#64ffda", "#8b5cf6", "#4ecdc4"]}
               />
             </span></h1>
             <h2>Computer Science Student</h2>
@@ -655,8 +686,8 @@ function App() {
                 style={{
                   position: 'relative',
                   overflow: 'hidden',
-                  background: 'linear-gradient(135deg, #64ffda 0%, #4ecdc4 100%)',
-                  boxShadow: '0 8px 32px rgba(100, 255, 218, 0.3)',
+                  background: 'linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%)',
+                  boxShadow: '0 8px 32px var(--shadow-primary)',
                   border: 'none',
                   transform: 'perspective(1000px)',
                 }}
@@ -709,7 +740,7 @@ function App() {
                   ripple.className = 'neon-ripple';
                   ripple.style.left = `${x}px`;
                   ripple.style.top = `${y}px`;
-                  ripple.style.background = 'linear-gradient(135deg, #64ffda 0%, #4ecdc4 100%)';
+                  ripple.style.background = 'linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%)';
                   button.appendChild(ripple);
                   setTimeout(() => {
                     ripple.remove();
@@ -724,10 +755,10 @@ function App() {
                 }}
                 whileHover={{
                   scale: 1.05,
-                  boxShadow: '0 0 30px rgba(100, 255, 218, 0.6)',
-                  color: '#64ffda',
-                  backgroundColor: 'rgba(100, 255, 218, 0.1)',
-                  borderColor: '#4ecdc4',
+                  boxShadow: '0 0 30px var(--shadow-primary)',
+                  color: 'var(--accent-primary)',
+                  backgroundColor: 'var(--accent-hover)',
+                  borderColor: 'var(--accent-secondary)',
                   transition: { duration: 0.2 }
                 }}
                 whileTap={{
@@ -737,10 +768,10 @@ function App() {
                 style={{
                   position: 'relative',
                   overflow: 'hidden',
-                  border: '2px solid #64ffda',
+                  border: '2px solid var(--accent-primary)',
                   backdropFilter: 'blur(10px)',
-                  background: 'rgba(100, 255, 218, 0.05)',
-                  color: '#ffffff'
+                  background: 'var(--card-bg)',
+                  color: 'var(--text-primary)'
                 }}
               >
                 <motion.span
@@ -1683,8 +1714,8 @@ function App() {
                         width: isMobile ? '60px' : '80px',
                         height: isMobile ? '60px' : '80px',
                         borderRadius: '50%',
-                        background: 'rgba(100, 255, 218, 0.1)',
-                        border: '3px solid #64ffda',
+                        background: 'var(--accent-hover)',
+                        border: '3px solid var(--accent-primary)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -1698,20 +1729,20 @@ function App() {
                           style={{
                             fontSize: isMobile ? '1.5rem' : '2rem',
                             fontWeight: 'bold',
-                            color: '#64ffda'
+                            color: 'var(--accent-primary)'
                           }}
                         >
                           ✓
                         </motion.div>
                       </div>
                       <h3 style={{
-                        color: '#ffffff',
+                        color: 'var(--text-primary)',
                         fontSize: isMobile ? '1.3rem' : '1.5rem',
                         fontWeight: '700',
                         marginBottom: '0.5rem'
                       }}>Message Sent Successfully!</h3>
                       <p style={{
-                        color: '#a0a0a0',
+                        color: 'var(--text-secondary)',
                         fontSize: isMobile ? '0.9rem' : '1rem',
                         lineHeight: '1.6'
                       }}>Thank you for your message. I'll get back to you soon!</p>
@@ -1729,7 +1760,7 @@ function App() {
                         }}
                       >
                         <p style={{
-                          color: '#64ffda',
+                          color: 'var(--accent-primary)',
                           fontSize: '0.9rem',
                           margin: '0'
                         }}>You'll receive a confirmation email shortly.</p>
