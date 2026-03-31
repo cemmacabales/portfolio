@@ -254,6 +254,7 @@ function App() {
   })
   const [formErrors, setFormErrors] = useState({})
   const [isValidating, setIsValidating] = useState(false)
+  const [showRAGDemoModal, setShowRAGDemoModal] = useState(false)
 
   const isMobile = useIsMobile();
 
@@ -1141,6 +1142,7 @@ function App() {
                           image: EscImage,
                           category: "ml",
                           githubUrl: "https://github.com/cemmacabales/AFIB.git",
+                          hasDemoOptions: true,
                         },
                         {
                           title: "Deep Learning Based Classification of Renal Diseases using YOLOv12",
@@ -1237,10 +1239,20 @@ function App() {
                                   <ExternalLink size={16} />
                                   Live Demo
                                 </a>
+                              ) : project.hasDemoOptions ? (
+                                <button
+                                  className="btn btn-small"
+                                  onClick={() => setShowRAGDemoModal(true)}
+                                  style={{ color: 'var(--accent-primary)', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
+                                >
+                                  <ExternalLink size={16} />
+                                  Live Demo
+                                </button>
                               ) : (
                                 <button
                                   className="btn btn-small"
                                   onClick={() => alert('🚧 This project is currently under maintenance. Please check back later!')}
+                                  style={{ color: 'var(--accent-primary)', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
                                 >
                                   <ExternalLink size={16} />
                                   Live Demo
@@ -1813,6 +1825,73 @@ function App() {
           </div>
         </div>
       </section>
+
+      {/* RAG Demo Modal */}
+      <AnimatePresence>
+        {showRAGDemoModal && (
+          <motion.div
+            className="modal-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowRAGDemoModal(false)}
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              backgroundColor: 'rgba(0, 0, 0, 0.7)',
+              backdropFilter: 'blur(5px)',
+              zIndex: 9999,
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+          >
+            <motion.div
+              className="modal-content"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                background: 'var(--bg-secondary)',
+                padding: '2rem',
+                borderRadius: '16px',
+                border: '1px solid var(--border-color)',
+                boxShadow: '0 10px 40px rgba(0,0,0,0.5)',
+                maxWidth: '400px',
+                width: '90%',
+                textAlign: 'center'
+              }}
+            >
+              <h3 style={{ marginBottom: '1.5rem', color: 'var(--text-primary)' }}>Choose a Model</h3>
+              <p style={{ marginBottom: '2rem', color: 'var(--text-secondary)' }}>
+                Select which AI model you'd like to use for the Demo:
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <a href="https://huggingface.co/spaces/johnnydang88/Llama3" target="_blank" rel="noopener noreferrer" className="btn btn-secondary" onClick={() => setShowRAGDemoModal(false)}>
+                  Llama-3
+                </a>
+                <a href="https://huggingface.co/spaces/johnnydang88/QWEN3" target="_blank" rel="noopener noreferrer" className="btn btn-secondary" onClick={() => setShowRAGDemoModal(false)}>
+                  Qwen3
+                </a>
+                <a href="https://huggingface.co/spaces/johnnydang88/PHI3" target="_blank" rel="noopener noreferrer" className="btn btn-secondary" onClick={() => setShowRAGDemoModal(false)}>
+                  Phi-3
+                </a>
+              </div>
+              <button 
+                onClick={() => setShowRAGDemoModal(false)}
+                className="btn btn-secondary"
+                style={{ marginTop: '2rem', width: '100%' }}
+              >
+                Cancel
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Footer */}
       <footer className="footer">
