@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, createElement } from "react";
+import { useEffect, useRef, useState, createElement, useMemo } from "react";
 import { gsap } from "gsap";
 import "./TextType.css";
 
@@ -33,7 +33,9 @@ const TextType = ({
   const cursorRef = useRef(null);
   const containerRef = useRef(null);
 
-  const textArray = Array.isArray(text) ? text : [text];
+  const textArray = useMemo(() => {
+    return Array.isArray(text) ? text : [text];
+  }, [JSON.stringify(text)]);
 
   const getRandomSpeed = () => {
     if (!variableSpeed) return typingSpeed;
@@ -41,9 +43,11 @@ const TextType = ({
     return Math.random() * (max - min) + min;
   };
 
+  const memoizedColors = useMemo(() => textColors, [JSON.stringify(textColors)]);
+
   const getCurrentTextColor = () => {
-    if (textColors.length === 0) return "#ffffff";
-    return textColors[currentTextIndex % textColors.length];
+    if (memoizedColors.length === 0) return "var(--text-primary)";
+    return memoizedColors[currentTextIndex % memoizedColors.length];
   };
 
   useEffect(() => {

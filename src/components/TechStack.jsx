@@ -18,7 +18,7 @@ const TechStack = () => {
     { name: "OpenCV", icon: "devicon-opencv-plain", color: "#922f2fff", bgColor: "#d4bed7ff", glowColor: "#5C3EE8" }, // purple → yellow
     { name: "Anaconda", icon: "devicon-anaconda-original", color: "#44A833", bgColor: "#2c7e3eff", glowColor: "#44A833" }, // green → yellow
     { name: "FastAPI", icon: "devicon-fastapi-plain", color: "#009688", bgColor: "#FFEB3B", glowColor: "#009688" }, // teal → yellow
-    { name: "Flask", icon: "devicon-flask-original", color: "#000000", bgColor: "#FFFFFF", glowColor: "#000000" }, // black → white
+    { name: "Flask", icon: "devicon-flask-original", color: "var(--bg-primary)", bgColor: "var(--text-primary)", glowColor: "var(--bg-primary)" }, // black → white
     { name: "Django", icon: "devicon-django-plain", color: "#092E20", bgColor: "#FFEB3B", glowColor: "#092E20" }, // dark green → yellow
     { name: "MySQL", icon: "devicon-mysql-plain", color: "#4479A1", bgColor: "#2e6995ff", glowColor: "#4479A1" }, // blue → orange
     { name: "MongoDB", icon: "devicon-mongodb-plain", color: "#47A248", bgColor: "#298a63ff", glowColor: "#47A248" }, // green → yellow

@@ -18,7 +18,9 @@ import {
   Award,
   Brain,
   Monitor,
-  FolderOpen
+  FolderOpen,
+  Sun,
+  Moon
 } from 'lucide-react'
 import TextType from './components/TextType'
 import MagnetLines from './components/MagnetLines'
@@ -44,19 +46,19 @@ const neonRippleStyle = `
     width: 0;
     height: 0;
     opacity: 0.9;
-    box-shadow: 0 0 0 0 #64ffda, 0 0 10px #4ecdc4;
+    box-shadow: 0 0 0 0 var(--accent-primary), 0 0 10px var(--accent-secondary);
   }
   60% {
     width: 180px;
     height: 180px;
     opacity: 0.7;
-    box-shadow: 0 0 40px 10px #64ffda, 0 0 60px 20px #4ecdc4;
+    box-shadow: 0 0 40px 10px var(--accent-primary), 0 0 60px 20px var(--accent-secondary);
   }
   100% {
     width: 220px;
     height: 220px;
     opacity: 0;
-    box-shadow: 0 0 60px 20px #64ffda, 0 0 80px 40px #4ecdc4;
+    box-shadow: 0 0 60px 20px var(--accent-primary), 0 0 80px 40px var(--accent-secondary);
   }
 }
 `;
@@ -234,6 +236,7 @@ const useProjectAnimations = () => {
 const useIsMobile = useMobileDetection;
 
 function App() {
+  const [theme, setTheme] = useState('dark')
   const [activeSection, setActiveSection] = useState('home')
   const [openCategory, setOpenCategory] = useState('ml')
   const [isLoading, setIsLoading] = useState(true)
@@ -269,6 +272,11 @@ function App() {
     console.log('App component mounted');
     console.log('ReadMyFaceImage imported:', !!ReadMyFaceImage);
   }, []);
+
+  // Apply theme class to html element
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
 
   // Trigger initial animation for current category
   useEffect(() => {
@@ -543,6 +551,32 @@ function App() {
 
   return (
     <div className="App">
+      {/* Theme Toggle Button */}
+      <button 
+        className="theme-toggle"
+        onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+        style={{
+          position: 'fixed',
+          top: '20px',
+          right: '25px',
+          zIndex: 1000,
+          background: 'var(--bg-secondary)',
+          border: '1px solid var(--border-color)',
+          borderRadius: '50%',
+          width: '50px',
+          height: '50px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          color: 'var(--text-primary)',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+        }}
+        aria-label="Toggle theme"
+      >
+        {theme === 'dark' ? <Sun size={24} /> : <Moon size={24} />}
+      </button>
+
       {/* Background - Only show on desktop */}
       {!isMobile && (
         <div className="background-container">
@@ -550,7 +584,7 @@ function App() {
             rows={20}
             columns={20}
             containerSize="100vw"
-            lineColor="#ffffff"
+            lineColor="var(--border-color)"
             lineWidth="1px"
             lineHeight="clamp(25px, 2.5vw, 40px)"
             baseAngle={-10}
@@ -568,7 +602,7 @@ function App() {
             left: 0,
             width: '100vw',
             height: '100vh',
-            background: 'linear-gradient(135deg, #000000 0%, #1a1a1a 100%)',
+            background: 'var(--bg-primary)',
             zIndex: -1,
             pointerEvents: 'none'
           }}
@@ -628,7 +662,7 @@ function App() {
                 loop={true}
                 showCursor={true}
                 cursorCharacter="|"
-                textColors={["#64ffda", "#8b5cf6", "#4ecdc4"]}
+                textColors={["var(--accent-primary)", "#8b5cf6", "var(--accent-secondary)"]}
               />
             </span></h1>
             <h2>Computer Science Student</h2>
@@ -655,8 +689,8 @@ function App() {
                 style={{
                   position: 'relative',
                   overflow: 'hidden',
-                  background: 'linear-gradient(135deg, #64ffda 0%, #4ecdc4 100%)',
-                  boxShadow: '0 8px 32px rgba(100, 255, 218, 0.3)',
+                  background: 'linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%)',
+                  boxShadow: '0 8px 32px var(--shadow-color)',
                   border: 'none',
                   transform: 'perspective(1000px)',
                 }}
@@ -709,7 +743,7 @@ function App() {
                   ripple.className = 'neon-ripple';
                   ripple.style.left = `${x}px`;
                   ripple.style.top = `${y}px`;
-                  ripple.style.background = 'linear-gradient(135deg, #64ffda 0%, #4ecdc4 100%)';
+                  ripple.style.background = 'linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%)';
                   button.appendChild(ripple);
                   setTimeout(() => {
                     ripple.remove();
@@ -724,10 +758,10 @@ function App() {
                 }}
                 whileHover={{
                   scale: 1.05,
-                  boxShadow: '0 0 30px rgba(100, 255, 218, 0.6)',
-                  color: '#64ffda',
-                  backgroundColor: 'rgba(100, 255, 218, 0.1)',
-                  borderColor: '#4ecdc4',
+                  boxShadow: '0 0 30px var(--shadow-color)',
+                  color: 'var(--accent-primary)',
+                  backgroundColor: 'var(--accent-hover)',
+                  borderColor: 'var(--accent-secondary)',
                   transition: { duration: 0.2 }
                 }}
                 whileTap={{
@@ -737,10 +771,10 @@ function App() {
                 style={{
                   position: 'relative',
                   overflow: 'hidden',
-                  border: '2px solid #64ffda',
+                  border: '2px solid var(--accent-primary)',
                   backdropFilter: 'blur(10px)',
-                  background: 'rgba(100, 255, 218, 0.05)',
-                  color: '#ffffff'
+                  background: 'var(--bg-tertiary)',
+                  color: 'var(--text-primary)'
                 }}
               >
                 <motion.span
@@ -758,6 +792,43 @@ function App() {
                   getResume()
                 </motion.span>
               </motion.button>
+
+              <motion.a
+                href="https://github.com/cemmacabales"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-secondary ripple-btn"
+                title="GitHub Profile"
+                whileHover={{
+                  scale: 1.1,
+                  y: -5,
+                  rotate: [0, -10, 10, -10, 0],
+                  boxShadow: '0 0 30px var(--shadow-color)',
+                  color: 'var(--accent-primary)',
+                  backgroundColor: 'var(--accent-hover)',
+                  borderColor: 'var(--accent-secondary)',
+                  transition: { 
+                    duration: 0.3,
+                    rotate: { repeat: Infinity, duration: 0.5, ease: "easeInOut" }
+                  }
+                }}
+                whileTap={{ scale: 0.9 }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '50px',
+                  height: '50px',
+                  padding: 0,
+                  borderRadius: '50%',
+                  border: '2px solid var(--accent-primary)',
+                  backdropFilter: 'blur(10px)',
+                  background: 'var(--bg-tertiary)',
+                  color: 'var(--text-primary)'
+                }}
+              >
+                <Github size={24} />
+              </motion.a>
             </div>
           </motion.div>
           <motion.div
@@ -1125,7 +1196,7 @@ function App() {
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 fontSize: '4rem',
-                                background: 'rgba(255, 255, 255, 0.05)'
+                                background: 'var(--bg-tertiary)'
                               }}>
                                 {project.image}
                               </div>
@@ -1683,8 +1754,8 @@ function App() {
                         width: isMobile ? '60px' : '80px',
                         height: isMobile ? '60px' : '80px',
                         borderRadius: '50%',
-                        background: 'rgba(100, 255, 218, 0.1)',
-                        border: '3px solid #64ffda',
+                        background: 'var(--accent-hover)',
+                        border: '3px solid var(--accent-primary)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -1698,20 +1769,20 @@ function App() {
                           style={{
                             fontSize: isMobile ? '1.5rem' : '2rem',
                             fontWeight: 'bold',
-                            color: '#64ffda'
+                            color: 'var(--accent-primary)'
                           }}
                         >
                           ✓
                         </motion.div>
                       </div>
                       <h3 style={{
-                        color: '#ffffff',
+                        color: 'var(--text-primary)',
                         fontSize: isMobile ? '1.3rem' : '1.5rem',
                         fontWeight: '700',
                         marginBottom: '0.5rem'
                       }}>Message Sent Successfully!</h3>
                       <p style={{
-                        color: '#a0a0a0',
+                        color: 'var(--text-secondary)',
                         fontSize: isMobile ? '0.9rem' : '1rem',
                         lineHeight: '1.6'
                       }}>Thank you for your message. I'll get back to you soon!</p>
@@ -1729,7 +1800,7 @@ function App() {
                         }}
                       >
                         <p style={{
-                          color: '#64ffda',
+                          color: 'var(--accent-primary)',
                           fontSize: '0.9rem',
                           margin: '0'
                         }}>You'll receive a confirmation email shortly.</p>

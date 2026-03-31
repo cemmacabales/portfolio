@@ -14,7 +14,7 @@ const careerData = [
     description: "Currently pursuing a degree in Computer Science with specialization in Artificial Intelligence, actively learning and growing in the field of technology.",
     image: MapuaImage,
     icon: <GraduationCap size={24} />,
-    color: "#64ffda"
+    color: "var(--accent-primary)"
   },
   {
     period: "2021 - 2023",
@@ -32,7 +32,7 @@ const careerData = [
     description: "Completed my primary and secondary education, building a strong foundation in academics and developing essential life skills.",
     image: IpsaImage,
     icon: <BookOpen size={24} />,
-    color: "#4ecdc4"
+    color: "var(--accent-secondary)"
   }
 ];
 
@@ -105,8 +105,8 @@ export const CareerTimeline = () => {
                 display: 'block',
                 width: '100%',
                 marginBottom: '1rem',
-                background: 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
+                background: 'var(--bg-tertiary)',
+                border: '1px solid var(--border-color)',
                 borderRadius: '12px',
                 overflow: 'hidden',
                 minHeight: '120px'
@@ -123,7 +123,7 @@ export const CareerTimeline = () => {
                   alignItems: 'center',
                   padding: '1rem',
                   gap: '1rem',
-                  borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+                  borderBottom: '1px solid var(--border-color)'
                 }}
               >
                 <div className="timeline-card-icon" style={{ 
@@ -154,18 +154,18 @@ export const CareerTimeline = () => {
                   <div className="timeline-card-title" style={{
                     fontSize: '1rem',
                     fontWeight: '600',
-                    color: '#ffffff'
+                    color: 'var(--text-primary)'
                   }}>{item.title}</div>
                   <div className="timeline-card-level" style={{
                     fontSize: '0.85rem',
-                    color: '#a0a0a0'
+                    color: 'var(--text-secondary)'
                   }}>{item.level}</div>
                 </div>
                 <div className="timeline-card-toggle" style={{
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#a0a0a0',
+                  color: 'var(--text-secondary)',
                   transition: 'color 0.3s ease'
                 }}>
                   {expandedItems.has(index) ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
@@ -200,7 +200,7 @@ export const CareerTimeline = () => {
                 </div>
                 <div className="timeline-card-description" style={{
                   fontSize: '0.95rem',
-                  color: '#a0a0a0',
+                  color: 'var(--text-secondary)',
                   lineHeight: '1.6',
                   marginBottom: '1rem',
                   paddingBottom: '1rem'
