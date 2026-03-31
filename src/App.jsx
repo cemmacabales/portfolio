@@ -757,12 +757,13 @@ function App() {
                   document.body.removeChild(link);
                 }}
                 whileHover={{
-                  scale: 1.05,
-                  boxShadow: '0 0 30px var(--shadow-primary)',
+                  scale: 1.1,
+                  y: -5,
+                  boxShadow: '0 0 40px var(--shadow-primary)',
                   color: 'var(--accent-primary)',
                   backgroundColor: 'var(--accent-hover)',
                   borderColor: 'var(--accent-secondary)',
-                  transition: { duration: 0.2 }
+                  transition: { duration: 0.3 }
                 }}
                 whileTap={{
                   scale: 0.98,
@@ -792,6 +793,43 @@ function App() {
                   getResume()
                 </motion.span>
               </motion.button>
+
+              <motion.a
+                whileHover={{ 
+                  scale: 1.15, 
+                  y: -8,
+                  rotate: [0, -10, 10, 0],
+                  boxShadow: '0 0 30px var(--shadow-primary)',
+                  borderColor: 'var(--accent-primary)',
+                  backgroundColor: 'var(--accent-hover)',
+                  transition: { 
+                    rotate: { duration: 0.4, ease: "easeInOut" },
+                    default: { duration: 0.2 }
+                  }
+                }}
+                whileTap={{ scale: 0.9 }}
+                href="https://github.com/cemmacabales"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="social-link"
+                title="GitHub Profile"
+                style={{
+                  width: '56px',
+                  height: '56px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: '50%',
+                  background: 'var(--accent-hover)',
+                  color: 'var(--accent-primary)',
+                  border: '1px solid var(--card-border)',
+                  backdropFilter: 'blur(10px)',
+                  transition: 'all 0.3s ease',
+                  textDecoration: 'none'
+                }}
+              >
+                <Github size={28} />
+              </motion.a>
             </div>
           </motion.div>
           <motion.div
