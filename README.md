@@ -1,12 +1,68 @@
-# React + Vite
+# Carl Emmanuel Macabales – Portfolio
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A personal portfolio website for **Carl Emmanuel Macabales**, a Computer Science student at Mapúa University specializing in Artificial Intelligence. Built with React and Vite, deployed on Netlify.
 
-Currently, two official plugins are available:
+🌐 **Live site:** [cemmacabales.tech](https://cemmacabales.tech/)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- **React 19** – UI library
+- **Vite** – build tool with HMR
+- **Three.js / @react-three/fiber / @react-three/drei** – 3D graphics and animations
+- **Framer Motion / GSAP** – animations
+- **EmailJS** – contact form
+- **Tailwind CSS / PostCSS** – styling
+- **Netlify** – hosting & deployment
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- npm
+
+### Installation
+
+```bash
+npm install
+```
+
+### Development
+
+```bash
+npm run dev
+```
+
+Opens the app at `http://localhost:5173` with hot module replacement.
+
+### Build
+
+```bash
+npm run build
+```
+
+Outputs to the `dist/` directory.
+
+### Preview production build
+
+```bash
+npm run preview
+```
+
+### Lint
+
+```bash
+npm run lint
+```
+
+## Deployment
+
+The project is configured for [Netlify](https://www.netlify.com/) via `netlify.toml`. Pushing to the main branch triggers an automatic deploy.
+
+## Contact
+
+- **Email:** carlmacabales31@gmail.com
+- **LinkedIn:** [Carl Emmanuel Macabales](https://www.linkedin.com/in/carl-emmanuel-macabales-a78742311/)
+- **GitHub:** [@cemmacabales](https://github.com/cemmacabales)
