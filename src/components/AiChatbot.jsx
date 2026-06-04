@@ -90,14 +90,17 @@ export default function AiChatbot() {
     const text = input.trim()
     if (!text || isLoading) return
 
-    const userMsg = { role: 'user', content: text, timestamp: new Date() }
-    const nextMessages = [...messages, userMsg]
-    setMessages(nextMessages)
+    const userMsg = { role: 'user', content: text, timestamp: new Date(), id: Date.now() }
+    let snapshot
+    setMessages(prev => {
+      snapshot = [...prev, userMsg]
+      return snapshot
+    })
     setInput('')
     if (textareaRef.current) textareaRef.current.style.height = 'auto'
     setIsLoading(true)
 
-    const payload = nextMessages
+    const payload = snapshot
       .slice(-WINDOW_SIZE)
       .map(({ role, content }) => ({ role: role === 'error' ? 'assistant' : role, content }))
 
@@ -113,14 +116,14 @@ export default function AiChatbot() {
         const text = res.status === 503
           ? "I'm a bit overwhelmed right now — try again in a moment."
           : "Something went wrong. Check your connection."
-        setMessages((prev) => [...prev, { role: 'error', content: text, timestamp: new Date() }])
+        setMessages((prev) => [...prev, { role: 'error', content: text, timestamp: new Date(), id: Date.now() }])
       } else {
-        setMessages((prev) => [...prev, { role: 'assistant', content: data.content, timestamp: new Date() }])
+        setMessages((prev) => [...prev, { role: 'assistant', content: data.content, timestamp: new Date(), id: Date.now() }])
       }
     } catch {
       setMessages((prev) => [
         ...prev,
-        { role: 'error', content: "Something went wrong. Check your connection.", timestamp: new Date() },
+        { role: 'error', content: "Something went wrong. Check your connection.", timestamp: new Date(), id: Date.now() },
       ])
     } finally {
       setIsLoading(false)
@@ -164,7 +167,7 @@ export default function AiChatbot() {
 
             {/* Messages or empty state */}
             {messages.length === 0 ? (
-              <div className="chatbot-empty" aria-live="polite">
+              <div className="chatbot-empty">
                 <MessageCircle size={28} className="chatbot-empty-icon" aria-hidden="true" />
                 <p className="chatbot-empty-text">
                   Ask me anything about Carl — his projects, skills, or background.
@@ -177,8 +180,8 @@ export default function AiChatbot() {
                 aria-live="polite"
                 aria-label="Conversation history"
               >
-                {messages.map((msg, i) => (
-                  <div key={i} className={`chatbot-message ${msg.role}`}>
+                {messages.map((msg) => (
+                  <div key={msg.id} className={`chatbot-message ${msg.role}`}>
                     <div className="chatbot-bubble">{msg.content}</div>
                     <span className="chatbot-timestamp" aria-hidden="true">
                       {formatTime(msg.timestamp)}
@@ -208,6 +211,7 @@ export default function AiChatbot() {
                 onKeyDown={handleKeyDown}
                 placeholder="Ask about Carl…"
                 rows={1}
+                maxLength={500}
                 disabled={isLoading}
                 aria-label="Message input"
               />
