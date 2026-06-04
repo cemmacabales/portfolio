@@ -166,40 +166,40 @@ export default function AiChatbot() {
             </div>
 
             {/* Messages or empty state */}
-            {messages.length === 0 ? (
+            {messages.length === 0 && (
               <div className="chatbot-empty">
                 <MessageCircle size={28} className="chatbot-empty-icon" aria-hidden="true" />
                 <p className="chatbot-empty-text">
                   Ask me anything about Carl — his projects, skills, or background.
                 </p>
               </div>
-            ) : (
-              <div
-                className="chatbot-messages"
-                role="log"
-                aria-live="polite"
-                aria-label="Conversation history"
-              >
-                {messages.map((msg) => (
-                  <div key={msg.id} className={`chatbot-message ${msg.role}`}>
-                    <div className="chatbot-bubble">{msg.content}</div>
-                    <span className="chatbot-timestamp" aria-hidden="true">
-                      {formatTime(msg.timestamp)}
-                    </span>
-                  </div>
-                ))}
-                {isLoading && (
-                  <div className="chatbot-message assistant">
-                    <div className="chatbot-typing" aria-label="Assistant is typing">
-                      <div className="chatbot-typing-dot" />
-                      <div className="chatbot-typing-dot" />
-                      <div className="chatbot-typing-dot" />
-                    </div>
-                  </div>
-                )}
-                <div ref={messagesEndRef} aria-hidden="true" />
-              </div>
             )}
+            <div
+              className="chatbot-messages"
+              role="log"
+              aria-live="polite"
+              aria-label="Conversation history"
+              style={messages.length === 0 ? { display: 'none' } : undefined}
+            >
+              {messages.map((msg) => (
+                <div key={msg.id} className={`chatbot-message ${msg.role}`}>
+                  <div className="chatbot-bubble">{msg.content}</div>
+                  <span className="chatbot-timestamp" aria-hidden="true">
+                    {formatTime(msg.timestamp)}
+                  </span>
+                </div>
+              ))}
+              {isLoading && (
+                <div className="chatbot-message assistant">
+                  <div className="chatbot-typing" aria-label="Assistant is typing">
+                    <div className="chatbot-typing-dot" />
+                    <div className="chatbot-typing-dot" />
+                    <div className="chatbot-typing-dot" />
+                  </div>
+                </div>
+              )}
+              <div ref={messagesEndRef} aria-hidden="true" />
+            </div>
 
             {/* Input */}
             <div className="chatbot-input-area">

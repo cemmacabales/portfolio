@@ -65,6 +65,14 @@ exports.handler = async (event) => {
     return { statusCode: 400, headers, body: JSON.stringify({ error: 'Too many messages' }) };
   }
 
+  const ALLOWED_ROLES = new Set(['user', 'assistant']);
+  const validMessages = messages.every(
+    (m) => ALLOWED_ROLES.has(m.role) && typeof m.content === 'string' && m.content.length <= 2000
+  );
+  if (!validMessages) {
+    return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid messages' }) };
+  }
+
   for (const model of MODELS) {
     try {
       const data = await callGroq(apiKey, model, messages);
