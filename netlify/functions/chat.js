@@ -36,6 +36,7 @@ exports.handler = async (event) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Content-Type': 'application/json',
   };
 
@@ -60,6 +61,10 @@ exports.handler = async (event) => {
     return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid request body' }) };
   }
 
+  if (messages.length > 20) {
+    return { statusCode: 400, headers, body: JSON.stringify({ error: 'Too many messages' }) };
+  }
+
   for (const model of MODELS) {
     try {
       const data = await callGroq(apiKey, model, messages);
@@ -67,7 +72,7 @@ exports.handler = async (event) => {
       if (!content) throw new Error('EMPTY_RESPONSE');
       return { statusCode: 200, headers, body: JSON.stringify({ content }) };
     } catch (err) {
-      if (err.message === 'RATE_LIMITED') continue;
+      if (err.message === 'RATE_LIMITED' || err.message === 'EMPTY_RESPONSE') continue;
       console.error(`Model ${model} failed:`, err.message);
       return { statusCode: 500, headers, body: JSON.stringify({ error: 'Internal server error' }) };
     }
