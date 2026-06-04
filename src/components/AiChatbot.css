@@ -359,7 +359,8 @@
 
   .chatbot-trigger,
   .chatbot-close-btn,
-  .chatbot-textarea {
+  .chatbot-textarea,
+  .chatbot-send-btn {
     transition: none;
   }
 }
