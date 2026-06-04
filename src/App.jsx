@@ -26,6 +26,7 @@ import TextType from './components/TextType'
 import MagnetLines from './components/MagnetLines'
 import Dock from './components/Dock'
 import DecryptedText from './components/DecryptedText'
+import GradualBlur from './components/GradualBlur'
 import './App.css'
 
 /* Neon ripple effect for getResume button */
@@ -85,6 +86,7 @@ import { debugMobileView } from './debug-mobile';
 import { useMobileDetection } from './mobile-detection';
 import { validateFormData, sanitizeFormData, checkRateLimit } from './utils/validation';
 import ModelSelectionModal from './components/ModelSelectionModal';
+import AiChatbot from './components/AiChatbot'
 
 // Custom hook for modern project card animations
 const useProjectAnimations = () => {
@@ -569,7 +571,30 @@ function App() {
 
   return (
     <div className="App">
-      <button 
+      <GradualBlur
+        target="page"
+        position="top"
+        height="5rem"
+        strength={2.5}
+        divCount={8}
+        curve="bezier"
+        exponential={false}
+        opacity={1}
+        zIndex={900}
+      />
+      <GradualBlur
+        target="page"
+        position="bottom"
+        height="5rem"
+        strength={2.5}
+        divCount={8}
+        curve="bezier"
+        exponential={false}
+        opacity={1}
+        zIndex={900}
+      />
+
+      <button
         className="theme-toggle-btn"
         onClick={toggleTheme}
         aria-label="Toggle Theme"
@@ -918,20 +943,6 @@ function App() {
               >
                 Outside of academics, I enjoy playing video games, coding, making things from scratch, and solving challenging problems. I'm also passionate about exploring new technologies, contributing to open-source projects, and sharing knowledge with the developer community.
               </ScrambledText>
-              <div className="about-stats">
-                <SpotlightCard className="stat" spotlightColor="rgba(0, 229, 255, 0.2)">
-                  <h4>400+</h4>
-                  <p>Hours of Learning</p>
-                </SpotlightCard>
-                <SpotlightCard className="stat" spotlightColor="rgba(0, 229, 255, 0.2)">
-                  <h4>10</h4>
-                  <p>Projects Completed</p>
-                </SpotlightCard>
-                <SpotlightCard className="stat" spotlightColor="rgba(0, 229, 255, 0.2)">
-                  <h4>20+</h4>
-                  <p>Certificates Earned</p>
-                </SpotlightCard>
-              </div>
             </motion.div>
             <motion.div
               initial={{ opacity: 0, x: 50 }}
@@ -1850,6 +1861,7 @@ function App() {
         onClose={() => setShowModelModal(false)}
         project={selectedModelProject}
       />
+      <AiChatbot />
     </div>
   )
 }
