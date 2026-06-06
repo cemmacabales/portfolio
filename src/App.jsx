@@ -72,7 +72,7 @@ if (typeof document !== 'undefined' && !document.getElementById('neon-ripple-sty
 import SpotlightCard from './components/SpotlightCard'
 import ScrambledText from './components/ScrambledText'
 import { CareerTimeline } from './components/CareerTimeline'
-import EarfquakeImage from './assets/earfquake.png';
+import PoseEstimationImage from './assets/Pose Estimation.png';
 import PetchinguImage from './assets/petchingu.png';
 import MyAptImage from './assets/myapt.png';
 import EscImage from './assets/esc.png';
@@ -1147,6 +1147,14 @@ function App() {
                     <div className="projects-grid">
                       {[
                         {
+                          title: "Pose Estimation + Exercise Classifier w/ RAG Chatbot",
+                          description: "Real-time exercise classifier on a Raspberry Pi 5 using BlazePose + dual-head LSTM. Post-session RAG chat via ONNX + Groq LLM delivers coaching — no PyTorch on-device.",
+                          tech: ["MediaPipe", "LSTM", "ONNX", "Groq", "Python", "Raspberry-Pi"],
+                          image: PoseEstimationImage,
+                          category: "ml",
+                          githubUrl: "https://github.com/cemmacabales/pose-estimation-classifier"
+                        },
+                        {
                           title: "RAG Clinical Chatbot for Atrial Fibrillation Guidelines",
                           description: "A GenAI-powered chatbot that answers clinical questions using ESC atrial fibrillation guidelines, optimized for accurate retrieval, low latency, and minimal hallucinations.",
                           tech: ["Llama-3", "Phi-3", "Qwen3", "FAISS", "MedCPT"],
@@ -1172,20 +1180,11 @@ function App() {
                         {
                           title: "Read My Face (Real-time Emotion Detector)",
                           description: "AI emotion detector built with face-api.js, React, and GSAP featuring dynamic visual feedback.",
-                          tech: ["React", "face-api.js", "GSAP", "JavaScript"],
+                          tech: ["React", "face-api", "GSAP", "JavaScript"],
                           image: ReadMyFaceImage,
                           category: "ml",
                           githubUrl: "https://github.com/cemmacabales/emotion-detector.git",
                           demoUrl: "https://readmyfaceai.netlify.app"
-                        },
-                        {
-                          title: "Earfquake (Earthquake Prediction Analysis Tool)",
-                          description: "A machine learning tool for analyzing earthquake data and predicting seismic activities using advanced algorithms and data visualization.",
-                          tech: ["Streamlit", "Python"],
-                          image: EarfquakeImage,
-                          category: "ml",
-                          githubUrl: "https://github.com/cemmacabales/EARFQUAKE.git",
-                          demoUrl: "https://earfquake-atjsxhtyuvwrcjwyfbjyx2.streamlit.app/"
                         }
                       ].map((project, index) => (
                         <motion.div
@@ -1242,7 +1241,8 @@ function App() {
                                   {tech}
                                 </span>
                               ))}
-                                                   <div className="project-links">
+                            </div>
+                            <div className="project-links">
                               {project.hasModels ? (
                                 <button
                                   className="btn btn-small"
@@ -1281,7 +1281,6 @@ function App() {
                                   Live Demo
                                 </button>
                               )}
-                            </div>
                               <a
                                 href={project.githubUrl}
                                 target="_blank"
