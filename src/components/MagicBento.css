@@ -3,7 +3,6 @@
   --mint-glow: rgba(var(--accent-rgb, 100, 255, 218), 0.2);
   --mint-border: rgba(var(--accent-rgb, 100, 255, 218), 0.8);
   --bento-border-color: rgba(255, 255, 255, 0.08);
-  color-scheme: light dark;
 }
 
 .card-grid {
