@@ -87,6 +87,7 @@ import { useMobileDetection } from './mobile-detection';
 import { validateFormData, sanitizeFormData, checkRateLimit } from './utils/validation';
 import ModelSelectionModal from './components/ModelSelectionModal';
 import AiChatbot from './components/AiChatbot'
+import AboutBento from './components/AboutBento';
 
 // Custom hook for modern project card animations
 const useProjectAnimations = () => {
@@ -915,34 +916,7 @@ function App() {
               viewport={{ once: true }}
               className="about-text"
             >
-              <div className="about-text-group">
-                <DecryptedText
-                  text="Who I am"
-                  speed={50}
-                  maxIterations={999999}
-                  sequential={false}
-                  className="about-subtitle-decrypted"
-                  parentClassName="about-subtitle-wrapper"
-                />
-                <ScrambledText
-                  className="scrambled-text-demo"
-                  radius={100}
-                  duration={1.2}
-                  speed={0.5}
-                  scrambleChars=".:"
-                >
-                  I'm a 3rd-year student at Mapúa University specializing in Artificial Intelligence. I enjoy working with machine learning and have experience in both backend and frontend development, allowing me to build complete and functional digital solutions.
-                </ScrambledText>
-              </div>
-              <ScrambledText
-                className="scrambled-text-demo"
-                radius={100}
-                duration={1.2}
-                speed={0.5}
-                scrambleChars=".:"
-              >
-                Outside of academics, I enjoy playing video games, coding, making things from scratch, and solving challenging problems. I'm also passionate about exploring new technologies, contributing to open-source projects, and sharing knowledge with the developer community.
-              </ScrambledText>
+              <AboutBento />
             </motion.div>
             <motion.div
               initial={{ opacity: 0, x: 50 }}
