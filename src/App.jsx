@@ -20,7 +20,8 @@ import {
   Monitor,
   FolderOpen,
   Sun,
-  Moon
+  Moon,
+  BookOpen
 } from 'lucide-react'
 import TextType from './components/TextType'
 import MagnetLines from './components/MagnetLines'
@@ -1161,6 +1162,7 @@ function App() {
                           image: EscImage,
                           category: "ml",
                           githubUrl: "https://github.com/cemmacabales/AFIB.git",
+                          paperUrl: "https://ieeexplore.ieee.org/document/11517831",
                           hasModels: true,
                           models: [
                             { name: "Llama3", url: "https://huggingface.co/spaces/johnnydang88/Llama3" },
@@ -1175,7 +1177,8 @@ function App() {
                           image: AxialModelTestingImage,
                           category: "ml",
                           githubUrl: "https://github.com/cemmacabales/KidneyDetection.git",
-                          demoUrl: "https://kidney-abnormality-detection.streamlit.app/"
+                          demoUrl: "https://kidney-abnormality-detection.streamlit.app/",
+                          paperUrl: "https://ieeexplore.ieee.org/document/11438968"
                         },
                         {
                           title: "Read My Face (Real-time Emotion Detector)",
@@ -1291,6 +1294,18 @@ function App() {
                                 <Github size={16} />
                                 Code
                               </a>
+                              {project.paperUrl && (
+                                <a
+                                  href={project.paperUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="btn btn-small btn-secondary"
+                                  style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '0.4rem 0.6rem' }}
+                                  title="Published Paper"
+                                >
+                                  <BookOpen size={16} />
+                                </a>
+                              )}
                             </div>
                           </div>
                         </motion.div>
