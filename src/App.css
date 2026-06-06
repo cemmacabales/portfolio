@@ -2990,3 +2990,32 @@ section {
   border-color: var(--accent-primary);
   color: var(--accent-primary);
 }
+
+/* ── AboutBento grid overrides ─────────────────────────────────────── */
+.about-text .card-grid {
+  grid-template-columns: repeat(2, 1fr);
+  max-width: 100%;
+  padding: 0;
+  font-size: 1rem;
+}
+
+/* Reset default MagicBento nth-child spanning rules for 4-col layout */
+.about-text .magic-bento-card:nth-child(3),
+.about-text .magic-bento-card:nth-child(4),
+.about-text .magic-bento-card:nth-child(6) {
+  grid-column: unset;
+  grid-row: unset;
+}
+
+/* First card spans full width as the hero card */
+.about-text .magic-bento-card:nth-child(1) {
+  grid-column: 1 / -1;
+  aspect-ratio: 16 / 5;
+  min-height: 100px;
+}
+
+/* Remaining cards: uniform 4/3 aspect ratio */
+.about-text .magic-bento-card:nth-child(n+2) {
+  aspect-ratio: 4 / 3;
+  min-height: 120px;
+}
