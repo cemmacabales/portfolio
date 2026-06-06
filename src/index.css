@@ -6,6 +6,7 @@
   --accent-primary: #64ffda;
   --accent-secondary: #4ecdc4;
   --accent-hover: rgba(100, 255, 218, 0.1);
+  --accent-rgb: 100, 255, 218;
   --card-bg: rgba(255, 255, 255, 0.05);
   --card-border: rgba(255, 255, 255, 0.1);
   --input-bg: rgba(255, 255, 255, 0.05);
@@ -37,6 +38,7 @@
   --accent-primary: #00897b;
   --accent-secondary: #00796b;
   --accent-hover: rgba(0, 137, 123, 0.1);
+  --accent-rgb: 0, 137, 123;
   --card-bg: rgba(0, 0, 0, 0.03);
   --card-border: rgba(0, 0, 0, 0.1);
   --input-bg: rgba(0, 0, 0, 0.03);
