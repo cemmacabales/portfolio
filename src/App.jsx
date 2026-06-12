@@ -1,5 +1,13 @@
 import { useState, useEffect, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import {
+  motion,
+  AnimatePresence,
+  useScroll,
+  useTransform,
+  useMotionValue,
+  useSpring,
+  useReducedMotion
+} from 'framer-motion'
 import emailjs from '@emailjs/browser'
 import { gsap } from 'gsap'
 import {
@@ -87,6 +95,17 @@ import { useMobileDetection } from './mobile-detection';
 import { validateFormData, sanitizeFormData, checkRateLimit } from './utils/validation';
 import ModelSelectionModal from './components/ModelSelectionModal';
 import AiChatbot from './components/AiChatbot'
+import ScrollThread from './components/ScrollThread'
+import TiltCard from './components/TiltCard'
+
+// Sections the scroll thread threads together (module-level for stable identity)
+const THREAD_SECTIONS = [
+  { id: 'home', label: 'Home' },
+  { id: 'about', label: 'About' },
+  { id: 'projects', label: 'Work' },
+  { id: 'skills', label: 'Experience' },
+  { id: 'contact', label: 'Contact' }
+]
 
 // Custom hook for modern project card animations
 const useProjectAnimations = () => {
@@ -260,7 +279,55 @@ function App() {
   const [selectedModelProject, setSelectedModelProject] = useState(null)
 
   const isMobile = useIsMobile();
-  
+  const reduceMotion = useReducedMotion();
+
+  // Hero scroll-parallax: content drifts up and fades as you scroll past the hero,
+  // with the portrait travelling a touch faster than the copy to read as depth.
+  // Driven by window scroll (not a target ref) so it survives the loader gate, where
+  // the hero section isn't mounted yet. Progress is measured over one viewport height.
+  const { scrollY } = useScroll();
+  const heroTextY = useTransform(scrollY, (v) => {
+    const h = typeof window !== 'undefined' ? window.innerHeight : 800;
+    return -Math.min(v / h, 1) * 70;
+  });
+  const heroImageY = useTransform(scrollY, (v) => {
+    const h = typeof window !== 'undefined' ? window.innerHeight : 800;
+    return -Math.min(v / h, 1) * 130;
+  });
+  const heroFade = useTransform(scrollY, (v) => {
+    const h = typeof window !== 'undefined' ? window.innerHeight : 800;
+    return 1 - Math.min(v / (h * 0.85), 1);
+  });
+
+  // Magnetic portrait: the image tilts toward the cursor in 3D.
+  const portraitX = useMotionValue(0);
+  const portraitY = useMotionValue(0);
+  const portraitRotateY = useSpring(portraitX, { stiffness: 150, damping: 18 });
+  const portraitRotateX = useSpring(portraitY, { stiffness: 150, damping: 18 });
+
+  const handlePortraitMove = (e) => {
+    if (reduceMotion) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const px = (e.clientX - rect.left) / rect.width - 0.5;
+    const py = (e.clientY - rect.top) / rect.height - 0.5;
+    portraitX.set(px * 18);
+    portraitY.set(-py * 18);
+  };
+  const handlePortraitLeave = () => {
+    portraitX.set(0);
+    portraitY.set(0);
+  };
+
+  const heroTextStyle = reduceMotion ? undefined : { y: heroTextY, opacity: heroFade };
+  const heroImageStyle = reduceMotion ? undefined : { y: heroImageY, opacity: heroFade };
+  const portraitTiltStyle = reduceMotion
+    ? undefined
+    : {
+        rotateX: portraitRotateX,
+        rotateY: portraitRotateY,
+        transformPerspective: 800
+      };
+
   const [isLightMode, setIsLightMode] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('theme');
@@ -531,6 +598,28 @@ function App() {
     return () => clearTimeout(timer)
   }, [])
 
+  // Scroll spy: keep activeSection in sync as the user scrolls (drives the dock
+  // highlight and the scroll thread's active node). The center-line rootMargin marks a
+  // section active once it crosses the middle of the viewport.
+  useEffect(() => {
+    if (isLoading) return
+    const els = THREAD_SECTIONS
+      .map((s) => document.getElementById(s.id))
+      .filter(Boolean)
+    if (!els.length) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActiveSection(entry.target.id)
+        })
+      },
+      { rootMargin: '-45% 0px -45% 0px', threshold: 0 }
+    )
+    els.forEach((el) => observer.observe(el))
+    return () => observer.disconnect()
+  }, [isLoading])
+
   // Debug mobile view issues and apply Safari fixes
   useEffect(() => {
     if (!isLoading) {
@@ -613,6 +702,7 @@ function App() {
             lineWidth="1px"
             lineHeight="clamp(25px, 2.5vw, 40px)"
             baseAngle={-10}
+            scrollReactive
             className="magnet-lines-bg"
           />
         </div>
@@ -635,6 +725,13 @@ function App() {
       )}
 
 
+
+      {/* Scroll Thread — signature progress spine + ambient nav */}
+      <ScrollThread
+        sections={THREAD_SECTIONS}
+        activeSection={activeSection}
+        onSelect={scrollToSection}
+      />
 
       {/* Dock Navigation */}
       <Dock
@@ -672,6 +769,7 @@ function App() {
       {/* Hero Section */}
       <section id="home" className="hero">
         <div className="hero-content">
+         <motion.div className="hero-text-parallax" style={heroTextStyle}>
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
@@ -857,13 +955,21 @@ function App() {
               </motion.a>
             </div>
           </motion.div>
+         </motion.div>
+         <motion.div className="hero-image-parallax" style={heroImageStyle}>
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             className="hero-image"
           >
-            <div className="profile-placeholder">
+            <motion.div
+              className="profile-placeholder"
+              onPointerMove={handlePortraitMove}
+              onPointerLeave={handlePortraitLeave}
+              whileHover={reduceMotion ? undefined : { scale: 1.04 }}
+              style={portraitTiltStyle}
+            >
               <img src={ProfileImage} alt="Profile" className="profile-image"
                 style={{
                   width: '100%',
@@ -872,8 +978,9 @@ function App() {
                   transition: 'all 0.3s ease'
                 }}
               />
-            </div>
+            </motion.div>
           </motion.div>
+         </motion.div>
         </div>
       </section>
 
@@ -1042,22 +1149,11 @@ function App() {
                         githubUrl: "https://github.com/cemmacabales/petchinguuu.git"
                       }
                     ].map((project, index) => (
-                      <motion.div
+                      <TiltCard
                         key={index}
                         ref={addCardRef}
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{
-                          duration: 0.5,
-                          delay: index * 0.1,
-                          ease: "easeOut"
-                        }}
+                        index={index}
                         className="project-card modern-card"
-                        whileHover={{
-                          y: -8,
-                          scale: 1.02,
-                          transition: { duration: 0.2 }
-                        }}
                       >
                         <div className="project-image">
                           <img
@@ -1127,7 +1223,7 @@ function App() {
                             )}
                           </div>
                         </div>
-                      </motion.div>
+                      </TiltCard>
                     ))}
                   </div>
                 </motion.div>
@@ -1188,22 +1284,11 @@ function App() {
                           demoUrl: "https://earfquake-atjsxhtyuvwrcjwyfbjyx2.streamlit.app/"
                         }
                       ].map((project, index) => (
-                        <motion.div
+                        <TiltCard
                           key={index}
                           ref={addCardRef}
-                          initial={{ opacity: 0, y: 30 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{
-                            duration: 0.5,
-                            delay: index * 0.1,
-                            ease: "easeOut"
-                          }}
+                          index={index}
                           className="project-card modern-card"
-                          whileHover={{
-                            y: -8,
-                            scale: 1.02,
-                            transition: { duration: 0.2 }
-                          }}
                         >
                           <div className="project-image">
                             {typeof project.image === 'string' && project.image.length <= 2 ? (
@@ -1294,7 +1379,7 @@ function App() {
                               </a>
                             </div>
                           </div>
-                        </motion.div>
+                        </TiltCard>
                       ))}
                     </div>
                   </motion.div>
