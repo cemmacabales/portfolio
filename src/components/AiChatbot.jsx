@@ -91,11 +91,9 @@ export default function AiChatbot() {
     if (!text || isLoading) return
 
     const userMsg = { role: 'user', content: text, timestamp: new Date(), id: Date.now() }
-    let snapshot
-    setMessages(prev => {
-      snapshot = [...prev, userMsg]
-      return snapshot
-    })
+    const prevMessages = Array.isArray(messages) ? messages : []
+    const snapshot = [...prevMessages, userMsg]
+    setMessages(snapshot)
     setInput('')
     if (textareaRef.current) textareaRef.current.style.height = 'auto'
     setIsLoading(true)
