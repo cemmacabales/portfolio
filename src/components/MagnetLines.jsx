@@ -9,10 +9,46 @@ export default function MagnetLines({
   lineWidth = "1vmin",
   lineHeight = "6vmin",
   baseAngle = -10,
+  scrollReactive = false,
   className = "",
   style = {}
 }) {
   const containerRef = useRef(null);
+
+  // Scroll energy: the field brightens and breathes with scroll velocity, then settles.
+  // One inherited CSS variable (`--scroll-energy`) drives the paint; no per-line work.
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container || !scrollReactive) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let energy = 0;
+    let lastY = window.scrollY;
+    let raf = 0;
+
+    const onScroll = () => {
+      const y = window.scrollY;
+      const v = Math.min(Math.abs(y - lastY), 60);
+      lastY = y;
+      energy = Math.min(energy + v / 55, 1);
+    };
+
+    const tick = () => {
+      energy *= 0.9; // exponential decay back to rest
+      if (energy < 0.001) energy = 0;
+      container.style.setProperty("--scroll-energy", energy.toFixed(3));
+      raf = requestAnimationFrame(tick);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    raf = requestAnimationFrame(tick);
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(raf);
+      container.style.removeProperty("--scroll-energy");
+    };
+  }, [scrollReactive]);
 
   useEffect(() => {
     const container = containerRef.current;

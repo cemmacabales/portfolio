@@ -15,6 +15,20 @@
   --dock-bg: rgba(20, 20, 20, 0.8);
   --dock-border: rgba(255, 255, 255, 0.1);
 
+  /* Motion system — easing curves (natural deceleration, no bounce/elastic) */
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Motion system — semantic z-index scale */
+  --z-background: 0;
+  --z-content: 1;
+  --z-thread: 40;
+  --z-edge-blur: 900;
+  --z-dock: 1000;
+  --z-toast: 1100;
+  --z-modal: 1200;
+
   font-family: 'Inter', -apple-system, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
