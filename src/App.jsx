@@ -691,7 +691,7 @@ function App() {
                 textColors={isLightMode ? ["#00897b", "#7c3aed", "#00796b"] : ["#64ffda", "#8b5cf6", "#4ecdc4"]}
               />
             </span></h1>
-            <h2>Computer Science Student</h2>
+            <h2>Computer Science Graduate</h2>
             <p>I specialize in Artificial Intelligence and Machine Learning, with a strong foundation in Software Engineering.</p>
             <div className="hero-buttons">
               <motion.button
