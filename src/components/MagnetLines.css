@@ -15,7 +15,8 @@
   transform-origin: center;
   will-change: transform;
   transform: rotate(var(--rotate));
-  opacity: 0.6;
+  /* Brightens with scroll energy (0 at rest), inherited from the container */
+  opacity: calc(0.6 + var(--scroll-energy, 0) * 0.4);
 }
 
 /* Mobile optimizations for magnet lines */
