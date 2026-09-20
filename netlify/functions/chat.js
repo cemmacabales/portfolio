@@ -102,9 +102,9 @@ Carl is open to full-time employment, freelance/contract work, and research coll
 const GROQ_BASE_URL = 'https://api.groq.com/openai/v1/chat/completions';
 
 const MODELS = [
-  'llama-3.3-70b-versatile',
-  'meta-llama/llama-4-scout-17b-16e-instruct',
-  'llama-3.1-8b-instant',
+  'openai/gpt-oss-120b',
+  'openai/gpt-oss-20b',
+  'qwen/qwen3.8-27b',
 ];
 
 async function callGroq(apiKey, model, messages) {
@@ -175,15 +175,21 @@ exports.handler = async (event) => {
       if (!content) throw new Error('EMPTY_RESPONSE');
       return { statusCode: 200, headers, body: JSON.stringify({ content }) };
     } catch (err) {
-      if (err.message === 'RATE_LIMITED' || err.message === 'EMPTY_RESPONSE') continue;
+      // A rejected key fails identically on every model, so stop rather than
+      // burning the whole list on it.
+      if (err.message === 'API_ERROR_401' || err.message === 'API_ERROR_403') {
+        console.error('Groq rejected the API key:', err.message);
+        return { statusCode: 500, headers, body: JSON.stringify({ error: 'Internal server error' }) };
+      }
+      // Rate limit, empty reply, or a retired model - fall through to the next.
       console.error(`Model ${model} failed:`, err.message);
-      return { statusCode: 500, headers, body: JSON.stringify({ error: 'Internal server error' }) };
+      continue;
     }
   }
 
   return {
     statusCode: 503,
     headers,
-    body: JSON.stringify({ error: 'All models rate limited' }),
+    body: JSON.stringify({ error: 'No model available' }),
   };
 };
