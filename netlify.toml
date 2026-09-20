@@ -19,3 +19,9 @@
   #  publish = "dist" # Folder with the static content for _redirect file
 
   ## more info on configuring this file: https://ntl.fyi/file-based-build-config
+
+# Pin the build's Node version. Without this, the build follows whatever
+# default the Netlify build image ships, so an upstream bump can break the
+# site with no change on our side. 22 satisfies Vite 7 (^20.19 || >=22.12).
+[build.environment]
+  NODE_VERSION = "22"
