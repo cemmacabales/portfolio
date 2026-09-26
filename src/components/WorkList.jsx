@@ -17,7 +17,6 @@ function ExternalButton({ href, variant, children }) {
 
 function WorkRow({ project, index, open, onToggle, onShowModels }) {
   const panelId = `work-panel-${project.slug}`
-  const number = String(index + 1).padStart(2, '0')
   const { demo, paper, code } = project.links
 
   return (
@@ -37,19 +36,16 @@ function WorkRow({ project, index, open, onToggle, onShowModels }) {
           aria-controls={panelId}
           onClick={() => onToggle(project.slug)}
         >
-          <span className="work-index" aria-hidden="true">
-            {number}
-          </span>
           <span className="work-thumb" aria-hidden="true">
             <img src={project.image} alt="" loading="lazy" decoding="async" />
           </span>
           <span className="work-name">{project.name}</span>
-          <span className="work-meta">
-            <span>{project.category}</span>
+          <span className="work-sub">
+            <span className="work-category">{project.category}</span>
             <span className="work-year">{project.year}</span>
           </span>
           <span className="work-toggle" aria-hidden="true">
-            <Plus size={18} strokeWidth={1.8} />
+            <Plus size={18} strokeWidth={2} />
           </span>
         </button>
       </h3>
