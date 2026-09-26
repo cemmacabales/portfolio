@@ -37,7 +37,7 @@ This is a single-page portfolio with no router — all sections (home, about, pr
 - `CareerTimeline` — timeline in the About section
 - `TechStack` / `Certificates` — content components in the Skills section
 - `ModelSelectionModal` — modal for the RAG chatbot project that has multiple hosted model variants
-- `Loader` — shown for 3 seconds on initial mount before App renders
+- Boot loader — not a component: its markup and styles are inline in `index.html` so it paints before any JS, and `src/boot.js` holds it until the hero's real dependencies are ready (React's first commit, the web font, decoded hero photos and Centient screens, the WebGPU field's first frame), capped at 4s after the app starts. Anything that moves on its own in the first screen should wait on `useBooted()`. (`src/components/Loader` is the old fixed 3-second one and is unused.)
 
 **`src/utils/validation.js`** — client-side form validation and rate limiting (`checkRateLimit`) for the contact form. Rate limit state is in-memory (resets on page reload).
 

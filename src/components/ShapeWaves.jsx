@@ -293,6 +293,7 @@ export default function ShapeWaves({
   introKey = 0,
   paused = false,
   onError,
+  onReady,
   className = ''
 }) {
   const rootRef = useRef(null);
@@ -302,6 +303,7 @@ export default function ShapeWaves({
   const applySettingsRef = useRef(() => {});
   const applyMaskRef = useRef(() => {});
   const onErrorRef = useRef(onError);
+  const onReadyRef = useRef(onReady);
 
   settingsRef.current = {
     text: String(text ?? ''),
@@ -331,6 +333,7 @@ export default function ShapeWaves({
     paused
   };
   onErrorRef.current = onError;
+  onReadyRef.current = onReady;
 
   const settingsSignature = [
     shapes,
@@ -673,6 +676,7 @@ export default function ShapeWaves({
           if (!presented) {
             presented = true;
             setReady(true);
+            onReadyRef.current?.();
           }
           if (animating || hovering || introPlaying) frameId = requestAnimationFrame(render);
           else lastFrameTime = 0;

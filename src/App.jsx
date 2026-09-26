@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { MotionConfig } from 'framer-motion'
 import SiteNav from './components/SiteNav'
 import HeroBento from './components/HeroBento'
@@ -13,6 +13,7 @@ import { useScrollState } from './hooks/useScrollState'
 import { useGlassSheen } from './hooks/useGlassSheen'
 import { useMobileDetection } from './mobile-detection'
 import { openAssistant } from './utils/assistant'
+import { markReady } from './boot'
 import './App.css'
 
 const SECTIONS = ['home', 'work', 'about', 'contact']
@@ -26,6 +27,9 @@ function App() {
   const [isModelModalOpen, setIsModelModalOpen] = useState(false)
 
   useGlassSheen()
+
+  // First commit is in; the boot loader can count the app as rendered.
+  useEffect(() => markReady('app'), [])
 
   const toggleProject = useCallback((slug) => {
     setOpenSlug((current) => (current === slug ? null : slug))

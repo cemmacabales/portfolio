@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { motion, AnimatePresence, useInView, useReducedMotion } from 'framer-motion' // eslint-disable-line no-unused-vars
 import { about } from '../data/portfolio'
 import { useCycle, usePageVisible } from '../hooks/useCycle'
+import { useBooted } from '../hooks/useBooted'
 import { Hoops, Lift, Games, Music, KDrama, Dogs, Cube } from './HobbyScenes'
 import './AboutTile.css'
 
@@ -27,12 +28,13 @@ export default function AboutTile({ variants }) {
   const inView = useInView(ref, { amount: 0.35 })
   const pageVisible = usePageVisible()
   const reduce = useReducedMotion()
+  const booted = useBooted()
   const [pointing, setPointing] = useState(false)
-  const [index, setIndex] = useCycle(HOBBIES.length, HOLD, inView && !pointing)
+  const [index, setIndex] = useCycle(HOBBIES.length, HOLD, booted && inView && !pointing)
 
   const current = HOBBIES[index]
   const Scene = SCENES[current.scene]
-  const playing = inView && pageVisible && !reduce
+  const playing = booted && inView && pageVisible && !reduce
 
   const point = (i) => {
     setIndex(i)

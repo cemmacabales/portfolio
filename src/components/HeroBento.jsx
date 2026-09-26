@@ -1,4 +1,4 @@
-import { Fragment, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence, useInView, useReducedMotion } from 'framer-motion' // eslint-disable-line no-unused-vars
 import { ArrowUpRight, ArrowDown, MessageCircle, Github, Trophy, Pause, Play } from 'lucide-react'
 import ShapeWaves from './ShapeWaves'
@@ -8,6 +8,8 @@ import BarongPhoto from '../assets/me-barong.jpg'
 import ResumePage from '../assets/resume-page.jpg'
 import { profile, disciplines, featured } from '../data/portfolio'
 import { useCycle, usePageVisible } from '../hooks/useCycle'
+import { useBooted } from '../hooks/useBooted'
+import { markReady } from '../boot'
 import './HeroBento.css'
 
 const HEADLINE = 'I build the model, and the product around it.'
@@ -62,13 +64,14 @@ function Portrait() {
   const inView = useInView(ref, { amount: 0.4 })
   const reduce = useReducedMotion()
   const pageVisible = usePageVisible()
+  const booted = useBooted()
   const [index, setIndex] = useState(0)
   const [hovered, setHovered] = useState(false)
   const [held, setHeld] = useState(false)
 
   // Rotates unless reduced motion is on or the viewer picked a photo.
   const auto = !reduce && !held
-  const running = inView && pageVisible && !hovered
+  const running = booted && inView && pageVisible && !hovered
 
   return (
     <figure
@@ -153,13 +156,14 @@ function CentientReel({ screens }) {
   const inView = useInView(ref, { amount: 0.35 })
   const reduce = useReducedMotion()
   const pageVisible = usePageVisible()
+  const booted = useBooted()
   const [index, setIndex] = useState(0)
   const [toggled, setToggled] = useState(false)
   const [hovered, setHovered] = useState(false)
 
   // Plays by default; with reduced motion it starts paused, and the toggle flips it.
   const playing = reduce ? toggled : !toggled
-  const running = playing && inView && pageVisible && !hovered
+  const running = booted && playing && inView && pageVisible && !hovered
   const count = screens.length
 
   return (
@@ -272,8 +276,9 @@ const SKILLS = disciplines.flatMap((group) => group.items)
 function SkillsTile() {
   const ref = useRef(null)
   const inView = useInView(ref, { amount: 0.45 })
+  const booted = useBooted()
   const [pointing, setPointing] = useState(false)
-  const [index, setIndex] = useCycle(SKILLS.length, 3400, inView && !pointing)
+  const [index, setIndex] = useCycle(SKILLS.length, 3400, booted && inView && !pointing)
   const current = SKILLS[index]
 
   const point = (i) => {
@@ -363,14 +368,22 @@ export default function HeroBento({ theme, showField, onOpenProject, onAskAssist
   const words = HEADLINE.split(' ')
   // Without WebGPU (or if it fails), drop the field so the static dot grid shows instead.
   const [fieldOk, setFieldOk] = useState(() => typeof navigator !== 'undefined' && 'gpu' in navigator)
+  const booted = useBooted()
+  const field = showField && fieldOk
+
+  // No field to warm up (touch devices, no WebGPU): nothing for the loader to wait on.
+  useEffect(() => {
+    if (!field) markReady('field')
+  }, [field])
 
   return (
     <section id="home" className="hero shell" aria-labelledby="hero-title">
-      <motion.div className="hero-grid" variants={grid} initial="hidden" animate="show">
+      {/* The entrance waits for the boot loader, so it never plays over half-decoded photos. */}
+      <motion.div className="hero-grid" variants={grid} initial="hidden" animate={booted ? 'show' : 'hidden'}>
         {/* ── Main: who, in one line, plus the portrait ───────────── */}
         <motion.article variants={rise} className="tile tile-main">
           <div className="main-copy">
-            {showField && fieldOk && (
+            {field && (
               <div className="main-field" aria-hidden="true">
                 <ShapeWaves
                   {...(FIELD[theme] ?? FIELD.light)}
@@ -385,7 +398,14 @@ export default function HeroBento({ theme, showField, onOpenProject, onAskAssist
                   splashRadius={40}
                   splashStrength={0.4}
                   introDuration={1.6}
-                  onError={() => setFieldOk(false)}
+                  // Mounted under the loader so its shaders compile there; the
+                  // intro replays once the page is revealed.
+                  introKey={booted ? 1 : 0}
+                  onReady={() => markReady('field')}
+                  onError={() => {
+                    setFieldOk(false)
+                    markReady('field')
+                  }}
                 />
               </div>
             )}

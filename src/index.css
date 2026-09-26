@@ -126,6 +126,7 @@
   --z-nav: 200;
   --z-chat: 300;
   --z-modal: 400;
+  --z-boot: 500; /* the boot loader, styled inline in index.html */
 
   font-family: var(--font-sans);
   font-size: 100%;

@@ -18,7 +18,185 @@
       } catch (e) {
         document.documentElement.dataset.theme = 'light';
       }
+      // Holds the page under the boot loader until src/boot.js lets go.
+      document.documentElement.classList.add('is-booting');
     </script>
+    <style>
+      /*
+       * Boot loader. It paints with the first frame, before any JS, so its
+       * colors are copied from the tokens in src/index.css (that file arrives
+       * with the bundle). The cells are the hero bento in miniature;
+       * src/boot.js fills each one as that tile's assets become ready.
+       */
+      html.is-booting {
+        overflow: hidden;
+        scrollbar-gutter: stable;
+      }
+
+      #boot {
+        --b-canvas: oklch(0.948 0.004 175);
+        --b-tile: oklch(0.992 0.0015 175);
+        --b-edge: oklch(0.86 0.006 175);
+        --b-ink: oklch(0.2 0.008 175);
+        --b-ink-2: oklch(0.41 0.01 175);
+        --b-mint: #64ffda;
+        --b-shadow: 0 1px 2px oklch(0.2 0.02 175 / 0.1);
+        --b-ease: cubic-bezier(0.16, 1, 0.3, 1);
+
+        position: fixed;
+        inset: 0;
+        z-index: 500; /* --z-boot: above the modal layer */
+        display: grid;
+        place-items: center;
+        background: var(--b-canvas);
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        transition:
+          opacity 0.55s var(--b-ease),
+          visibility 0s linear 0.55s;
+      }
+
+      :root[data-theme='dark'] #boot {
+        --b-canvas: oklch(0.135 0.004 175);
+        --b-tile: oklch(0.29 0.006 175);
+        --b-edge: oklch(0.33 0.007 175);
+        --b-ink: oklch(0.965 0.003 175);
+        --b-ink-2: oklch(0.79 0.008 175);
+        --b-shadow: 0 0 0 1px oklch(0.285 0.006 175);
+      }
+
+      .boot-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 18px;
+        transition:
+          transform 0.55s var(--b-ease),
+          filter 0.55s var(--b-ease);
+      }
+
+      .boot-grid {
+        display: grid;
+        width: 132px;
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+        grid-template-rows: 20px 13px 28px 30px;
+        grid-template-areas:
+          'main main main main main main main main mint mint mint mint'
+          'main main main main main main main main res res gh gh'
+          'feat feat feat feat feat feat feat feat feat feat feat feat'
+          'about about about about about about skills skills skills skills skills skills';
+        gap: 4px;
+      }
+
+      .boot-grid i {
+        border: 1.5px solid var(--b-edge);
+        border-radius: 5px;
+        animation: boot-wave 1.4s ease-in-out infinite both;
+        transition:
+          background-color 0.45s ease,
+          border-color 0.45s ease,
+          box-shadow 0.45s ease;
+      }
+
+      .boot-grid [data-cell='main'] { grid-area: main; }
+      .boot-grid [data-cell='mint'] { grid-area: mint; animation-delay: 0.08s; }
+      .boot-grid [data-cell='res'] { grid-area: res; animation-delay: 0.16s; }
+      .boot-grid [data-cell='gh'] { grid-area: gh; animation-delay: 0.24s; }
+      .boot-grid [data-cell='feat'] { grid-area: feat; animation-delay: 0.32s; }
+      .boot-grid [data-cell='about'] { grid-area: about; animation-delay: 0.4s; }
+      .boot-grid [data-cell='skills'] { grid-area: skills; animation-delay: 0.48s; }
+
+      /* A tile whose assets are in: it fills and settles into place. */
+      .boot-grid i.is-on {
+        border-color: transparent;
+        background: var(--b-tile);
+        box-shadow: var(--b-shadow);
+        animation: boot-pop 0.5s var(--b-ease) both;
+      }
+
+      .boot-grid [data-cell='mint'].is-on {
+        background: var(--b-mint);
+      }
+
+      @keyframes boot-wave {
+        0%,
+        100% { opacity: 0.35; }
+        50% { opacity: 1; }
+      }
+
+      @keyframes boot-pop {
+        from { transform: scale(0.84); }
+      }
+
+      .boot-line {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        margin: 0;
+        font-size: 14px;
+        line-height: 1;
+        color: var(--b-ink);
+      }
+
+      .boot-name {
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+
+      .boot-pct {
+        min-width: 4ch;
+        color: var(--b-ink-2);
+        font-variant-numeric: tabular-nums;
+        text-align: right;
+      }
+
+      .boot-sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+      }
+
+      #boot.is-leaving {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      /* On the way out, the miniature grows toward the real bento. */
+      #boot.is-leaving .boot-card {
+        transform: scale(1.35);
+        filter: blur(6px);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .boot-grid i,
+        .boot-grid i.is-on {
+          animation: none;
+        }
+
+        .boot-grid i {
+          opacity: 0.6;
+        }
+
+        .boot-grid i.is-on {
+          opacity: 1;
+        }
+
+        #boot.is-leaving .boot-card {
+          transform: none;
+          filter: none;
+        }
+      }
+    </style>
+    <noscript>
+      <style>
+        #boot { display: none; }
+        html.is-booting { overflow: auto; }
+      </style>
+    </noscript>
     
     <!-- SEO Meta Tags -->
     <title>cemmacabales</title>
@@ -80,7 +258,36 @@
     
   </head>
   <body>
-    <div id="root"></div>
+    <div id="boot">
+      <div class="boot-card">
+        <div class="boot-grid" aria-hidden="true">
+          <i data-cell="main"></i>
+          <i data-cell="mint"></i>
+          <i data-cell="res"></i>
+          <i data-cell="gh"></i>
+          <i data-cell="feat"></i>
+          <i data-cell="about"></i>
+          <i data-cell="skills"></i>
+        </div>
+        <p class="boot-line" aria-hidden="true">
+          <span class="boot-name">Carl Macabales</span>
+          <span class="boot-pct" data-pct>0%</span>
+        </p>
+        <p class="boot-sr" role="status">Loading</p>
+      </div>
+      <script>
+        // If the app never starts (a chunk failed to load), let go anyway.
+        // Once src/boot.js is running, it owns the exit.
+        setTimeout(function () {
+          var boot = document.getElementById('boot');
+          if (!boot || 'started' in boot.dataset) return;
+          boot.remove();
+          document.documentElement.classList.remove('is-booting');
+          document.getElementById('root').removeAttribute('aria-busy');
+        }, 12000);
+      </script>
+    </div>
+    <div id="root" aria-busy="true"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
