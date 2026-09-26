@@ -3,7 +3,7 @@ import { useReducedMotion } from 'framer-motion'
 import './PetYard.css'
 
 /*
- * The QA team: three pixel pets that live under the shipped list.
+ * Three pixel pets that live under the shipped list.
  *
  * Sprites are string grids, one character per pixel. A single rAF loop
  * moves the pets by writing transforms and data attributes straight to
@@ -175,7 +175,8 @@ const PETS = [
     run: 200,
     stride: 0.13,
     runStride: 0.07,
-    lines: ['Woof! Tests pass!', 'Found a bug! Can I keep it?', 'Deploy? DEPLOY!', 'Good build!'],
+    lines: ['Woof! Hi!', 'Wanna play fetch?', 'Belly rubs, please!', 'You’re my favorite human!'],
+    yums: ['Yum! Thank you!', 'Best day ever!', 'More, please!'],
   },
   {
     id: 'cat',
@@ -186,7 +187,8 @@ const PETS = [
     run: 140,
     stride: 0.2,
     runStride: 0.09,
-    lines: ['LGTM.', 'mrrp. ship it.', 'I sat on the keyboard. Fixed it.'],
+    lines: ['Mrrp.', 'Pet me. Okay, stop.', 'Is it dinner yet?', 'I knocked your cup over.'],
+    yums: ['Acceptable.', 'Nom. Fine, thank you.', 'I’ll allow it.'],
   },
   {
     id: 'bot',
@@ -197,11 +199,12 @@ const PETS = [
     run: 115,
     stride: 0.2,
     runStride: 0.1,
-    lines: ['Beep. 0 bugs found.', 'Coverage: 100%. Probably.', 'Running inference…', 'Hello, human.'],
+    lines: ['Beep boop! Hello!', 'I like your shoes.', 'Did you drink water today?', 'Robots need hugs too.'],
+    yums: ['Crunchy! Beep!', 'Delicious!', 'Nom nom nom!'],
   },
 ]
 
-const SLEEPY_LINE = 'Mrrp. I was compiling.'
+const SLEEPY_LINE = 'Mrrp… five more minutes.'
 
 function Sprite({ species }) {
   const { w, h, rects } = SPRITES[species]
@@ -302,6 +305,7 @@ export default function PetYard() {
         blinkT: 0,
         flipped: false,
         line: 0,
+        yum: 0,
         bubbleT: 0,
         bubbleW: 0,
         shown: {},
@@ -413,7 +417,8 @@ export default function PetYard() {
       p.timer = 0.6
       p.treat = null
       restart(p.heart)
-      say(p, 'Nom!')
+      say(p, p.yums[p.yum % p.yums.length])
+      p.yum += 1
       announce(`${p.name} got the treat.`)
       for (const q of pets) {
         if (q !== p && q.mode === 'chase' && q.treat === t) retarget(q)
@@ -669,12 +674,9 @@ export default function PetYard() {
   return (
     <div className="pet-yard">
       <div className="yard-head">
-        <p className="yard-label">
-          QA team
-          <span className="yard-hint">
-            <span className="hint-fine">Click</span>
-            <span className="hint-touch">Tap</span> a pet to say hi
-          </span>
+        <p className="yard-hint">
+          <span className="hint-fine">Click</span>
+          <span className="hint-touch">Tap</span> a pet to say hi
         </p>
         {!reduce && (
           <button type="button" className="yard-toss" onClick={() => api.current?.toss()}>

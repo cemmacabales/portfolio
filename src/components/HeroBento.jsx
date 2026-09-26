@@ -289,10 +289,12 @@ function SkillsTile() {
             <motion.div
               key={index}
               className="focus-roll"
-              initial={{ y: '45%', opacity: 0, filter: 'blur(4px)' }}
+              initial={{ y: 14, opacity: 0, filter: 'blur(4px)' }}
               animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
-              exit={{ y: '-45%', opacity: 0, filter: 'blur(4px)' }}
-              transition={{ duration: 0.75, ease: EASE }}
+              // The old line leaves quicker than the new one arrives, so the
+              // two never sit on top of each other for long.
+              exit={{ y: -14, opacity: 0, filter: 'blur(4px)', transition: { duration: 0.28, ease: 'easeIn' } }}
+              transition={{ duration: 0.6, ease: EASE }}
             >
               <p className="focus-name">{current.name}</p>
               <p className="focus-where">

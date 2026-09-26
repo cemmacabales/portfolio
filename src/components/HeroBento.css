@@ -876,12 +876,15 @@
   gap: 26px;
 }
 
-/* A fixed-height slot, so the roll never shifts the pills below it. */
+/*
+ * A fixed-height slot, so the roll never shifts the pills below it. No
+ * overflow clip: the lines crossfade in place, so there's no hard edge
+ * for the text to slide behind.
+ */
 .skills-focus {
   position: relative;
   display: grid;
   height: 4.75rem;
-  overflow: hidden;
 }
 
 .focus-roll {
