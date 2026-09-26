@@ -20,7 +20,7 @@ Allow: /*.svg
 Allow: /*.ico
 
 # Sitemap location
-Sitemap: https://cemmacabales.netlify.app/sitemap.xml
+Sitemap: https://cemmacabales.com/sitemap.xml
 
 # Crawl-delay for respectful crawling
 Crawl-delay: 1
