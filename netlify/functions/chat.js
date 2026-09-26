@@ -46,6 +46,14 @@ Carl is open to full-time employment, freelance/contract work, and research coll
 
 ## Software Development Projects
 
+**Centient — Train AI, cent by cent** (2026, Carl's featured project)
+- Won a $5,000 USD Instawards grant
+- Human-feedback data labeling platform: contributors compare two AI answers, explain which is better, and are paid in USDC on Stellar as soon as the answer is accepted — no bank account needed
+- Quality guards: gold tasks, rate limiting, spam and bias detection, inter-annotator agreement
+- Payouts are co-signed from a multisig account that no single key can drain; after 8 of 10 balances were stuck under the old 1 USDC withdrawal minimum, the Withdraw button was removed and every accepted answer now pays the contributor's wallet directly
+- Tech: Next.js, React, TypeScript, PostgreSQL, Prisma, Stellar SDK, Freighter/Albedo wallets, Redis, Sentry, Railway
+- Beta: https://beta.centient.work · Code: https://github.com/cemmacabales/centient
+
 **iPrayUST — Digital Prayer Companion** (Jun–Dec 2025)
 - Cross-platform mobile app for the UST community with 10,000+ users and daily content
 - Firebase backend (Firestore, Auth, Storage) managing 500+ prayer resources; admin CMS cut content update time by ~80%

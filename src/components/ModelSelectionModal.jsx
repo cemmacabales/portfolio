@@ -1,68 +1,94 @@
-import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, Brain, Cpu, Layers, ExternalLink, Zap } from 'lucide-react';
+import React, { useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion'; // eslint-disable-line no-unused-vars
+import { X, ArrowUpRight } from 'lucide-react';
 import './ModelSelectionModal.css';
 
-const ModelSelectionModal = ({ isOpen, onClose, project }) => {
-  if (!project) return null;
+const MODEL_NOTES = {
+  Llama3: 'Llama 3 8B Instruct, by Meta',
+  Qwen3: 'Qwen3, by Alibaba',
+  Phi3: 'Phi-3, by Microsoft',
+};
 
-  const modelIcons = {
-    Llama3: <Brain size={32} />,
-    Qwen3: <Zap size={32} />,
-    Phi3: <Layers size={32} />
-  };
+const ModelSelectionModal = ({ isOpen, onClose, project }) => {
+  const closeRef = useRef(null);
+  const returnFocusRef = useRef(null);
+
+  useEffect(() => {
+    if (!isOpen) return undefined;
+    returnFocusRef.current = document.activeElement;
+    const timer = setTimeout(() => closeRef.current?.focus(), 30);
+    const onKey = (event) => {
+      if (event.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('keydown', onKey);
+      returnFocusRef.current?.focus?.();
+    };
+  }, [isOpen, onClose]);
+
+  if (!project) return null;
 
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="modal-overlay" onClick={onClose}>
+        <motion.div
+          className="modal-overlay"
+          onClick={onClose}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.25 }}
+        >
           <motion.div
             className="modal-content"
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="model-modal-title"
+            initial={{ opacity: 0, scale: 0.94, y: 16 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            exit={{ opacity: 0, scale: 0.96, y: 10 }}
+            transition={{ type: 'spring', damping: 30, stiffness: 340 }}
             onClick={(e) => e.stopPropagation()}
           >
-            <button className="modal-close" onClick={onClose} aria-label="Close modal">
-              <X size={24} />
+            <button ref={closeRef} className="modal-close" onClick={onClose} aria-label="Close">
+              <X size={18} strokeWidth={1.8} />
             </button>
 
             <div className="modal-header">
-              <h3>Select a Model</h3>
-              <p>Choose which version of {project.title} you'd like to experience.</p>
+              <h3 id="model-modal-title">Pick a model to try</h3>
+              <p>
+                Each one runs the same retrieval pipeline for {project.name} on its own
+                Hugging Face Space. The first answer can take a moment while the Space wakes up.
+              </p>
             </div>
 
-            <div className="model-grid">
-              {project.models.map((model, index) => (
-                <motion.a
-                  key={index}
-                  href={model.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="model-card"
-                  whileHover={{ 
-                    y: -5, 
-                    backgroundColor: 'var(--accent-hover)',
-                    borderColor: 'var(--accent-primary)',
-                    boxShadow: '0 10px 30px var(--shadow-primary)'
-                  }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <div className="model-icon">
-                    {modelIcons[model.name] || <Brain size={32} />}
-                  </div>
-                  <div className="model-info">
-                    <h4>{model.name}</h4>
-                    <span className="launch-text">
-                      Launch Space <ExternalLink size={14} />
+            <ul className="model-grid">
+              {project.models.map((model) => (
+                <li key={model.name}>
+                  <a
+                    href={model.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="model-card"
+                  >
+                    <span className="model-info">
+                      <span className="model-name">{model.name}</span>
+                      {MODEL_NOTES[model.name] && (
+                        <span className="model-note">{MODEL_NOTES[model.name]}</span>
+                      )}
                     </span>
-                  </div>
-                </motion.a>
+                    <span className="model-arrow" aria-hidden="true">
+                      <ArrowUpRight size={18} strokeWidth={1.8} />
+                    </span>
+                    <span className="visually-hidden"> (opens in a new tab)</span>
+                  </a>
+                </li>
               ))}
-            </div>
+            </ul>
           </motion.div>
-        </div>
+        </motion.div>
       )}
     </AnimatePresence>
   );

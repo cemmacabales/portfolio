@@ -1,0 +1,374 @@
+.background-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-template-areas:
+    'ship ship ship ship ship ship ship edu edu edu edu edu'
+    'stack stack stack stack stack stack stack res res res res res'
+    'certs certs certs certs certs certs certs certs clock clock clock clock';
+  gap: var(--gap);
+}
+
+.tile-shipped {
+  grid-area: ship;
+}
+
+.tile-education {
+  grid-area: edu;
+}
+
+.tile-research {
+  grid-area: res;
+}
+
+.tile-clock {
+  grid-area: clock;
+}
+
+.tile-stack {
+  grid-area: stack;
+}
+
+.tile-certs {
+  grid-area: certs;
+}
+
+/* ── Shipped software ────────────────────────────────────────── */
+.shipped-list > li + li {
+  border-top: 1px solid var(--line);
+}
+
+.shipped-row {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) minmax(0, auto);
+  align-items: baseline;
+  gap: 8px 18px;
+  padding: 20px var(--pad-tile);
+  color: var(--ink);
+  transition: background-color 0.3s ease;
+}
+
+a.shipped-row:focus-visible {
+  outline-offset: -3px;
+}
+
+.shipped-year {
+  font-size: var(--text-xs);
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.shipped-main {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.shipped-name {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.shipped-what {
+  max-width: 52ch;
+  font-size: var(--text-sm);
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+
+.shipped-proof {
+  justify-self: end;
+  max-width: 26ch;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  line-height: 1.35;
+  text-align: center;
+  color: var(--ink);
+}
+
+.shipped-list > li:first-child .shipped-proof {
+  border-color: transparent;
+  background: var(--mint);
+  color: var(--mint-ink);
+  font-weight: 600;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  a.shipped-row:hover {
+    background: var(--tile-sunk);
+  }
+}
+
+/* ── Education ───────────────────────────────────────────────── */
+.edu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.edu-item {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+}
+
+.edu-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  object-fit: cover;
+  background: oklch(1 0 0);
+  border: 1px solid var(--line);
+}
+
+.edu-school {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ink);
+}
+
+.edu-detail {
+  font-size: var(--text-xs);
+  line-height: 1.4;
+  color: var(--ink-2);
+}
+
+.edu-period {
+  align-self: start;
+  padding-top: 2px;
+  font-size: var(--text-xs);
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ── Row lists (research, certificates) ──────────────────────── */
+.row-list > li + li {
+  border-top: 1px solid var(--line);
+}
+
+.row-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px var(--pad-tile);
+  color: var(--ink);
+  transition: background-color 0.3s ease;
+}
+
+.row-link:focus-visible {
+  outline-offset: -3px;
+}
+
+.row-icon {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  color: var(--ink);
+  transition:
+    transform 0.45s var(--ease-out),
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.row-icon-end {
+  margin-left: auto;
+}
+
+.row-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.row-title {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.row-sub {
+  font-size: var(--text-xs);
+  line-height: 1.4;
+  color: var(--ink-2);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  a.row-link:hover {
+    background: var(--tile-sunk);
+  }
+
+  a.row-link:hover .row-icon {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--tile);
+    transform: rotate(45deg);
+  }
+}
+
+/* ── Research ────────────────────────────────────────────────── */
+.tile-research {
+  display: flex;
+  flex-direction: column;
+}
+
+.research-figure {
+  flex: 1 1 auto;
+  min-height: 150px;
+  margin: 0 10px 10px;
+  overflow: hidden;
+  border-radius: calc(var(--r-tile) - 10px);
+  border: 1px solid var(--line);
+  background: oklch(1 0 0);
+}
+
+.research-figure img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 30%;
+}
+
+/* ── Clock ───────────────────────────────────────────────────── */
+.tile-clock {
+  display: flex;
+  flex-direction: column;
+}
+
+.clock-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.clock-time {
+  font-size: clamp(2.5rem, 1.9rem + 1.6vw, 3.375rem);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.clock-place {
+  margin-top: 10px;
+  font-size: var(--text-sm);
+  line-height: 1.4;
+  color: var(--ink);
+}
+
+.clock-off {
+  margin-top: auto;
+  padding-top: 24px;
+  font-size: var(--text-xs);
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+
+/* ── Stack ───────────────────────────────────────────────────── */
+.stack-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+  gap: 22px 8px;
+}
+
+.stack-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+/* Icons render as masks so they take the ink color and stay one family. */
+.stack-glyph {
+  width: 34px;
+  height: 34px;
+  background-color: var(--ink);
+  -webkit-mask: var(--icon) center / contain no-repeat;
+  mask: var(--icon) center / contain no-repeat;
+  transition:
+    background-color 0.35s ease,
+    transform 0.45s var(--ease-out);
+}
+
+.stack-name {
+  font-size: var(--text-xs);
+  line-height: 1.2;
+  color: var(--ink-2);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .stack-item:hover .stack-glyph {
+    background-color: var(--tint, var(--ink));
+    transform: translateY(-3px);
+  }
+}
+
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .background-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      'ship ship'
+      'edu res'
+      'stack stack'
+      'certs clock';
+  }
+}
+
+@media (max-width: 760px) {
+  .background-grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'ship'
+      'edu'
+      'res'
+      'stack'
+      'certs'
+      'clock';
+  }
+
+  .stack-grid {
+    grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+  }
+
+  .shipped-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  .shipped-year {
+    order: -1;
+  }
+
+  .shipped-proof {
+    justify-self: start;
+    max-width: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .row-icon,
+  .stack-glyph {
+    transition: none;
+  }
+
+  a.row-link:hover .row-icon,
+  .stack-item:hover .stack-glyph {
+    transform: none;
+  }
+}

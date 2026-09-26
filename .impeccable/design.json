@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-06-04T00:00:00Z",
+  "title": "Design System: Carl Macabales Portfolio",
+  "extensions": {
+    "colorMeta": {
+      "void":            { "role": "neutral",   "displayName": "Void",          "canonical": "oklch(0% 0 0)",       "tonalRamp": ["#000000","#111111","#1a1a1a","#262626","#333333","#4d4d4d","#666666","#999999"] },
+      "surface":         { "role": "neutral",   "displayName": "Surface",        "canonical": "oklch(13% 0 0)",      "tonalRamp": ["#0a0a0a","#111111","#1a1a1a","#222222","#2e2e2e","#3a3a3a","#484848","#666666"] },
+      "electric-mint":   { "role": "primary",   "displayName": "Electric Mint",  "canonical": "oklch(91% 0.18 178)","tonalRamp": ["#003326","#005540","#007a5c","#009e77","#22c99a","#4edfbe","#64ffda","#a8fff0"] },
+      "mint-deep":       { "role": "secondary", "displayName": "Mint Deep",      "canonical": "oklch(78% 0.12 188)","tonalRamp": ["#002e2c","#00504e","#007270","#009491","#1eb8b5","#4ecdc4","#7addd9","#b3edeb"] },
+      "ink-bright":      { "role": "neutral",   "displayName": "Ink Bright",     "canonical": "oklch(100% 0 0)",    "tonalRamp": ["#333333","#555555","#777777","#999999","#bbbbbb","#dddddd","#f0f0f0","#ffffff"] },
+      "ink-muted":       { "role": "neutral",   "displayName": "Ink Muted",      "canonical": "oklch(66% 0 0)",     "tonalRamp": ["#1a1a1a","#333333","#4d4d4d","#666666","#808080","#999999","#b3b3b3","#cccccc"] },
+      "light-canvas":    { "role": "neutral",   "displayName": "Light Canvas",   "canonical": "oklch(96% 0.003 270)","tonalRamp": ["#d0d0d5","#dcdce0","#e5e5e8","#eeeef0","#f2f2f4","#f5f5f7","#f9f9fa","#ffffff"] },
+      "light-accent":    { "role": "primary",   "displayName": "Teal (Light)",   "canonical": "oklch(57% 0.12 175)","tonalRamp": ["#003027","#005040","#007060","#00897b","#1aa895","#3ec2b0","#6ed8cc","#b3ece7"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Hero name and primary hooks only. Maximum three lines at display size." },
+      "headline": { "displayName": "Headline", "purpose": "Section titles, project names, career timeline entries." },
+      "body":    { "displayName": "Body", "purpose": "All descriptive copy. Line length capped at 65-75ch." },
+      "label":   { "displayName": "Label", "purpose": "Dock tooltips, metadata, small chip text. Never at body-size with ink-muted." }
+    },
+    "shadows": [
+      { "name": "accent-glow",    "value": "0 8px 32px rgba(100, 255, 218, 0.3)",  "purpose": "Primary interactive glow. Buttons, active cards, hovered profile image." },
+      { "name": "accent-glow-lg", "value": "0 12px 40px rgba(100, 255, 218, 0.3)", "purpose": "Elevated CTA glow on hover — one step above accent-glow." },
+      { "name": "ambient-micro",  "value": "0 4px 6px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.06)", "purpose": "Dock items at rest. Neutral lift, no color." }
+    ],
+    "motion": [
+      { "name": "ease-standard",  "value": "cubic-bezier(0.4, 0, 0.2, 1)",  "purpose": "Default easing for state transitions." },
+      { "name": "ease-out-quart", "value": "cubic-bezier(0.25, 1, 0.5, 1)", "purpose": "Entrance animations — GSAP card reveals, modal entrances." },
+      { "name": "ease-in-quart",  "value": "cubic-bezier(0.5, 0, 0.75, 0)", "purpose": "Exit animations — card dismissal, category transitions." }
+    ],
+    "breakpoints": [
+      { "name": "mobile",  "value": "480px",  "notes": "Dock compresses; MagnetLines disabled." },
+      { "name": "tablet",  "value": "768px",  "notes": "Grid collapses to 1 column; MagnetLines disabled." },
+      { "name": "desktop", "value": "1024px", "notes": "Full two-column layouts; MagnetLines enabled." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The default action button. Electric mint fill, dark ink text, gentle rounded corners.",
+      "html": "<button class=\"ds-btn-primary\">View My Work</button>",
+      "css": ".ds-btn-primary { background: #64ffda; color: #111111; padding: 12px 24px; border-radius: 8px; font-size: 1rem; font-weight: 600; font-family: Inter, -apple-system, sans-serif; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; transition: background 0.3s ease, transform 0.3s ease; } .ds-btn-primary:hover { background: #4ecdc4; transform: translateY(-2px); } .ds-btn-primary:active { transform: translateY(0); }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Ghost button with Electric Mint outline. Fills on hover.",
+      "html": "<button class=\"ds-btn-secondary\">Download Resume</button>",
+      "css": ".ds-btn-secondary { background: transparent; color: #ffffff; padding: 12px 24px; border-radius: 8px; font-size: 1rem; font-weight: 600; font-family: Inter, -apple-system, sans-serif; border: 2px solid #64ffda; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease; } .ds-btn-secondary:hover { background: #64ffda; color: #111111; transform: translateY(-2px); } .ds-btn-secondary:active { transform: translateY(0); }"
+    },
+    {
+      "name": "Magnetic CTA Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Hero CTA variant. Gradient fill, expanding glow on hover, perspective lift. The portfolio's primary personality statement.",
+      "html": "<button class=\"ds-btn-magnetic\"><span>View Projects</span></button>",
+      "css": ".ds-btn-magnetic { background: linear-gradient(135deg, #64ffda 0%, #4ecdc4 100%); color: #111111; padding: 12px 24px; border-radius: 8px; font-size: 1rem; font-weight: 700; font-family: Inter, -apple-system, sans-serif; border: none; cursor: pointer; position: relative; overflow: hidden; box-shadow: 0 8px 32px rgba(100,255,218,0.3); transform: perspective(1000px); transition: box-shadow 0.3s ease, transform 0.3s ease; } .ds-btn-magnetic::before { content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0; background: radial-gradient(circle, rgba(100,255,218,0.3) 0%, transparent 70%); border-radius: 50%; transform: translate(-50%,-50%); transition: width 0.6s ease, height 0.6s ease; pointer-events: none; } .ds-btn-magnetic:hover { box-shadow: 0 12px 40px rgba(100,255,218,0.3); transform: perspective(1000px) translateZ(20px); } .ds-btn-magnetic:hover::before { width: 300px; height: 300px; } .ds-btn-magnetic:active { transform: perspective(1000px) translateZ(10px) scale(0.98); }"
+    },
+    {
+      "name": "SpotlightCard",
+      "kind": "card",
+      "refersTo": "card-spotlight",
+      "description": "Primary project/content card. Mouse-tracking radial spotlight on hover is the defining interaction.",
+      "html": "<div class=\"ds-spotlight-card\"><h3>Project Title</h3><p>Description of the project and the thinking behind it.</p></div>",
+      "css": ".ds-spotlight-card { position: relative; border-radius: 1.5rem; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); padding: 2rem; overflow: hidden; --mouse-x: 50%; --mouse-y: 50%; } .ds-spotlight-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1; background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), rgba(100,255,218,0.1), transparent 80%); opacity: 0; transition: opacity 0.5s ease; pointer-events: none; } .ds-spotlight-card:hover::before { opacity: 0.6; } .ds-spotlight-card > * { position: relative; z-index: 2; } .ds-spotlight-card h3 { color: #ffffff; font-weight: 600; margin-bottom: 0.75rem; } .ds-spotlight-card p { color: #a0a0a0; font-size: 0.95rem; line-height: 1.6; }"
+    },
+    {
+      "name": "Dock Navigation",
+      "kind": "nav",
+      "refersTo": "dock-panel",
+      "description": "Fixed bottom navigation with macOS-style magnification and frosted glass backdrop. The only glassmorphism in the system.",
+      "html": "<nav class=\"ds-dock\"><button class=\"ds-dock-item ds-dock-item--active\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2\"/><circle cx=\"12\" cy=\"7\" r=\"4\"/></svg></button><button class=\"ds-dock-item\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"2\" y=\"7\" width=\"20\" height=\"14\" rx=\"2\" ry=\"2\"/><path d=\"M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16\"/></svg></button></nav>",
+      "css": ".ds-dock { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 1rem; border-radius: 1rem; background: rgba(20,20,20,0.8); border: 1px solid rgba(255,255,255,0.1); padding: 0.5rem; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); } .ds-dock-item { display: inline-flex; align-items: center; justify-content: center; width: 50px; height: 50px; border-radius: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #ffffff; cursor: pointer; transition: all 0.3s ease; } .ds-dock-item:hover { border-color: rgba(100,255,218,0.3); background: rgba(100,255,218,0.1); } .ds-dock-item--active { border-color: #64ffda; background: rgba(100,255,218,0.1); color: #64ffda; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "card-spotlight",
+      "description": "Form field. Translucent surface, accent glow on focus.",
+      "html": "<div class=\"ds-field\"><label class=\"ds-label\">Your name</label><input class=\"ds-input\" type=\"text\" placeholder=\"Carl Macabales\"></div>",
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 0.5rem; } .ds-label { font-size: 0.875rem; font-weight: 500; color: #ffffff; font-family: Inter, sans-serif; } .ds-input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 0.75rem 1rem; font-size: 1rem; font-family: Inter, sans-serif; color: #ffffff; outline: none; transition: border-color 0.3s ease, box-shadow 0.3s ease; } .ds-input::placeholder { color: rgba(160,160,160,0.6); } .ds-input:focus { border-color: #64ffda; box-shadow: 0 0 0 3px rgba(100,255,218,0.15); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Curious Machine",
+    "overview": "This is an interface built at the intersection of precision and exploration. The void-black canvas is not a backdrop — it is the working environment. The electric-mint accent is the signal: alive, responsive, energetic. Every interaction reveals that something is running, thinking, responding beneath the surface.\n\nThe system rejects the legible categories: it is not a terminal, not corporate, not the warm-minimal of 2026, and emphatically not the generic neon-teal portfolio template. The difference from template is not in the accent color — it is in how that color behaves.\n\nTone is calibrated confidence. The portfolio shows depth in AI/ML not by listing tools, but by demonstrating the quality of thinking. The interface itself is evidence.",
+    "keyCharacteristics": [
+      "Void black as active canvas, not passive void",
+      "Electric-mint is the sole accent; its rarity and reactivity are the point",
+      "All motion is deliberate — every animation reveals state or rewards attention",
+      "Depth through interaction, not through layering",
+      "Single typeface (Inter) doing all the heavy lifting through weight contrast alone"
+    ],
+    "rules": [
+      { "name": "The One Signal Rule", "body": "Electric Mint is the only accent. No purple gradients, no orange highlights, no secondary brand colors in the dark theme. Every appearance of the accent is intentional.", "section": "colors" },
+      { "name": "The AAA Correction Rule", "body": "#a0a0a0 on void-black fails WCAG AAA for normal text. Secondary body text must use #c8c8c8 or lighter.", "section": "colors" },
+      { "name": "The One-Family Rule", "body": "Inter is the only typeface. Never introduce a second family.", "section": "typography" },
+      { "name": "The Weight Ceiling", "body": "Display weight is 800, maximum. The scale works because the jump from 400 to 800 is decisive.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "Surfaces are flat at rest. The accent glow appears only in response to interaction.", "section": "elevation" },
+      { "name": "The Monochrome Shadow Rule", "body": "The only colored shadow in the system is the accent glow. All ambient shadows are rgba(0,0,0,X).", "section": "elevation" },
+      { "name": "The Motion Authenticity Rule", "body": "The MagnetLines background only exists because it responds. A static version would be decoration. If performance requires removal, remove it entirely.", "section": "components" }
+    ],
+    "dos": [
+      "Do use #64ffda (Electric Mint) exclusively as the interaction accent.",
+      "Do apply the accent glow (rgba(100,255,218,0.3)) as the shadow for all accent-colored interactive elements.",
+      "Do ensure all body-weight text meets ≥7:1 contrast (WCAG 2.1 AAA).",
+      "Do keep button interactions physical: glow, perspective shift, particle response.",
+      "Do apply the SpotlightCard mouse-tracking radial gradient to every primary card component.",
+      "Do preserve the MagnetLines background on desktop.",
+      "Do use text-wrap: balance on h1–h3 headings.",
+      "Do include prefers-reduced-motion alternatives for every animation."
+    ],
+    "donts": [
+      "Don't use a second accent color alongside Electric Mint in the dark theme.",
+      "Don't build a dark + neon-teal card grid — the generic AI-developer-portfolio template.",
+      "Don't use cream, sand, or warm-neutral backgrounds.",
+      "Don't build a hacker-terminal aesthetic.",
+      "Don't create a corporate-SaaS layout with metric tiles or hero-number templates.",
+      "Don't introduce a second typeface.",
+      "Don't use border-left greater than 1px as a colored stripe on cards or section markers.",
+      "Don't apply gradient text (background-clip: text with a gradient).",
+      "Don't use #a0a0a0 for normal body text — fails WCAG AA and AAA.",
+      "Don't remove the MagnetLines background and replace it with a static pattern."
+    ]
+  }
+}

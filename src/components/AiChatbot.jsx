@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion' // eslint-disable-line no-unused-vars
 import { Bot, X, Send, MessageCircle } from 'lucide-react'
+import { ASSISTANT_OPEN_EVENT } from '../utils/assistant'
 import './AiChatbot.css'
 
 const WINDOW_SIZE = 10
@@ -43,6 +44,12 @@ export default function AiChatbot() {
       return () => clearTimeout(timer)
     }
   }, [isOpen])
+
+  useEffect(() => {
+    const open = () => setIsOpen(true)
+    window.addEventListener(ASSISTANT_OPEN_EVENT, open)
+    return () => window.removeEventListener(ASSISTANT_OPEN_EVENT, open)
+  }, [])
 
   useEffect(() => {
     const onKey = (e) => {

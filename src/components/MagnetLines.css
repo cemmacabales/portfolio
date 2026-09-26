@@ -1,36 +1,19 @@
 .magnetLines-container {
   display: grid;
-  grid-template-columns: repeat(var(--columns), 1fr);
-  grid-template-rows: repeat(var(--rows), 1fr);
-
   justify-items: center;
   align-items: center;
-
-  width: 80vmin;
-  height: 80vmin;
 }
 
 .magnetLines-container span {
   display: block;
+  border-radius: 1px;
   transform-origin: center;
-  will-change: transform;
   transform: rotate(var(--rotate));
-  opacity: 0.6;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Mobile optimizations for magnet lines */
-@media (max-width: 768px) {
-  .magnetLines-container {
-    display: none !important;
+@media (prefers-reduced-motion: reduce) {
+  .magnetLines-container span {
+    transition: none;
   }
-  
-  /* Ensure background container is properly hidden on mobile */
-  .magnet-lines-bg {
-    display: none !important;
-  }
-  
-  /* Alternative mobile background */
-  .background-container {
-    display: none !important;
-  }
-} 
+}

@@ -79,18 +79,15 @@ export default defineConfig({
           utils: ['./src/utils/validation'],
           // Split large components
           components: [
-            './src/components/CareerTimeline',
-            './src/components/Certificates',
-            './src/components/TechStack'
+            './src/components/WorkList',
+            './src/components/BackgroundBento',
+            './src/components/ContactPanel'
           ],
           ui: [
-            './src/components/Dock',
-            './src/components/SpotlightCard',
+            './src/components/SiteNav',
+            './src/components/HeroBento',
             './src/components/MagnetLines',
-            './src/components/TextType',
-            './src/components/DecryptedText',
-            './src/components/ScrambledText',
-            './src/components/Loader'
+            './src/components/GradualBlur'
           ]
         }
       },

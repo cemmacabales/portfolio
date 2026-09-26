@@ -9,8 +9,9 @@ export const sanitizeInput = (input) => {
   
   return input
     .trim()
-    .replace(/[<>"'&]/g, '') // Remove HTML/script injection characters
-    .replace(/\s+/g, ' ') // Replace multiple spaces with single space
+    .replace(/[<>"&]/g, '') // Remove HTML/script injection characters
+    .replace(/[^\S\n]+/g, ' ') // Collapse runs of spaces/tabs, keep line breaks
+    .replace(/\n{3,}/g, '\n\n') // At most one blank line between paragraphs
     .substring(0, 1000) // Limit length to prevent abuse
 }
 
@@ -20,10 +21,10 @@ export const validateEmail = (email) => {
   return EMAIL_REGEX.test(email.trim())
 }
 
-// Validate name (letters, spaces, hyphens, apostrophes only)
+// Validate name (letters in any script, spaces, hyphens, apostrophes, periods)
 export const validateName = (name) => {
   if (!name || typeof name !== 'string') return false
-  const nameRegex = /^[a-zA-Z\s'-]{2,50}$/
+  const nameRegex = /^[\p{L}\p{M}\s'.’-]{2,50}$/u
   return nameRegex.test(name.trim())
 }
 
@@ -75,22 +76,22 @@ export const validateFormData = (formData) => {
   
   // Validate name
   if (!validateName(formData.name)) {
-    errors.name = 'Name must be 2-50 characters and contain only letters, spaces, hyphens, and apostrophes'
+    errors.name = 'Enter your name (2 to 50 letters).'
   }
   
   // Validate email
   if (!validateEmail(formData.email)) {
-    errors.email = 'Please enter a valid email address'
+    errors.email = 'Enter an email address like name@example.com.'
   }
   
   // Validate subject
   if (!validateSubject(formData.subject)) {
-    errors.subject = 'Subject must be 3-100 characters long'
+    errors.subject = 'Add a subject (3 to 100 characters).'
   }
   
   // Validate message
   if (!validateMessage(formData.message)) {
-    errors.message = 'Message must be 10-2000 characters long'
+    errors.message = 'Write a message of at least 10 characters.'
   }
   
   // Validate project type (if provided)
