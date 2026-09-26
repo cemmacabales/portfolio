@@ -229,9 +229,8 @@ export default function BackgroundBento() {
         transition={{ duration: 0.8, ease: EASE }}
       >
         <h2 id="about-title" className="section-title">
-          Background
+          Background. <span className="section-lede">What I’ve shipped, published, and studied.</span>
         </h2>
-        <p className="section-meta">Shipping, research, and study</p>
       </motion.header>
 
       <motion.div

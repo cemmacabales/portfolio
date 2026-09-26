@@ -134,10 +134,8 @@ export default function WorkList({ openSlug, onToggle, onShowModels }) {
         transition={{ duration: 0.8, ease: EASE }}
       >
         <h2 id="work-title" className="section-title">
-          Selected work
-          <span className="section-count">({String(projects.length).padStart(2, '0')})</span>
+          Selected work. <span className="section-lede">What&nbsp;I’ve&nbsp;built since 2025.</span>
         </h2>
-        <p className="section-meta">2025–2026</p>
       </motion.header>
 
       <ol className="work-list">

@@ -12,39 +12,24 @@
   }
 
   .section-head {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 24px;
-    padding-bottom: clamp(24px, 3vw, 40px);
+    padding-bottom: clamp(28px, 3.4vw, 48px);
   }
 
+  /*
+   * Apple's two-tone headline: a bold name, then a gray sentence at the same
+   * size that says what the section holds.
+   */
   .section-title {
+    max-width: 21ch;
     font-size: var(--text-section);
-    font-weight: 650;
-    letter-spacing: -0.035em;
-    line-height: 1;
+    font-weight: 600;
+    letter-spacing: -0.028em;
+    line-height: 1.06;
     color: var(--ink);
   }
 
-  .section-count {
-    display: inline-block;
-    margin-left: 0.35em;
-    font-size: max(0.875rem, 0.28em);
-    font-weight: 500;
-    letter-spacing: 0;
-    vertical-align: top;
+  .section-lede {
     color: var(--ink-2);
-    font-variant-numeric: tabular-nums;
-    transform: translateY(0.15em);
-  }
-
-  .section-meta {
-    font-size: var(--text-sm);
-    color: var(--ink-2);
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-    padding-bottom: 0.35em;
   }
 
   /* ── Tiles ───────────────────────────────────────────────────── */
@@ -364,18 +349,6 @@
     button.tile:active,
     .btn:active {
       transform: none;
-    }
-  }
-
-  @media (max-width: 720px) {
-    .section-head {
-      align-items: flex-start;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .section-meta {
-      padding-bottom: 0;
     }
   }
 }
