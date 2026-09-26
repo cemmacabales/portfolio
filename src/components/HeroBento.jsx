@@ -3,11 +3,13 @@ import { motion, AnimatePresence, useInView, useReducedMotion } from 'framer-mot
 import { ArrowUpRight, ArrowDown, MessageCircle, Github, Trophy, Pause, Play } from 'lucide-react'
 import ShapeWaves from './ShapeWaves'
 import AboutTile from './AboutTile'
+import SocialTile from './SocialTile'
+import SetupTile from './SetupTile'
 import GradPhoto from '../assets/me.jpeg'
 import BarongPhoto from '../assets/me-barong.jpg'
 import ResumePage from '../assets/resume-page.jpg'
-import { profile, disciplines, featured } from '../data/portfolio'
-import { useCycle, usePageVisible } from '../hooks/useCycle'
+import { profile, featured } from '../data/portfolio'
+import { usePageVisible } from '../hooks/useCycle'
 import { useBooted } from '../hooks/useBooted'
 import { markReady } from '../boot'
 import './HeroBento.css'
@@ -270,92 +272,6 @@ function CentientReel({ screens }) {
   )
 }
 
-/* ── What I work on: each skill, and where it was used ───────── */
-const SKILLS = disciplines.flatMap((group) => group.items)
-
-function SkillsTile() {
-  const ref = useRef(null)
-  const inView = useInView(ref, { amount: 0.45 })
-  const booted = useBooted()
-  const [pointing, setPointing] = useState(false)
-  const [index, setIndex] = useCycle(SKILLS.length, 3400, booted && inView && !pointing)
-  const current = SKILLS[index]
-
-  const point = (i) => {
-    setIndex(i)
-    setPointing(true)
-  }
-
-  return (
-    <motion.article ref={ref} variants={rise} className="tile tile-skills">
-      <h2 className="tile-head">What I work on</h2>
-      <div className="tile-body skills-body">
-        <div className="skills-focus" aria-hidden="true">
-          <AnimatePresence mode="popLayout" initial={false}>
-            <motion.div
-              key={index}
-              className="focus-roll"
-              initial={{ y: 14, opacity: 0, filter: 'blur(4px)' }}
-              animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
-              // The old line leaves quicker than the new one arrives, so the
-              // two never sit on top of each other for long.
-              exit={{ y: -14, opacity: 0, filter: 'blur(4px)', transition: { duration: 0.28, ease: 'easeIn' } }}
-              transition={{ duration: 0.6, ease: EASE }}
-            >
-              <p className="focus-name">{current.name}</p>
-              <p className="focus-where">
-                <span className="focus-project">{current.project}</span>
-                <span className="focus-sep">·</span>
-                {current.where}
-              </p>
-            </motion.div>
-          </AnimatePresence>
-        </div>
-
-        <div className="skills-groups" onPointerLeave={() => setPointing(false)}>
-          {disciplines.map((group) => (
-            <div key={group.title} className="skills-group">
-              <h3 className="skills-title">{group.title}</h3>
-              <ul className="pill-list">
-                {group.items.map((item) => {
-                  const i = SKILLS.indexOf(item)
-                  const on = i === index
-                  return (
-                    <li key={item.name}>
-                      <button
-                        type="button"
-                        className={`pill skill-pill${on ? ' is-on' : ''}`}
-                        aria-describedby={`skill-where-${i}`}
-                        onPointerEnter={() => point(i)}
-                        onFocus={() => point(i)}
-                        onBlur={() => setPointing(false)}
-                        onClick={() => setIndex(i)}
-                      >
-                        {on && (
-                          <motion.span
-                            layoutId="skill-lens"
-                            className="skill-lens"
-                            style={{ borderRadius: 999 }}
-                            transition={{ type: 'spring', stiffness: 420, damping: 36 }}
-                          />
-                        )}
-                        <span className="skill-label">{item.name}</span>
-                      </button>
-                      <span id={`skill-where-${i}`} hidden>
-                        {item.project}: {item.where}
-                      </span>
-                    </li>
-                  )
-                })}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </div>
-    </motion.article>
-  )
-}
-
 // Field palettes per theme. The background must match the tile exactly, since
 // ShapeWaves paints an opaque surface. Glow is off in light mode: bloom adds
 // light, which vanishes on a near-white tile.
@@ -569,7 +485,11 @@ export default function HeroBento({ theme, showField, onOpenProject, onAskAssist
 
         <AboutTile variants={rise} />
 
-        <SkillsTile />
+        {/* ── Beside it: where to find me, and what I work on ────── */}
+        <div className="hero-stack">
+          <SocialTile variants={rise} />
+          <SetupTile variants={rise} />
+        </div>
       </motion.div>
     </section>
   )

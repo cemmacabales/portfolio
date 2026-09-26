@@ -74,78 +74,43 @@ export const about = {
   ],
 }
 
-// The two halves of the work. Each skill names where it was used, which the
-// "What I work on" tile rolls through. Keep `where` to facts from `projects`,
-// `shipped`, or `research`.
-export const disciplines = [
+// The Socials tile. `verb` is what each app's own button says.
+export const socials = [
   {
-    title: 'AI & machine learning',
-    items: [
-      {
-        name: 'Retrieval-augmented generation',
-        project: 'AF Guideline Assistant',
-        where: '0.835 BERTScore F1, published at CSPA 2026',
-      },
-      {
-        name: 'Computer vision',
-        project: 'Edge Exercise Coach',
-        where: '97.15% classification across 9 movements',
-      },
-      {
-        name: 'Medical imaging',
-        project: 'Renal CT Detection',
-        where: '0.946 mAP@0.5, presented at IEEE ICIPCN 2026',
-      },
-      {
-        name: 'Model evaluation',
-        project: 'AF Guideline Assistant',
-        where: '20 clinical queries, every hallucination reviewed',
-      },
-      {
-        name: 'Edge inference',
-        project: 'Edge Exercise Coach',
-        where: '25–30 fps live on a Raspberry Pi 5',
-      },
-    ],
+    id: 'instagram',
+    name: 'Instagram',
+    handle: '@crlemmanuel_',
+    verb: 'Follow',
+    url: 'https://www.instagram.com/crlemmanuel_/',
   },
   {
-    title: 'Software engineering',
-    items: [
-      {
-        name: 'Next.js & React',
-        project: 'Centient',
-        where: 'the contributor app, on desktop and mobile',
-      },
-      {
-        name: 'TypeScript',
-        project: 'Centient',
-        where: 'app, API, and payout worker',
-      },
-      {
-        name: 'PostgreSQL & Prisma',
-        project: 'Centient',
-        where: 'payouts raced in tests, zero double-pays',
-      },
-      {
-        name: 'Payments on Stellar',
-        project: 'Centient & Pink Raft',
-        where: 'USDC payouts and Soroban contracts',
-      },
-      {
-        name: 'React Native',
-        project: 'iPrayUST',
-        where: '10,000+ users in the UST community',
-      },
-      {
-        name: 'CI/CD on Railway',
-        project: 'Centient',
-        where: 'deploys on Railway; payment tests run on every PR',
-      },
-    ],
+    id: 'linkedin',
+    name: 'LinkedIn',
+    handle: profile.shortName,
+    verb: 'Connect',
+    url: profile.linkedin,
+  },
+  {
+    id: 'facebook',
+    name: 'Facebook',
+    handle: 'carl.macabales',
+    verb: 'Add friend',
+    url: 'https://www.facebook.com/carl.macabales/',
   },
 ]
 
-// The featured project in the hero. Details live in `projects[0]`.
+// The My setup tile: the machine, the box that keeps the files, and the
+// apps that stay open. All of it came from Carl.
+export const setup = {
+  machine: { name: 'MacBook Air', detail: 'Apple M2 · 8 GB memory' },
+  server: { name: 'Raspberry Pi', detail: 'Storage server' },
+  apps: [
+    { id: 'claude', name: 'Claude Code', role: 'Agent' },
+    { id: 'codex', name: 'Codex', role: 'Agent' },
+    { id: 'cursor', name: 'Cursor', role: 'Editor' },
+  ],
+}
+
 export const featured = {
   slug: 'centient',
   name: 'Centient',

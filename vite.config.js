@@ -100,6 +100,8 @@ export default defineConfig({
             './src/components/SiteNav',
             './src/components/HeroBento',
             './src/components/AboutTile',
+            './src/components/SocialTile',
+            './src/components/SetupTile',
             './src/components/HobbyScenes',
             './src/components/ShapeWaves',
             './src/components/GradualBlur'

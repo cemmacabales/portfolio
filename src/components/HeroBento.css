@@ -8,7 +8,7 @@
   grid-template-areas:
     'main main main main main main main main side side side side'
     'feat feat feat feat feat feat feat feat feat feat feat feat'
-    'about about about about about about skills skills skills skills skills skills';
+    'about about about about about about stack stack stack stack stack stack';
   gap: var(--gap);
 }
 
@@ -28,8 +28,8 @@
   grid-area: about;
 }
 
-.tile-skills {
-  grid-area: skills;
+.hero-stack {
+  grid-area: stack;
 }
 
 /* ── Main tile: copy + inset portrait ────────────────────────── */
@@ -850,135 +850,17 @@
   }
 }
 
-/* ── What I work on: a focus line over the two pill groups ─── */
-/* Shares a row with the About tile; the pill groups sit on the bottom edge. */
-.tile-skills {
+/* ── Beside About: Socials over My setup ─────────────────────── */
+/* Socials keeps its own height; My setup takes whatever the About tile leaves. */
+.hero-stack {
   display: flex;
   flex-direction: column;
-  container-type: inline-size;
+  gap: var(--gap);
+  min-width: 0;
 }
 
-.tile-skills .tile-body {
+.hero-stack .tile-setup {
   flex: 1 0 auto;
-}
-
-.skills-body {
-  display: flex;
-  flex-direction: column;
-  gap: 26px;
-}
-
-/*
- * A fixed-height slot, so the roll never shifts the pills below it. No
- * overflow clip: the lines crossfade in place, so there's no hard edge
- * for the text to slide behind.
- */
-.skills-focus {
-  position: relative;
-  display: grid;
-  height: 4.75rem;
-}
-
-.focus-roll {
-  grid-area: 1 / 1;
-}
-
-.focus-name {
-  font-size: clamp(1.0625rem, 4.4cqi, 2.25rem);
-  font-weight: 650;
-  letter-spacing: -0.03em;
-  line-height: 1.12;
-  white-space: nowrap;
-  color: var(--ink);
-}
-
-.focus-where {
-  margin-top: 8px;
-  font-size: var(--text-sm);
-  line-height: 1.4;
-  color: var(--ink-2);
-}
-
-.focus-project {
-  font-weight: 600;
-  color: var(--ink);
-}
-
-.focus-sep {
-  margin: 0 8px;
-}
-
-.skills-groups {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 28px;
-  margin-top: auto;
-  padding-top: 22px;
-  border-top: 1px solid var(--line);
-}
-
-.skills-group + .skills-group {
-  padding-left: 28px;
-  border-left: 1px solid var(--line);
-}
-
-/* Too narrow for two columns of pills: stack the groups so the pills can
-   flow in rows instead of one per line. */
-@container (max-width: 700px) {
-  .skills-groups {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 20px;
-  }
-
-  .skills-group + .skills-group {
-    padding-top: 20px;
-    padding-left: 0;
-    border-top: 1px solid var(--line);
-    border-left: 0;
-  }
-}
-
-.skills-title {
-  margin-bottom: 14px;
-  font-size: var(--text-sm);
-  font-weight: 600;
-  color: var(--ink);
-}
-
-/*
- * No background and no stacking context of its own: the lens lives inside
- * one pill but glides across the others, so no pill may paint over it.
- */
-.skill-pill {
-  position: relative;
-  min-height: 38px;
-  padding: 0 15px;
-  background: transparent;
-  cursor: default;
-  transition:
-    color 0.35s ease,
-    border-color 0.35s ease;
-}
-
-/* One mint lens glides from pill to pill (Framer layoutId), like the nav's. */
-.skill-pill.is-on {
-  border-color: transparent;
-  color: var(--mint-ink);
-}
-
-/* Above every pill's border, below every label. */
-.skill-lens {
-  position: absolute;
-  inset: -1px;
-  z-index: 1;
-  border-radius: 999px;
-  background: var(--mint);
-  box-shadow: 0 8px 18px -10px oklch(0.3 0.06 175 / 0.7);
-}
-
-.skill-label {
-  position: relative;
-  z-index: 2;
 }
 
 /* ── Responsive ──────────────────────────────────────────────── */
@@ -989,7 +871,7 @@
       'main main'
       'side side'
       'feat feat'
-      'about skills';
+      'about stack';
   }
 
   .hero-side {
@@ -1005,7 +887,7 @@
       'side side'
       'feat feat'
       'about about'
-      'skills skills';
+      'stack stack';
   }
 
   .tile-featured {
@@ -1032,7 +914,7 @@
       'side'
       'feat'
       'about'
-      'skills';
+      'stack';
   }
 
   .tile-main {
@@ -1112,27 +994,6 @@
 
   .tile-mint {
     min-height: 190px;
-  }
-
-  .skills-focus {
-    height: 7.25rem;
-  }
-
-  .focus-name {
-    font-size: 1.5rem;
-    white-space: normal;
-  }
-
-  .skills-groups {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 22px;
-  }
-
-  .skills-group + .skills-group {
-    padding-left: 0;
-    padding-top: 22px;
-    border-left: 0;
-    border-top: 1px solid var(--line);
   }
 }
 

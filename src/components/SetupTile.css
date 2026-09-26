@@ -1,0 +1,590 @@
+/* ── My setup: About This Mac, plus a Dock of what stays open ─── */
+.tile-setup {
+  --alu-hi: oklch(0.91 0.004 175);
+  --alu-lo: oklch(0.77 0.005 175);
+  --alu-rim: oklch(0.8 0.004 175);
+  --alu-scoop: oklch(0.7 0.005 175);
+  --rig-shadow: oklch(0.2 0.02 175 / 0.12);
+  --shelf: color-mix(in oklch, var(--tile-sunk) 75%, transparent);
+  --shelf-rim: oklch(1 0 0 / 0.7);
+  --loop: 6.4s;
+  display: flex;
+  flex-direction: column;
+  container-type: inline-size;
+}
+
+/* The Air in Midnight after dark, so it doesn't glow off the tile. */
+:root[data-theme='dark'] .tile-setup {
+  --alu-hi: oklch(0.5 0.008 175);
+  --alu-lo: oklch(0.36 0.008 175);
+  --alu-rim: oklch(0.44 0.008 175);
+  --alu-scoop: oklch(0.3 0.006 175);
+  --rig-shadow: oklch(0 0 0 / 0.45);
+  --shelf-rim: oklch(1 0 0 / 0.06);
+}
+
+.setup-body {
+  flex: 1 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 420px) auto;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px 28px;
+}
+
+.setup-name {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  color: var(--ink);
+}
+
+.setup-role {
+  display: block;
+  font-size: var(--text-xs);
+  line-height: 1.35;
+  color: var(--ink-2);
+}
+
+/* ── The desk ────────────────────────────────────────────────── */
+.rig {
+  min-width: 0;
+}
+
+.rig-art {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.rig-captions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.rig-caption-end {
+  text-align: right;
+}
+
+.rig-shadow {
+  fill: var(--rig-shadow);
+}
+
+.lid-rim {
+  fill: var(--alu-rim);
+}
+
+.lid-bezel {
+  fill: #0b0c0c;
+}
+
+.alu-hi {
+  stop-color: var(--alu-hi);
+}
+
+.alu-lo {
+  stop-color: var(--alu-lo);
+}
+
+.base-hinge {
+  fill: var(--alu-lo);
+}
+
+.base-scoop {
+  fill: var(--alu-scoop);
+}
+
+.scr-menubar {
+  fill: oklch(1 0 0 / 0.16);
+}
+
+.win {
+  stroke: oklch(1 0 0 / 0.12);
+  stroke-width: 0.6;
+}
+
+.win-term {
+  fill: #141615;
+}
+
+.win-editor {
+  fill: #1d201f;
+}
+
+.win-editor-side,
+.win-bar {
+  fill: #262a29;
+}
+
+.code rect {
+  fill: oklch(1 0 0 / 0.26);
+}
+
+.code .code-hi {
+  fill: #64ffda;
+  fill-opacity: 0.75;
+}
+
+.side-rows rect {
+  fill: oklch(1 0 0 / 0.2);
+}
+
+.scr-dock {
+  fill: oklch(1 0 0 / 0.16);
+  stroke: oklch(1 0 0 / 0.24);
+  stroke-width: 0.5;
+}
+
+/* At rest the terminal shows a finished run, so the scene is never empty. */
+.t-line {
+  fill: oklch(1 0 0 / 0.62);
+  transform-box: fill-box;
+  transform-origin: left center;
+}
+
+.t-prompt {
+  fill: #d97757;
+}
+
+.t-done {
+  fill: #64ffda;
+}
+
+.t-caret {
+  fill: oklch(1 0 0 / 0.75);
+}
+
+.link-line {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-dasharray: 0.1 4.6;
+}
+
+.link-packet {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 3.2;
+  stroke-linecap: round;
+  stroke-dasharray: 6 200;
+  stroke-dashoffset: 6;
+  opacity: 0;
+}
+
+.pi-lid {
+  fill: #f5f6f6;
+  stroke: oklch(0 0 0 / 0.1);
+  stroke-width: 0.8;
+}
+
+.pi-port {
+  fill: #19191a;
+}
+
+.pi-tongue {
+  fill: #3b3b3d;
+}
+
+.pi-led-off {
+  fill: #1f4d31;
+}
+
+.pi-led {
+  fill: #3ddc84;
+  opacity: 0;
+}
+
+/* ── The loop: type, send, land ──────────────────────────────── */
+.is-live .t-line {
+  animation: var(--loop) linear infinite;
+}
+
+.is-live .t-line:nth-child(1) {
+  animation-name: t-type-1;
+}
+
+.is-live .t-line:nth-child(2) {
+  animation-name: t-type-2;
+}
+
+.is-live .t-line:nth-child(3) {
+  animation-name: t-type-3;
+}
+
+.is-live .t-line:nth-child(4) {
+  animation-name: t-type-4;
+}
+
+.is-live .t-line:nth-child(5) {
+  animation-name: t-type-5;
+}
+
+.is-live .t-caret {
+  animation: t-caret 1s steps(1, end) infinite;
+}
+
+.is-live .link-packet {
+  animation: packet var(--loop) infinite;
+}
+
+.is-live .pi-led {
+  animation: pi-blink var(--loop) linear infinite;
+}
+
+/* Each line types in chunks, holds, and the screen clears together. */
+@keyframes t-type-1 {
+  0%,
+  3% {
+    transform: scaleX(0);
+    opacity: 1;
+    animation-timing-function: steps(4, end);
+  }
+  8%,
+  86% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  92% {
+    transform: scaleX(1);
+    opacity: 0;
+  }
+  93%,
+  100% {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+}
+
+@keyframes t-type-2 {
+  0%,
+  12% {
+    transform: scaleX(0);
+    opacity: 1;
+    animation-timing-function: steps(9, end);
+  }
+  22%,
+  86% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  92% {
+    transform: scaleX(1);
+    opacity: 0;
+  }
+  93%,
+  100% {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+}
+
+@keyframes t-type-3 {
+  0%,
+  24% {
+    transform: scaleX(0);
+    opacity: 1;
+    animation-timing-function: steps(7, end);
+  }
+  32%,
+  86% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  92% {
+    transform: scaleX(1);
+    opacity: 0;
+  }
+  93%,
+  100% {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+}
+
+@keyframes t-type-4 {
+  0%,
+  34% {
+    transform: scaleX(0);
+    opacity: 1;
+    animation-timing-function: steps(10, end);
+  }
+  44%,
+  86% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  92% {
+    transform: scaleX(1);
+    opacity: 0;
+  }
+  93%,
+  100% {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+}
+
+@keyframes t-type-5 {
+  0%,
+  49% {
+    transform: scaleX(0);
+    opacity: 1;
+    animation-timing-function: steps(5, end);
+  }
+  54%,
+  86% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  92% {
+    transform: scaleX(1);
+    opacity: 0;
+  }
+  93%,
+  100% {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+}
+
+@keyframes t-caret {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes packet {
+  0%,
+  56% {
+    stroke-dashoffset: 6;
+    opacity: 0;
+  }
+  57% {
+    stroke-dashoffset: 6;
+    opacity: 1;
+    animation-timing-function: cubic-bezier(0.45, 0, 0.25, 1);
+  }
+  74% {
+    stroke-dashoffset: -100;
+    opacity: 1;
+  }
+  75%,
+  100% {
+    stroke-dashoffset: -100;
+    opacity: 0;
+  }
+}
+
+/* Two quick blinks as the file lands. */
+@keyframes pi-blink {
+  0%,
+  73.5% {
+    opacity: 0;
+  }
+  74%,
+  76.5% {
+    opacity: 1;
+  }
+  77%,
+  78% {
+    opacity: 0;
+  }
+  78.5%,
+  81% {
+    opacity: 1;
+  }
+  81.5%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ── The Dock, stood on its side ─────────────────────────────── */
+.dock {
+  --shelf-w: 66px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 9px 0;
+}
+
+.dock::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--shelf-w);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: var(--shelf);
+  box-shadow: inset 0 1px 0 var(--shelf-rim);
+}
+
+@supports (corner-shape: squircle) {
+  .dock::before {
+    corner-shape: squircle;
+    border-radius: calc(22px * 1.75);
+  }
+}
+
+.dock-app {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--shelf-w) auto;
+  align-items: center;
+  min-height: 58px;
+}
+
+.dock-icon {
+  --r-icon: 11px;
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  justify-self: center;
+  width: 46px;
+  height: 46px;
+  border-radius: var(--r-icon);
+  box-shadow:
+    inset 0 0 0 1px oklch(1 0 0 / 0.1),
+    0 3px 6px -2px oklch(0 0 0 / 0.3);
+  transform-origin: left center;
+  transition: transform 0.45s var(--ease-out);
+}
+
+@supports (corner-shape: squircle) {
+  .dock-icon {
+    corner-shape: squircle;
+    border-radius: calc(var(--r-icon) * 1.75);
+  }
+}
+
+.dock-icon svg {
+  width: 58%;
+  height: 58%;
+}
+
+.dock-icon-claude {
+  background: linear-gradient(180deg, #e2896a, #d0694a);
+  color: #faf9f5;
+}
+
+.dock-icon-codex {
+  background: linear-gradient(180deg, #2c2c2c, #050505);
+  color: #fff;
+}
+
+.dock-icon-cursor {
+  background: linear-gradient(180deg, #2e2c27, #14120b);
+}
+
+.dock-icon-cursor svg {
+  width: 56%;
+  height: 56%;
+}
+
+/* The running light: every app here is always open. */
+.dock-run {
+  position: absolute;
+  top: 50%;
+  left: 3px;
+  width: 4px;
+  height: 4px;
+  margin-top: -2px;
+  border-radius: 50%;
+  background: var(--ink-2);
+}
+
+.dock-text {
+  padding-left: 14px;
+}
+
+/* Magnification, the way the real Dock swells under the pointer. */
+@media (hover: hover) and (pointer: fine) {
+  .dock-app:hover .dock-icon {
+    transform: scale(1.18);
+  }
+
+  .dock-app:hover + .dock-app .dock-icon,
+  .dock-app:has(+ .dock-app:hover) .dock-icon {
+    transform: scale(1.07);
+  }
+}
+
+/* ── Narrow tile: the desk on top, the Dock back on the floor ── */
+@container (max-width: 560px) {
+  .setup-body {
+    grid-template-columns: minmax(0, 1fr);
+    justify-content: stretch;
+  }
+
+  .rig {
+    width: min(100%, 400px);
+  }
+
+  .dock {
+    --shelf-h: 64px;
+    flex-direction: row;
+    gap: 0;
+    padding: 0;
+  }
+
+  .dock::before {
+    inset: 0 auto auto 0;
+    width: 100%;
+    height: var(--shelf-h);
+  }
+
+  .dock-app {
+    flex: 1 1 0;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: var(--shelf-h) auto;
+    justify-items: center;
+    align-items: start;
+    min-height: 0;
+    text-align: center;
+  }
+
+  .dock-icon {
+    align-self: center;
+    transform-origin: center bottom;
+  }
+
+  .dock-run {
+    top: calc(var(--shelf-h) - 7px);
+    left: 50%;
+    margin: 0 0 0 -2px;
+  }
+
+  .dock-text {
+    padding: 10px 4px 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .is-live .t-line,
+  .is-live .t-caret,
+  .is-live .link-packet,
+  .is-live .pi-led {
+    animation: none;
+  }
+
+  .dock-icon {
+    transition: none;
+  }
+
+  .dock-app:hover .dock-icon,
+  .dock-app:hover + .dock-app .dock-icon,
+  .dock-app:has(+ .dock-app:hover) .dock-icon {
+    transform: none;
+  }
+}
