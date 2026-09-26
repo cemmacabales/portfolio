@@ -1,4 +1,7 @@
-import CentientImage from '../assets/centient-payout.jpg'
+import CentientHome from '../assets/centient/home.jpg'
+import CentientRank from '../assets/centient/rank.jpg'
+import CentientPaid from '../assets/centient/paid.jpg'
+import CentientAccount from '../assets/centient/account.jpg'
 import CentientOwl from '../assets/centient-owl.png'
 import PoseEstimationImage from '../assets/Pose Estimation.png'
 import EscImage from '../assets/esc.png'
@@ -45,27 +48,73 @@ export const profile = {
   timeZone: 'Asia/Manila',
 }
 
-// The two halves of the work, shown side by side in the hero.
+// The two halves of the work. Each skill names where it was used, which the
+// "What I work on" tile rolls through. Keep `where` to facts from `projects`,
+// `shipped`, or `research`.
 export const disciplines = [
   {
     title: 'AI & machine learning',
     items: [
-      'Retrieval-augmented generation',
-      'Computer vision',
-      'Medical imaging',
-      'Model evaluation',
-      'Edge inference',
+      {
+        name: 'Retrieval-augmented generation',
+        project: 'AF Guideline Assistant',
+        where: '0.835 BERTScore F1, published at CSPA 2026',
+      },
+      {
+        name: 'Computer vision',
+        project: 'Edge Exercise Coach',
+        where: '97.15% classification across 9 movements',
+      },
+      {
+        name: 'Medical imaging',
+        project: 'Renal CT Detection',
+        where: '0.946 mAP@0.5, presented at IEEE ICIPCN 2026',
+      },
+      {
+        name: 'Model evaluation',
+        project: 'AF Guideline Assistant',
+        where: '20 clinical queries, every hallucination reviewed',
+      },
+      {
+        name: 'Edge inference',
+        project: 'Edge Exercise Coach',
+        where: '25–30 fps live on a Raspberry Pi 5',
+      },
     ],
   },
   {
     title: 'Software engineering',
     items: [
-      'Next.js & React',
-      'TypeScript',
-      'PostgreSQL & Prisma',
-      'Payments on Stellar',
-      'React Native',
-      'CI/CD on Railway',
+      {
+        name: 'Next.js & React',
+        project: 'Centient',
+        where: 'the contributor app, on desktop and mobile',
+      },
+      {
+        name: 'TypeScript',
+        project: 'Centient',
+        where: 'app, API, and payout worker',
+      },
+      {
+        name: 'PostgreSQL & Prisma',
+        project: 'Centient',
+        where: 'payouts raced in tests, zero double-pays',
+      },
+      {
+        name: 'Payments on Stellar',
+        project: 'Centient & Pink Raft',
+        where: 'USDC payouts and Soroban contracts',
+      },
+      {
+        name: 'React Native',
+        project: 'iPrayUST',
+        where: '10,000+ users in the UST community',
+      },
+      {
+        name: 'CI/CD on Railway',
+        project: 'Centient',
+        where: 'deploys on Railway; payment tests run on every PR',
+      },
     ],
   },
 ]
@@ -77,8 +126,29 @@ export const featured = {
   tagline: 'Train AI, cent by cent.',
   award: '$5,000 Instawards grant',
   logo: CentientOwl,
-  image: CentientImage,
-  imageAlt: 'Centient confirming “+0.25 USDC on its way” after a contributor ranks an AI answer',
+  // Screens for the hero slideshow, in the order a contributor meets them.
+  screens: [
+    {
+      src: CentientHome,
+      caption: 'Sign in with a Stellar wallet',
+      alt: 'Centient home screen: “Train AI, cent by cent.” with a Connect Freighter button',
+    },
+    {
+      src: CentientRank,
+      caption: 'Pick the better answer, say why',
+      alt: 'A Centient task with response A selected and the reason typed in',
+    },
+    {
+      src: CentientPaid,
+      caption: 'Paid per accepted answer, on-chain',
+      alt: 'Centient confirming “+0.25 USDC on its way” after an answer is accepted',
+    },
+    {
+      src: CentientAccount,
+      caption: 'Every payout tracked to confirmed',
+      alt: 'Centient account sheet: 0.5 USDC earned, two submissions marked confirmed',
+    },
+  ],
   pitch:
     'People rank pairs of AI answers and get paid in USDC on Stellar the moment an answer is accepted, with no bank account and nothing to cash out. Quality guards catch spam and bias, and every payout is co-signed from a multisig account that no single key can drain.',
   stack: ['Next.js', 'TypeScript', 'PostgreSQL', 'Stellar'],
@@ -91,16 +161,15 @@ export const projects = [
   {
     slug: 'centient',
     name: 'Centient',
-    featured: true,
     category: 'Full-stack · USDC on Stellar',
     year: '2026',
-    image: CentientImage,
-    imageAlt: 'Centient confirming “+0.25 USDC on its way” after a contributor ranks an AI answer',
+    image: CentientHome,
+    imageAlt: 'Centient home screen: “Train AI, cent by cent.” with a Connect Freighter button',
     summary:
       'A human-feedback platform for AI teams: contributors compare two AI answers, say why one is better, and are paid in USDC on Stellar as soon as the answer is accepted. Gold tasks, rate limits, and agreement checks keep the rankings honest. Payouts are co-signed from a multisig account, and after most balances sat stuck below the old withdrawal minimum, the Withdraw button went away: every accepted answer now pays the wallet directly.',
     metrics: [
       { value: '$5,000', label: 'Instawards grant' },
-      { value: '8 of 10', label: 'balances were stuck under the old 1 USDC minimum' },
+      { value: '2 of 3', label: 'keys co-sign every payout, enforced in CI' },
     ],
     tech: ['Next.js', 'TypeScript', 'PostgreSQL', 'Prisma', 'Stellar SDK', 'Redis', 'Railway'],
     links: {
@@ -253,12 +322,6 @@ export const shipped = [
     what: 'No-code payment flows that deploy Soroban contracts in under a minute; AI replies cut from ~10 s to ~2 s',
     proof: '1st runner-up, Stellar Hackathon',
     year: '2026',
-  },
-  {
-    name: 'iPrayUST',
-    what: 'React Native and Firebase prayer companion; offline-first caching cut network requests ~40%',
-    proof: '10,000+ users in the UST community',
-    year: '2025',
   },
 ]
 

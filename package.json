@@ -26,7 +26,8 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "tech-stack-icons": "^3.7.1",
-    "three": "^0.179.1"
+    "three": "^0.186.1",
+    "vgpu": "^0.5.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.1",

@@ -30,7 +30,7 @@
 .site-nav:not(.is-scrolled) .nav-brand,
 .site-nav:not(.is-scrolled) .nav-links,
 .site-nav:not(.is-scrolled) .nav-circle {
-  box-shadow: inset 0 1px 0 var(--glass-border);
+  box-shadow: none;
 }
 
 .nav-brand {
@@ -152,6 +152,8 @@
     height: 60px;
     padding: 4px;
     border-radius: 999px;
+    background: color-mix(in oklch, var(--glass-solid) 84%, transparent);
+    border-color: transparent;
   }
 
   .tab {

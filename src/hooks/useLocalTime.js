@@ -21,9 +21,14 @@ export function useLocalTime(timeZone) {
     minute: '2-digit',
     timeZone,
   }).format(now)
-  const hour = Number(
-    new Intl.DateTimeFormat('en-US', { hour: 'numeric', hourCycle: 'h23', timeZone }).format(now)
-  )
+  const parts = new Intl.DateTimeFormat('en-US', {
+    hour: 'numeric',
+    minute: 'numeric',
+    hourCycle: 'h23',
+    timeZone,
+  }).formatToParts(now)
+  const hour = Number(parts.find((p) => p.type === 'hour').value)
+  const minute = Number(parts.find((p) => p.type === 'minute').value)
 
-  return { time, hour }
+  return { time, hour, minute }
 }

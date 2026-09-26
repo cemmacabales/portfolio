@@ -237,7 +237,7 @@
   /* ── Liquid glass ────────────────────────────────────────────── */
   /*
    * Apple's Liquid Glass is a native material; this is an approximation:
-   * blurred, saturated backdrop + a light-catching rim + a cursor sheen.
+   * blurred, saturated backdrop + an even hairline edge + a cursor sheen.
    * Used only on things that float over content (nav, chips on images,
    * the chat launcher), never on the tiles themselves.
    */
@@ -249,28 +249,6 @@
     backdrop-filter: blur(22px) saturate(185%);
     border: 1px solid var(--glass-border);
     box-shadow: var(--glass-shadow);
-  }
-
-  .glass::before {
-    content: '';
-    position: absolute;
-    inset: -1px;
-    z-index: -1;
-    border-radius: inherit;
-    padding: 1px;
-    background: linear-gradient(
-      150deg,
-      var(--glass-rim) 0%,
-      transparent 32%,
-      transparent 68%,
-      color-mix(in oklch, var(--glass-rim) 55%, transparent) 100%
-    );
-    -webkit-mask:
-      linear-gradient(#000 0 0) content-box,
-      linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
   }
 
   .glass[data-sheen]::after {

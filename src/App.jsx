@@ -65,6 +65,7 @@ function App() {
 
       <main id="main">
         <HeroBento
+          theme={theme}
           showField={!isMobile}
           onOpenProject={openProject}
           onAskAssistant={openAssistant}

@@ -43,10 +43,7 @@ function WorkRow({ project, index, open, onToggle, onShowModels }) {
           <span className="work-thumb" aria-hidden="true">
             <img src={project.image} alt="" loading="lazy" decoding="async" />
           </span>
-          <span className="work-name">
-            {project.name}
-            {project.featured && <span className="work-flag">Featured</span>}
-          </span>
+          <span className="work-name">{project.name}</span>
           <span className="work-meta">
             <span>{project.category}</span>
             <span className="work-year">{project.year}</span>

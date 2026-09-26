@@ -74,6 +74,7 @@ export default defineConfig({
         manualChunks: {
           vendor: ['react', 'react-dom'],
           animations: ['framer-motion', 'gsap'],
+          gpu: ['vgpu'],
           icons: ['lucide-react'],
           email: ['@emailjs/browser'],
           utils: ['./src/utils/validation'],
@@ -86,7 +87,7 @@ export default defineConfig({
           ui: [
             './src/components/SiteNav',
             './src/components/HeroBento',
-            './src/components/MagnetLines',
+            './src/components/ShapeWaves',
             './src/components/GradualBlur'
           ]
         }

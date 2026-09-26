@@ -19,29 +19,14 @@
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  border: 1px solid var(--glass-border);
-  background: var(--glass-bg);
+  border: 1px solid transparent;
+  /* Denser than the nav glass: it floats over photos, where a thin fill reads as a ring. */
+  background: color-mix(in oklch, var(--glass-solid) 84%, transparent);
   -webkit-backdrop-filter: blur(22px) saturate(185%);
   backdrop-filter: blur(22px) saturate(185%);
   box-shadow: var(--glass-shadow);
   color: var(--ink);
   cursor: pointer;
-}
-
-.chatbot-trigger::before {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  z-index: -1;
-  border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(150deg, var(--glass-rim), transparent 40%, transparent 65%, var(--glass-rim));
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
 }
 
 /* A mint pip marks it as the assistant without a second accent. */
