@@ -8,7 +8,7 @@
   grid-template-areas:
     'main main main main main main main main side side side side'
     'feat feat feat feat feat feat feat feat feat feat feat feat'
-    'about about about about about skills skills skills skills skills skills skills';
+    'about about about about about about skills skills skills skills skills skills';
   gap: var(--gap);
 }
 
@@ -850,24 +850,16 @@
   }
 }
 
-/* ── About + disciplines ─────────────────────────────────────── */
-.tile-about .tile-body {
+/* ── What I work on: a focus line over the two pill groups ─── */
+/* Shares a row with the About tile; the pill groups sit on the bottom edge. */
+.tile-skills {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-}
-
-.about-copy {
-  max-width: 62ch;
-  font-size: clamp(1.0625rem, 0.98rem + 0.25vw, 1.1875rem);
-  line-height: 1.62;
-  letter-spacing: -0.006em;
-  color: var(--ink);
-}
-
-/* ── What I work on: a focus line over the two pill groups ─── */
-.tile-skills {
   container-type: inline-size;
+}
+
+.tile-skills .tile-body {
+  flex: 1 0 auto;
 }
 
 .skills-body {
@@ -920,6 +912,7 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 28px;
+  margin-top: auto;
   padding-top: 22px;
   border-top: 1px solid var(--line);
 }
@@ -927,6 +920,22 @@
 .skills-group + .skills-group {
   padding-left: 28px;
   border-left: 1px solid var(--line);
+}
+
+/* Too narrow for two columns of pills: stack the groups so the pills can
+   flow in rows instead of one per line. */
+@container (max-width: 700px) {
+  .skills-groups {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+
+  .skills-group + .skills-group {
+    padding-top: 20px;
+    padding-left: 0;
+    border-top: 1px solid var(--line);
+    border-left: 0;
+  }
 }
 
 .skills-title {

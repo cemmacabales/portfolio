@@ -22,6 +22,8 @@
 
   --mint: #64ffda;
   --mint-ink: oklch(0.3 0.06 175);
+  /* Dark in both themes: screens, records, plates in the About scenes. */
+  --screen: oklch(0.22 0.008 175);
 
   --inverse: oklch(0.2 0.008 175);
   --inverse-ink: oklch(0.97 0.003 175);
@@ -62,6 +64,7 @@
   --accent: var(--mint);
 
   --mint-ink: oklch(0.3 0.06 175);
+  --screen: oklch(0.13 0.004 175);
 
   --inverse: oklch(0.235 0.007 175);
   --inverse-ink: oklch(0.965 0.003 175);

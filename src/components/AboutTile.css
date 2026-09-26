@@ -1,0 +1,1200 @@
+/* ── About: a hello, the hobbies, and a stage that acts them out ── */
+.tile-about {
+  display: flex;
+  flex-direction: column;
+}
+
+.about-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 20px;
+}
+
+.about-hello {
+  font-size: clamp(1.5rem, 1.25rem + 0.7vw, 1.875rem);
+  font-weight: 650;
+  letter-spacing: -0.028em;
+  line-height: 1.15;
+  color: var(--ink);
+}
+
+.about-copy {
+  max-width: 62ch;
+  font-size: clamp(1.0625rem, 0.98rem + 0.25vw, 1.1875rem);
+  line-height: 1.62;
+  letter-spacing: -0.006em;
+  color: var(--ink);
+  text-wrap: pretty;
+}
+
+/* A stacking context of its own, so the lens can sit under the words. */
+.about-hobbies {
+  position: relative;
+  z-index: 0;
+}
+
+/*
+ * Each hobby reads as part of the sentence. The padding gives the lens room
+ * around the word; the matching negative margin keeps the text where it was.
+ */
+.hobby {
+  position: relative;
+  display: inline-block;
+  margin: 0 -0.22em;
+  padding: 0 0.22em;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  font: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+  white-space: nowrap;
+  cursor: pointer;
+  text-decoration-line: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.24em;
+  text-decoration-color: color-mix(in oklch, var(--accent) 45%, transparent);
+  transition:
+    color 0.35s ease,
+    text-decoration-color 0.35s ease;
+}
+
+.hobby:hover {
+  text-decoration-color: var(--accent);
+}
+
+.hobby.is-on {
+  color: var(--mint-ink);
+  text-decoration-color: transparent;
+}
+
+.hobby:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Under the paragraph's text, above the tile: a highlighter pass. */
+.hobby-lens {
+  position: absolute;
+  inset: 0.1em 0 0;
+  z-index: -1;
+  border-radius: 8px;
+  background: var(--mint);
+}
+
+/* ── Stage ───────────────────────────────────────────────────── */
+.about-stage {
+  --ov-bg: color-mix(in oklch, var(--tile) 78%, transparent);
+  --ov-solid: var(--tile);
+  --ov-line: var(--line);
+  --ov-ink: var(--ink);
+
+  position: relative;
+  flex: 1 0 auto;
+  min-height: clamp(200px, 15vw, 220px);
+  margin: 0 10px 10px;
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: calc(var(--r-tile) - 10px);
+  background:
+    radial-gradient(120% 110% at 100% 100%, var(--cover-wash), transparent 62%),
+    var(--tile-sunk);
+}
+
+.about-scene {
+  position: absolute;
+  inset: 0;
+  padding: 10px 14px 8px;
+}
+
+.scene-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.about-chip {
+  position: absolute;
+  z-index: 2;
+  top: 14px;
+  left: 14px;
+  gap: 8px;
+  padding: 0 12px;
+}
+
+/* ── Shared scene parts ──────────────────────────────────────── */
+.scene-svg text {
+  font-family: var(--font-sans);
+}
+
+.sc-line {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.sc-floor {
+  stroke: var(--line-strong);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.sc-ball {
+  fill: var(--mint);
+  stroke: var(--mint-ink);
+  stroke-width: 2;
+}
+
+.sc-seam {
+  fill: none;
+  stroke: var(--mint-ink);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+
+/* Every animated part turns about its own box unless it says otherwise. */
+.hoops-spin,
+.hoops-net,
+.lift-dust circle,
+.games-recoil,
+.games-ring,
+.games-hit,
+.music-spin,
+.music-eq rect,
+.kd-lean-l,
+.kd-lean-r,
+.kd-petal,
+.kd-played,
+.dogs-paw,
+.dogs-roll,
+.cube-turn,
+.cube-solved,
+.cube-spark {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* ── Basketball (2.6s loop) ──────────────────────────────────── */
+/*
+ * The ball's x runs at a steady speed while y rises and falls on quadratic
+ * easing, which traces a true parabola. The timings put the apex at x 219,
+ * the peak of the dotted arc.
+ */
+.hoops-x {
+  transform: translateX(219px);
+  animation: hoops-x 2.6s infinite both;
+}
+
+.hoops-y {
+  transform: translateY(19px);
+  animation: hoops-y 2.6s infinite both;
+}
+
+.hoops-spin {
+  animation: hoops-spin 2.6s linear infinite both;
+}
+
+@keyframes hoops-x {
+  0% {
+    transform: translateX(80px);
+    opacity: 0;
+    animation-timing-function: linear;
+  }
+  3% {
+    opacity: 1;
+  }
+  50% {
+    transform: translateX(310px);
+    animation-timing-function: linear;
+  }
+  62.7% {
+    transform: translateX(312px);
+    animation-timing-function: linear;
+  }
+  88.3% {
+    transform: translateX(288px);
+    opacity: 1;
+    animation-timing-function: ease-out;
+  }
+  94%,
+  100% {
+    transform: translateX(282px);
+    opacity: 0;
+  }
+}
+
+@keyframes hoops-y {
+  0% {
+    transform: translateY(130px);
+    animation-timing-function: cubic-bezier(0.333, 0.667, 0.667, 1);
+  }
+  30.3% {
+    transform: translateY(19px);
+    animation-timing-function: cubic-bezier(0.333, 0, 0.667, 0.333);
+  }
+  50% {
+    transform: translateY(66px);
+    animation-timing-function: cubic-bezier(0.333, 0.252, 0.667, 0.585);
+  }
+  62.7% {
+    transform: translateY(146px);
+    animation-timing-function: cubic-bezier(0.333, 0.667, 0.667, 1);
+  }
+  75.5% {
+    transform: translateY(126px);
+    animation-timing-function: cubic-bezier(0.333, 0, 0.667, 0.333);
+  }
+  88.3%,
+  100% {
+    transform: translateY(146px);
+  }
+}
+
+/* Backspin on the way up, then a roll back to the left. */
+@keyframes hoops-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  62.7% {
+    transform: rotate(-560deg);
+  }
+  100% {
+    transform: rotate(-720deg);
+  }
+}
+
+.hoops-arc {
+  fill: none;
+  stroke: var(--ink-2);
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-dasharray: 0.1 8;
+  opacity: 0.55;
+  animation: hoops-arc 2.6s infinite both;
+}
+
+@keyframes hoops-arc {
+  0% {
+    opacity: 0;
+  }
+  6%,
+  52% {
+    opacity: 0.55;
+  }
+  70%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.hoops-board {
+  stroke: var(--ink);
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+
+.hoops-rim {
+  stroke: var(--ink);
+  stroke-width: 3.2;
+  stroke-linecap: round;
+}
+
+.sc-net {
+  fill: none;
+  stroke: var(--ink-2);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.hoops-net {
+  transform-origin: 50% 0;
+  animation: hoops-net 2.6s infinite both;
+}
+
+@keyframes hoops-net {
+  0%,
+  51% {
+    transform: none;
+  }
+  56% {
+    transform: scale(0.9, 1.3);
+  }
+  63% {
+    transform: scale(1.02, 0.95);
+  }
+  70%,
+  100% {
+    transform: none;
+  }
+}
+
+.hoops-score {
+  font-size: 15px;
+  font-weight: 700;
+  fill: var(--ink);
+  opacity: 0;
+  animation: hoops-score 2.6s infinite both;
+}
+
+@keyframes hoops-score {
+  0%,
+  54% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  60% {
+    opacity: 1;
+    transform: none;
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(-4px);
+  }
+  90%,
+  100% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+/* ── Lifting (2.8s loop) ─────────────────────────────────────── */
+.lift-bar {
+  transform: translateY(52px);
+  animation: lift-bar 2.8s infinite both;
+}
+
+@keyframes lift-bar {
+  0%,
+  14% {
+    transform: translateY(120px);
+    animation-timing-function: cubic-bezier(0.3, 0, 0.2, 1);
+  }
+  42% {
+    transform: translateY(52px);
+    animation-timing-function: ease-out;
+  }
+  46% {
+    transform: translateY(55px);
+    animation-timing-function: ease-in-out;
+  }
+  50%,
+  60% {
+    transform: translateY(52px);
+    animation-timing-function: cubic-bezier(0.5, 0, 0.75, 0);
+  }
+  82% {
+    transform: translateY(120px);
+    animation-timing-function: ease-out;
+  }
+  85% {
+    transform: translateY(117px);
+    animation-timing-function: ease-in;
+  }
+  88%,
+  100% {
+    transform: translateY(120px);
+  }
+}
+
+.lift-shaft {
+  stroke: var(--ink-2);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.lift-plate {
+  fill: var(--screen);
+  stroke: color-mix(in oklch, var(--ink) 16%, transparent);
+  stroke-width: 1.2;
+}
+
+.lift-plate.is-small {
+  fill: var(--mint);
+  stroke: var(--mint-ink);
+}
+
+.lift-collar {
+  fill: var(--ink);
+}
+
+.lift-dust circle {
+  fill: var(--line-strong);
+  opacity: 0;
+  animation: lift-dust 2.8s ease-out infinite both;
+}
+
+@keyframes lift-dust {
+  0%,
+  82% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  85% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  96%,
+  100% {
+    opacity: 0;
+    transform: translateY(-3px) scale(1.7);
+  }
+}
+
+.lift-count {
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  fill: var(--ink);
+  animation: lift-count 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes lift-count {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+.lift-label {
+  font-size: 11.5px;
+  font-weight: 500;
+  fill: var(--ink-2);
+}
+
+/* ── Games (3.6s loop): flick, hit, next ─────────────────────── */
+.games-outer {
+  fill: var(--tile);
+  stroke: var(--ink);
+  stroke-width: 2.4;
+}
+
+.games-core {
+  fill: var(--tile);
+  stroke: var(--ink);
+  stroke-width: 1.6;
+}
+
+.games-bull {
+  fill: var(--ink);
+}
+
+.games-label {
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  fill: var(--ink-2);
+}
+
+.games-t1 .games-core {
+  animation: games-lit-1 3.6s infinite both;
+}
+
+.games-t2 .games-core {
+  fill: var(--mint);
+  animation: games-lit-2 3.6s infinite both;
+}
+
+.games-t3 .games-core {
+  animation: games-lit-3 3.6s infinite both;
+}
+
+@keyframes games-lit-1 {
+  0%,
+  11% {
+    fill: var(--tile);
+  }
+  12.5%,
+  92% {
+    fill: var(--mint);
+  }
+  97%,
+  100% {
+    fill: var(--tile);
+  }
+}
+
+@keyframes games-lit-2 {
+  0%,
+  44% {
+    fill: var(--tile);
+  }
+  45.5%,
+  92% {
+    fill: var(--mint);
+  }
+  97%,
+  100% {
+    fill: var(--tile);
+  }
+}
+
+@keyframes games-lit-3 {
+  0%,
+  77% {
+    fill: var(--tile);
+  }
+  78.5%,
+  92% {
+    fill: var(--mint);
+  }
+  97%,
+  100% {
+    fill: var(--tile);
+  }
+}
+
+/* Pulse and hit marker share one keyframe set, offset to each target's hit. */
+.games-ring {
+  animation: games-pulse 3.6s var(--hit) infinite both;
+}
+
+.games-hit {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  opacity: 0;
+  animation: games-marker 3.6s var(--hit) infinite both;
+}
+
+.games-t1 {
+  --hit: 0.4s;
+}
+
+.games-t2 {
+  --hit: 1.58s;
+}
+
+.games-t3 {
+  --hit: 2.77s;
+}
+
+@keyframes games-pulse {
+  0% {
+    transform: none;
+  }
+  3% {
+    transform: scale(1.16);
+  }
+  12%,
+  100% {
+    transform: none;
+  }
+}
+
+@keyframes games-marker {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  2% {
+    opacity: 1;
+    transform: none;
+  }
+  9%,
+  100% {
+    opacity: 0;
+    transform: scale(1.35);
+  }
+}
+
+.games-aim {
+  transform: translate(200px, 70px);
+  animation: games-aim 3.6s infinite both;
+}
+
+/* Flicks ease out hard, like a mouse snapping onto a target. */
+@keyframes games-aim {
+  0% {
+    transform: translate(200px, 150px);
+    animation-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  10%,
+  33% {
+    transform: translate(100px, 96px);
+    animation-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  43%,
+  66% {
+    transform: translate(200px, 70px);
+    animation-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  76%,
+  90% {
+    transform: translate(300px, 100px);
+    animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  100% {
+    transform: translate(200px, 150px);
+  }
+}
+
+.games-recoil {
+  animation: games-recoil 3.6s infinite both;
+}
+
+@keyframes games-recoil {
+  0%,
+  10.5%,
+  16%,
+  43.5%,
+  49%,
+  76.5%,
+  82%,
+  100% {
+    transform: none;
+  }
+  12%,
+  45%,
+  78% {
+    transform: scale(0.78);
+  }
+}
+
+.games-reticle {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+}
+
+.games-dot {
+  fill: var(--accent);
+}
+
+/* ── Music: a record at 33⅓ rpm (1.8s a turn) ─────────────────── */
+.music-spin {
+  animation: music-turn 1.8s linear infinite;
+}
+
+@keyframes music-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.music-record {
+  fill: var(--screen);
+  stroke: color-mix(in oklch, var(--ink) 14%, transparent);
+  stroke-width: 1.2;
+}
+
+.music-groove {
+  fill: none;
+  stroke: oklch(1 0 0 / 0.09);
+  stroke-width: 1;
+}
+
+.music-label {
+  fill: var(--mint);
+}
+
+.music-print {
+  fill: none;
+  stroke: var(--mint-ink);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.music-hole {
+  fill: var(--tile-sunk);
+}
+
+.music-glare {
+  fill: none;
+  stroke: oklch(1 0 0 / 0.2);
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+
+/* The arm swings in from its rest and drops onto the record. */
+.music-arm {
+  transform-origin: 236px 40px;
+  animation: music-arm 1s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+}
+
+@keyframes music-arm {
+  from {
+    transform: rotate(-30deg);
+  }
+}
+
+.music-tone {
+  stroke-width: 3;
+}
+
+.music-weight,
+.music-head {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 6;
+  stroke-linecap: round;
+}
+
+.music-pivot {
+  fill: var(--tile);
+  stroke: var(--ink);
+  stroke-width: 2.4;
+}
+
+.music-pin {
+  fill: var(--ink);
+}
+
+.music-note ellipse {
+  fill: var(--ink);
+}
+
+.music-note path {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.music-note {
+  animation: music-note 2.6s ease-out infinite both;
+}
+
+.music-note.n2 {
+  animation-delay: 1.3s;
+}
+
+@keyframes music-note {
+  0% {
+    opacity: 0;
+    transform: translate(0, 6px);
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(14px, -30px) rotate(12deg);
+  }
+}
+
+.music-eq rect {
+  fill: var(--ink);
+  transform-origin: 50% 100%;
+  transform: scaleY(calc((var(--lo) + var(--hi)) / 2));
+  animation: music-eq var(--dur) ease-in-out infinite alternate both;
+}
+
+@keyframes music-eq {
+  from {
+    transform: scaleY(var(--lo));
+  }
+  to {
+    transform: scaleY(var(--hi));
+  }
+}
+
+/* ── K-dramas (5.2s loop): the lean-in, cut to “next episode” ─── */
+.kd-screen {
+  fill: var(--screen);
+}
+
+.kd-moon {
+  fill: oklch(0.97 0.01 175 / 0.9);
+}
+
+.kd-star {
+  fill: oklch(1 0 0 / 0.55);
+}
+
+/* Solid, not translucent, with a screen-colored edge: when they lean in,
+   they stay two people instead of blending into one shape. */
+.kd-figure {
+  fill: oklch(0.44 0.012 175);
+  stroke: var(--screen);
+  stroke-width: 2.5;
+}
+
+.kd-lean-r .kd-figure {
+  fill: oklch(0.37 0.012 175);
+}
+
+.kd-lean-l,
+.kd-lean-r {
+  transform-origin: 50% 100%;
+}
+
+.kd-lean-l {
+  transform: translateX(6px) rotate(5deg);
+  animation: kd-lean-l 5.2s infinite both;
+}
+
+.kd-lean-r {
+  transform: translateX(-6px) rotate(-5deg);
+  animation: kd-lean-r 5.2s infinite both;
+}
+
+@keyframes kd-lean-l {
+  0%,
+  12% {
+    transform: none;
+    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+  }
+  56%,
+  96% {
+    transform: translateX(6px) rotate(5deg);
+  }
+  97%,
+  100% {
+    transform: none;
+  }
+}
+
+@keyframes kd-lean-r {
+  0%,
+  12% {
+    transform: none;
+    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+  }
+  56%,
+  96% {
+    transform: translateX(-6px) rotate(-5deg);
+  }
+  97%,
+  100% {
+    transform: none;
+  }
+}
+
+.kd-petal {
+  fill: oklch(1 0 0 / 0.8);
+  transform: translate(calc(var(--dx) / 2), 70px) rotate(40deg);
+  animation: kd-fall var(--dur) linear var(--delay) infinite both;
+}
+
+@keyframes kd-fall {
+  from {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  to {
+    transform: translate(var(--dx), 150px) rotate(320deg);
+  }
+}
+
+.kd-sub {
+  font-size: 10.5px;
+  font-weight: 500;
+  fill: oklch(0.98 0 0);
+  stroke: var(--screen);
+  stroke-width: 3;
+  stroke-linejoin: round;
+  paint-order: stroke;
+  animation: kd-sub 5.2s infinite both;
+}
+
+@keyframes kd-sub {
+  0%,
+  8% {
+    opacity: 0;
+  }
+  12%,
+  52% {
+    opacity: 1;
+  }
+  56%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.kd-ep {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  fill: oklch(1 0 0 / 0.7);
+}
+
+.kd-track {
+  fill: oklch(1 0 0 / 0.2);
+}
+
+.kd-played {
+  fill: var(--mint);
+  transform-origin: 0 50%;
+  transform: scaleX(0.55);
+  animation: kd-played 5.2s linear infinite both;
+}
+
+@keyframes kd-played {
+  0% {
+    transform: scaleX(0.02);
+  }
+  58%,
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+.kd-dim {
+  fill: oklch(0 0 0);
+  opacity: 0;
+  animation: kd-dim 5.2s infinite both;
+}
+
+/* Dims for the autoplay card, then a cut to black before the next one. */
+@keyframes kd-dim {
+  0%,
+  56% {
+    opacity: 0;
+  }
+  61%,
+  91% {
+    opacity: 0.55;
+  }
+  94.5%,
+  97.5% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.kd-next {
+  opacity: 0;
+  animation: kd-next 5.2s infinite both;
+}
+
+@keyframes kd-next {
+  0%,
+  58% {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  63%,
+  91% {
+    opacity: 1;
+    transform: none;
+  }
+  94%,
+  100% {
+    opacity: 0;
+    transform: none;
+  }
+}
+
+/* The screen is dark in both themes, so the card uses fixed colors. */
+.kd-card {
+  fill: oklch(0.985 0.002 175);
+}
+
+.kd-next-text {
+  font-size: 10.5px;
+  font-weight: 650;
+  fill: oklch(0.2 0.008 175);
+}
+
+.kd-ring-track,
+.kd-ring {
+  fill: none;
+  stroke-width: 2.4;
+}
+
+.kd-ring-track {
+  stroke: oklch(0.88 0.005 175);
+}
+
+.kd-ring {
+  stroke: oklch(0.3 0.06 175);
+  stroke-linecap: round;
+  stroke-dasharray: 44;
+  stroke-dashoffset: 14;
+  animation: kd-ring 5.2s linear infinite both;
+}
+
+@keyframes kd-ring {
+  0%,
+  61% {
+    stroke-dashoffset: 44;
+  }
+  91%,
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ── Two dogs (3.2s loop): prints chase the ball ─────────────── */
+.dogs-paw {
+  opacity: 0.9;
+  animation: dogs-paw 3.2s ease-out var(--delay) infinite both;
+}
+
+.dogs-paw.tone-a {
+  fill: var(--ink);
+}
+
+.dogs-paw.tone-b {
+  fill: var(--accent);
+}
+
+@keyframes dogs-paw {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  6%,
+  45% {
+    opacity: 0.9;
+    transform: none;
+  }
+  72%,
+  100% {
+    opacity: 0;
+    transform: none;
+  }
+}
+
+.dogs-ball {
+  transform: translate(352px, 106px);
+  animation: dogs-ball 3.2s linear infinite both;
+}
+
+@keyframes dogs-ball {
+  0% {
+    transform: translate(30px, 106px);
+    opacity: 0;
+  }
+  4% {
+    opacity: 1;
+  }
+  40% {
+    transform: translate(392px, 106px);
+    opacity: 1;
+  }
+  42%,
+  100% {
+    transform: translate(392px, 106px);
+    opacity: 0;
+  }
+}
+
+.dogs-roll {
+  animation: dogs-roll 3.2s linear infinite;
+}
+
+@keyframes dogs-roll {
+  to {
+    transform: rotate(1080deg);
+  }
+}
+
+/* ── Rubik’s cube (5.2s loop) ────────────────────────────────── */
+.cube-shadow {
+  fill: var(--ink);
+  opacity: 0.08;
+}
+
+.cube-body {
+  fill: var(--screen);
+  stroke: color-mix(in oklch, var(--ink) 14%, transparent);
+  stroke-width: 1.2;
+  stroke-linejoin: round;
+}
+
+/* Tints of the one accent, not a toy cube's six colors. */
+.c-a {
+  fill: var(--mint);
+}
+
+.c-b {
+  fill: oklch(0.97 0.004 175);
+}
+
+.c-c {
+  fill: oklch(0.6 0.1 178);
+}
+
+/* The hand turning it while the stickers fall into place, then the pop. */
+.cube-turn {
+  animation: cube-turn 5.2s ease-in-out infinite both;
+}
+
+@keyframes cube-turn {
+  0% {
+    transform: rotate(-6deg);
+  }
+  7% {
+    transform: rotate(5deg);
+  }
+  14% {
+    transform: rotate(-4deg);
+  }
+  21% {
+    transform: rotate(3deg);
+  }
+  28% {
+    transform: rotate(-2deg);
+  }
+  35% {
+    transform: rotate(1deg);
+  }
+  39% {
+    transform: none;
+  }
+  43% {
+    transform: scale(1.07);
+  }
+  50%,
+  86% {
+    transform: none;
+  }
+  91% {
+    transform: rotate(-10deg) scale(0.94);
+  }
+  100% {
+    transform: rotate(-6deg);
+  }
+}
+
+.cube-spark {
+  fill: var(--accent);
+  animation: cube-spark 5.2s ease-out var(--delay) infinite both;
+}
+
+@keyframes cube-spark {
+  0%,
+  40% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  47% {
+    opacity: 1;
+    transform: scale(1) rotate(45deg);
+  }
+  60%,
+  100% {
+    opacity: 0;
+    transform: scale(0.4) rotate(90deg);
+  }
+}
+
+/* ── Playback ────────────────────────────────────────────────── */
+/* Off-screen or in a hidden tab, every scene holds its frame. */
+.about-stage[data-paused] * {
+  animation-play-state: paused !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hobby {
+    transition: none;
+  }
+
+  /* Each part's resting style is its still pose. */
+  .about-stage * {
+    animation: none !important;
+  }
+}

@@ -2,6 +2,7 @@ import { Fragment, useRef, useState } from 'react'
 import { motion, AnimatePresence, useInView, useReducedMotion } from 'framer-motion' // eslint-disable-line no-unused-vars
 import { ArrowUpRight, ArrowDown, MessageCircle, Github, Trophy, Pause, Play } from 'lucide-react'
 import ShapeWaves from './ShapeWaves'
+import AboutTile from './AboutTile'
 import GradPhoto from '../assets/me.jpeg'
 import BarongPhoto from '../assets/me-barong.jpg'
 import ResumePage from '../assets/resume-page.jpg'
@@ -546,22 +547,7 @@ export default function HeroBento({ theme, showField, onOpenProject, onAskAssist
           <CentientReel screens={featured.screens} />
         </motion.article>
 
-        {/* ── About + disciplines ────────────────────────────────── */}
-        <motion.article variants={rise} className="tile tile-about">
-          <h2 className="tile-head">About</h2>
-          <div className="tile-body">
-            <p className="about-copy">
-              Hi, I’m Carl. I finished my Computer Science degree at Mapúa University in 2026,
-              specializing in AI. I work on both sides of the line: training and evaluating models,
-              then building the software around them, from the API and database to payments and
-              deploys.
-            </p>
-            <p className="about-copy">
-              Two of my ML projects became IEEE papers. On the software side, Centient won a
-              $5,000 Instawards grant and Pink Raft took 1st runner-up at the Stellar Hackathon.
-            </p>
-          </div>
-        </motion.article>
+        <AboutTile variants={rise} />
 
         <SkillsTile />
       </motion.div>

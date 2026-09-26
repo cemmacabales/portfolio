@@ -87,6 +87,8 @@ export default defineConfig({
           ui: [
             './src/components/SiteNav',
             './src/components/HeroBento',
+            './src/components/AboutTile',
+            './src/components/HobbyScenes',
             './src/components/ShapeWaves',
             './src/components/GradualBlur'
           ]

@@ -48,6 +48,32 @@ export const profile = {
   timeZone: 'Asia/Manila',
 }
 
+// The About tile. `offClock` reads as one paragraph: strings are prose, and
+// each object is a hobby the tile's stage acts out (`scene` names the
+// animation in HobbyScenes.jsx, `label` is the stage caption). Everything
+// here came from Carl; keep it that way.
+export const about = {
+  hello: 'Hi, I’m Carl.',
+  from: 'I grew up in Al\u00a0Khobar, Saudi Arabia, and I’m based in Quezon\u00a0City now.',
+  offClock: [
+    'Off the clock, you’ll find me playing ',
+    { scene: 'hoops', text: 'basketball', label: 'Basketball' },
+    ', ',
+    { scene: 'lift', text: 'lifting', label: 'Lifting' },
+    ', or queueing up ',
+    { scene: 'games', text: 'shooters, MOBAs, and RPGs', label: 'Shooters, MOBAs, RPGs' },
+    '. ',
+    { scene: 'music', text: 'Hip-hop and R&B', label: 'On repeat: hip-hop, R&B' },
+    ' are always on, I’m hooked on ',
+    { scene: 'kdrama', text: 'K-dramas', label: 'Currently watching: K-dramas' },
+    ' right now, I have ',
+    { scene: 'dogs', text: 'two dogs', label: 'Two dogs' },
+    ', and I can solve a ',
+    { scene: 'cube', text: 'Rubik’s cube', label: 'Solved one-handed' },
+    ' with one hand.',
+  ],
+}
+
 // The two halves of the work. Each skill names where it was used, which the
 // "What I work on" tile rolls through. Keep `where` to facts from `projects`,
 // `shipped`, or `research`.
