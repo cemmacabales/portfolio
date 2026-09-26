@@ -51,17 +51,18 @@ const BARS = [
 ]
 
 // `backdrop` is each photo's own top-edge color, so the zoomed-out frame
-// blends into the studio background instead of showing a band.
+// blends into the studio background instead of showing a band. `theme` is the
+// site theme the outfit matches: flipping the theme brings that photo up.
 const PORTRAITS = [
-  { src: GradPhoto, alt: 'Carl in graduation robes', width: 1320, height: 1365, backdrop: '#0b0b0b' },
-  { src: BarongPhoto, alt: 'Carl smiling in a white barong', width: 1320, height: 1342, backdrop: '#2e323d' },
+  { src: BarongPhoto, alt: 'Carl smiling in a white barong', width: 1320, height: 1342, backdrop: '#2e323d', theme: 'light' },
+  { src: GradPhoto, alt: 'Carl in graduation robes', width: 1320, height: 1365, backdrop: '#0b0b0b', theme: 'dark' },
 ]
 
 const FADE = 0.9
 const HOLD = 4
 
 /* ── Portrait: two photos that trade places ─────────────────── */
-function Portrait() {
+function Portrait({ theme }) {
   const ref = useRef(null)
   const inView = useInView(ref, { amount: 0.4 })
   const reduce = useReducedMotion()
@@ -70,8 +71,18 @@ function Portrait() {
   const [index, setIndex] = useState(0)
   const [hovered, setHovered] = useState(false)
   const [held, setHeld] = useState(false)
+  const [matchedTheme, setMatchedTheme] = useState(theme)
 
-  // Rotates unless reduced motion is on or the viewer picked a photo.
+  // A theme flip crossfades to the matching photo and the rotation carries on
+  // from there, even if the viewer had stopped it by picking a photo. If the
+  // matching photo is already up and rotating, the timer keeps its place.
+  if (theme !== matchedTheme) {
+    setMatchedTheme(theme)
+    setIndex(PORTRAITS.findIndex((photo) => photo.theme === theme))
+    setHeld(false)
+  }
+
+  // Rotates unless reduced motion is on or the viewer picked a photo since the last theme flip.
   const auto = !reduce && !held
   const running = booted && inView && pageVisible && !hovered
 
@@ -361,7 +372,7 @@ export default function HeroBento({ theme, showField, onOpenProject, onAskAssist
             </div>
           </div>
 
-          <Portrait />
+          <Portrait theme={theme} />
         </motion.article>
 
         {/* ── Side: assistant, résumé, GitHub ─────────────────────── */}
