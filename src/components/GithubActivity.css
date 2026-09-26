@@ -1,0 +1,287 @@
+/* ── GitHub activity: the contribution calendar, newest week on the right ── */
+@property --fade-l {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --fade-r {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+/*
+ * Five steps from an empty day to the busiest quarter. Light mode climbs from
+ * a mint wash through mint to the deep accent teal; dark mode brightens
+ * toward mint, the way it glows everywhere else on that theme.
+ */
+.tile-github {
+  --cell: 12px;
+  --cell-gap: 3px;
+  --gh-0: color-mix(in oklch, var(--ink) 7%, var(--tile));
+  --gh-1: color-mix(in oklch, var(--mint) 40%, var(--tile));
+  --gh-2: var(--mint);
+  --gh-3: color-mix(in oklch, var(--mint) 45%, var(--accent));
+  --gh-4: var(--accent);
+
+  display: flex;
+  flex-direction: column;
+}
+
+:root[data-theme='dark'] .tile-github {
+  --gh-0: color-mix(in oklch, var(--ink) 9%, var(--tile));
+  --gh-1: color-mix(in oklch, var(--mint) 24%, var(--tile));
+  --gh-2: color-mix(in oklch, var(--mint) 46%, var(--tile));
+  --gh-3: color-mix(in oklch, var(--mint) 72%, var(--tile));
+  --gh-4: var(--mint);
+}
+
+.tile-github [data-l='0'] {
+  --lvl: var(--gh-0);
+}
+
+.tile-github [data-l='1'] {
+  --lvl: var(--gh-1);
+}
+
+.tile-github [data-l='2'] {
+  --lvl: var(--gh-2);
+}
+
+.tile-github [data-l='3'] {
+  --lvl: var(--gh-3);
+}
+
+.tile-github [data-l='4'] {
+  --lvl: var(--gh-4);
+}
+
+.gh-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.gh-total {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+.gh-total.is-quiet {
+  color: var(--ink-2);
+}
+
+.gh-num {
+  font-variant-numeric: tabular-nums;
+}
+
+.gh-meta {
+  margin-top: 6px;
+  font-size: var(--text-sm);
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+
+.gh-fact {
+  white-space: nowrap;
+}
+
+.gh-cal {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 14px;
+}
+
+/*
+ * The scroller bleeds to the tile's edges so older weeks slide under a soft
+ * fade instead of stopping at a hard line. The fade shows only on a side
+ * that actually has more calendar behind it.
+ */
+.gh-scroll {
+  margin-inline: calc(var(--pad-tile) * -1);
+  padding: 22px var(--pad-tile) 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 var(--fade-l),
+    #000 calc(100% - var(--fade-r)),
+    transparent
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 var(--fade-l),
+    #000 calc(100% - var(--fade-r)),
+    transparent
+  );
+  transition:
+    --fade-l 0.35s ease,
+    --fade-r 0.35s ease;
+}
+
+.gh-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.gh-scroll[data-clip-start='true'] {
+  --fade-l: calc(var(--pad-tile) + 40px);
+}
+
+.gh-scroll[data-clip-end='true'] {
+  --fade-r: calc(var(--pad-tile) + 24px);
+}
+
+.gh-scroll:focus-visible {
+  outline-offset: -3px;
+}
+
+.gh-weeks {
+  display: flex;
+  gap: var(--cell-gap);
+  width: max-content;
+}
+
+.gh-week {
+  position: relative;
+  display: grid;
+  grid-template-rows: repeat(7, var(--cell));
+  gap: var(--cell-gap);
+  width: var(--cell);
+}
+
+.gh-month {
+  position: absolute;
+  bottom: calc(100% + 7px);
+  left: 0;
+  font-size: 0.75rem;
+  line-height: 1;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+.gh-day {
+  position: relative;
+  width: var(--cell);
+  height: var(--cell);
+  border-radius: 3px;
+  background: var(--gh-0);
+}
+
+.gh-day[data-l]::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--lvl);
+}
+
+/* Today: a ring that breathes, the same beat as the "now" dot under Education. */
+.gh-day.is-today {
+  outline: 1.5px solid var(--accent);
+  outline-offset: 1.5px;
+}
+
+.gh-day.is-today::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 5px;
+  border: 1px solid var(--accent);
+  animation: gh-ping 2.8s var(--ease-out) infinite;
+}
+
+@keyframes gh-ping {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  70%,
+  100% {
+    transform: scale(1.7);
+    opacity: 0;
+  }
+}
+
+/* On first view the year fills in left to right, ending on today. */
+.gh-scroll.is-live .gh-day[data-l]::before {
+  animation: gh-fill 0.7s var(--ease-out) both;
+  animation-delay: var(--d);
+}
+
+@keyframes gh-fill {
+  from {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .gh-day[data-i]:hover {
+    outline: 1.5px solid var(--ink);
+    outline-offset: 1px;
+  }
+}
+
+.gh-readout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  font-size: var(--text-xs);
+  line-height: 1.3;
+  color: var(--ink-2);
+}
+
+.gh-focus {
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.gh-legend {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.gh-legend i {
+  width: 10px;
+  height: 10px;
+  border-radius: 2.5px;
+  background: var(--lvl);
+}
+
+.gh-legend i:first-of-type {
+  margin-left: 5px;
+}
+
+.gh-legend i:last-of-type {
+  margin-right: 5px;
+}
+
+.gh-link {
+  border-top: 1px solid var(--line);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gh-scroll {
+    transition: none;
+  }
+
+  .gh-day.is-today::after,
+  .gh-scroll.is-live .gh-day[data-l]::before {
+    animation: none;
+  }
+}

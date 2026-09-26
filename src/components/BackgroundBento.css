@@ -4,7 +4,7 @@
   grid-template-areas:
     'ship ship ship ship ship ship ship edu edu edu edu edu'
     'stack stack stack stack stack stack stack res res res res res'
-    'certs certs certs certs certs certs certs certs clock clock clock clock';
+    'certs certs certs certs gh gh gh gh clock clock clock clock';
   gap: var(--gap);
 }
 
@@ -30,6 +30,10 @@
 
 .tile-certs {
   grid-area: certs;
+}
+
+.tile-github {
+  grid-area: gh;
 }
 
 /* ── Shipped software ────────────────────────────────────────── */
@@ -748,7 +752,8 @@ a.shipped-row:focus-visible {
       'ship ship'
       'edu res'
       'stack stack'
-      'certs clock';
+      'certs certs'
+      'gh clock';
   }
 }
 
@@ -761,6 +766,7 @@ a.shipped-row:focus-visible {
       'res'
       'stack'
       'certs'
+      'gh'
       'clock';
   }
 

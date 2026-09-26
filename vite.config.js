@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { handler as githubActivity } from './netlify/functions/github.js'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -10,6 +11,17 @@ export default defineConfig({
       // Optimize JSX runtime
       jsxRuntime: 'automatic'
     }),
+    {
+      // Serve the GitHub activity function in dev, as Netlify does in production.
+      name: 'netlify-github-function',
+      configureServer(server) {
+        server.middlewares.use('/.netlify/functions/github', async (req, res) => {
+          const { statusCode, headers, body } = await githubActivity()
+          res.writeHead(statusCode, headers)
+          res.end(body)
+        })
+      }
+    },
     {
       name: 'security-headers',
       configureServer(server) {

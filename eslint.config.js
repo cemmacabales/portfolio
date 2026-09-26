@@ -10,7 +10,7 @@ export default defineConfig([
     files: ['netlify/functions/**/*.js'],
     languageOptions: {
       globals: globals.node,
-      sourceType: 'commonjs',
+      sourceType: 'module',
     },
   },
   {

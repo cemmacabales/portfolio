@@ -11,6 +11,7 @@ import { ArrowUpRight } from 'lucide-react'
 import { education, shipped, research, certificates, stack, profile } from '../data/portfolio'
 import { useLocalTime } from '../hooks/useLocalTime'
 import PetYard from './PetYard'
+import GithubActivity from './GithubActivity'
 import IcipcnImage from '../assets/icipcn.png'
 import './BackgroundBento.css'
 
@@ -315,8 +316,6 @@ export default function BackgroundBento() {
           </figure>
         </motion.article>
 
-        <ClockTile />
-
         <motion.article variants={rise} className="tile tile-stack">
           <h3 className="tile-head">Tools I reach for</h3>
           <ul className="tile-body stack-grid">
@@ -359,6 +358,10 @@ export default function BackgroundBento() {
             ))}
           </ul>
         </motion.article>
+
+        <GithubActivity variants={rise} />
+
+        <ClockTile />
       </motion.div>
     </section>
   )
