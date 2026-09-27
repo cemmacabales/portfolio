@@ -31,6 +31,10 @@
   --inverse-line: oklch(1 0 0 / 0.12);
   --inverse-field: oklch(1 0 0 / 0.06);
   --danger-on-inverse: #ffb4ab;
+  --danger: oklch(0.47 0.17 27);
+
+  /* The assistant's side of the chat (the iMessage gray). */
+  --bubble: oklch(0.935 0.005 175);
 
   --shadow-tile: 0 1px 2px oklch(0.2 0.02 175 / 0.04);
   --shadow-float: 0 18px 48px -18px oklch(0.2 0.02 175 / 0.28), 0 2px 6px oklch(0.2 0.02 175 / 0.06);
@@ -71,6 +75,9 @@
   --inverse-ink-2: oklch(0.79 0.008 175);
   --inverse-line: oklch(1 0 0 / 0.1);
   --inverse-field: oklch(1 0 0 / 0.05);
+  --danger: #ffb4ab;
+
+  --bubble: oklch(0.29 0.006 175);
 
   --shadow-tile: none;
   --shadow-float: 0 24px 60px -20px oklch(0 0 0 / 0.7), 0 2px 8px oklch(0 0 0 / 0.4);

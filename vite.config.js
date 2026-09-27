@@ -1,6 +1,8 @@
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import { handler as githubActivity } from './netlify/functions/github.js'
+import process from 'node:process'
+import { handler as chatReply } from './netlify/functions/chat.js'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -19,6 +21,21 @@ export default defineConfig({
           const { statusCode, headers, body } = await githubActivity()
           res.writeHead(statusCode, headers)
           res.end(body)
+        })
+      }
+    },
+    {
+      // Serve the chat function in dev too. Netlify injects GROQ_API_KEY in
+      // production; locally it comes from .env.
+      name: 'netlify-chat-function',
+      configureServer(server) {
+        process.env.GROQ_API_KEY ??= loadEnv(server.config.mode, process.cwd(), '').GROQ_API_KEY
+        server.middlewares.use('/.netlify/functions/chat', async (req, res) => {
+          let body = ''
+          for await (const chunk of req) body += chunk
+          const reply = await chatReply({ httpMethod: req.method, body })
+          res.writeHead(reply.statusCode, reply.headers)
+          res.end(reply.body)
         })
       }
     },
