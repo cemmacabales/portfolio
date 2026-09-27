@@ -3,6 +3,8 @@ import CentientRank from '../assets/centient/rank.jpg'
 import CentientPaid from '../assets/centient/paid.jpg'
 import CentientAccount from '../assets/centient/account.jpg'
 import CentientOwl from '../assets/centient-owl.png'
+import BlocklabsLogo from '../assets/blocklabs.png'
+import PinkRaftLogo from '../assets/pinkraft.svg'
 import PoseEstimationImage from '../assets/Pose Estimation.png'
 import EscImage from '../assets/esc.png'
 import AxialModelTestingImage from '../assets/axial model testing.png'
@@ -312,20 +314,82 @@ export const education = [
   },
 ]
 
-// Software shipped outside of coursework, newest first.
-export const shipped = [
+// The Experience tile: roles, then software shipped outside of coursework,
+// newest first in each group. `start`/`end` are ISO dates (an `end` of null
+// means the role is current); the tile works out the tenure from them. In
+// `points`, **double asterisks** mark the figures the tile sets in bold.
+// Artisam's title and dates are from Carl's contract; Blocklabs' bullets are
+// from his LinkedIn.
+export const experience = [
   {
-    name: 'Centient',
-    what: 'Human-feedback labeling paid in USDC on Stellar',
-    proof: '$5,000 Instawards grant',
-    year: '2026',
-    url: 'https://beta.centient.work',
+    id: 'artisam',
+    group: 'roles',
+    name: 'Artisam Labs',
+    title: 'Lead Developer',
+    kind: 'Contract',
+    start: '2026-09-07',
+    end: null,
+    monogram: 'AL',
+    points: [
+      'Leads the build of **Centient** through a four-week sprint, with a reviewed deliverable and a QA gate every week.',
+      'Replaced balance-and-withdraw with a payout for every accepted answer, after **8 of 10** balances sat stuck under the 1 USDC minimum.',
+      'Every payout is co-signed **2 of 3** from a multisig account, and a CI lane races concurrent payouts to prove **zero double-pays**.',
+      'Wrote the beta tester guides for desktop, Android, and iOS, plus the script for tester interviews.',
+    ],
+    see: 'centient',
   },
   {
+    id: 'blocklabs',
+    group: 'roles',
+    name: 'The Blocklabs',
+    title: 'Software Engineer Intern',
+    kind: 'Internship',
+    start: '2026-04',
+    end: '2026-06',
+    logo: BlocklabsLogo,
+    points: [
+      'Led a **5-intern** pod across three blockchain products. Shared review and test workflows cut feature turnaround from **4 weeks to 2** and post-release errors by **~40%**.',
+      'Shipped a 6-phase on-chain payout system with atomic withdrawals and anti-fraud controls: **10K+** simulated payouts on Stellar testnet, **zero** double-spends.',
+      'Ran security QA on a learning management system, filing **30+** reproducible issues (IDOR, broken access control, rate-limit bypass) and cutting escaped defects by **~35%**.',
+      'Built an LLM adapter across Groq, Anthropic, Gemini, Vertex AI, and Ollama that turns prompts into Stellar payment flows: **~94%** success, **~70%** fewer malformed-output crashes.',
+    ],
+  },
+  {
+    id: 'centient',
+    group: 'shipped',
+    name: 'Centient',
+    title: 'Centient',
+    tagline: 'Human-feedback labeling, paid in USDC on Stellar',
+    date: '2026',
+    logo: CentientOwl,
+    proof: '$5,000 Instawards grant',
+    points: [
+      'People compare two AI answers, say why one is better, and are paid in USDC the moment the answer is accepted.',
+      'No bank account and nothing to cash out: each payout lands in the contributor’s own Stellar wallet.',
+      'Gold tasks, rate limits, and agreement checks keep the rankings honest.',
+    ],
+    stack: ['Next.js', 'TypeScript', 'PostgreSQL', 'Stellar'],
+    links: [
+      { label: 'Try the beta', url: 'https://beta.centient.work' },
+      { label: 'Source', url: 'https://github.com/cemmacabales/centient' },
+    ],
+  },
+  {
+    id: 'pinkraft',
+    group: 'shipped',
     name: 'Pink Raft',
-    what: 'No-code payment flows that deploy Soroban contracts in under a minute; AI replies cut from ~10 s to ~2 s',
+    title: 'Pink Raft',
+    tagline: 'No-code payment flows on Stellar',
+    date: 'May 2026',
+    role: 'Full-stack and AI integration lead',
+    logo: PinkRaftLogo,
     proof: '1st runner-up, Stellar Hackathon',
-    year: '2026',
+    points: [
+      'Drag in triggers and actions, and a live Soroban contract deploys in under **60 seconds**.',
+      'Cut AI replies from **~10 s to ~2 s** with null-stripping, Zod schema hardening, and trigger-conflict checks that replace silent failures.',
+      'WebAuthn 2FA, non-custodial wallet signing (Freighter, xBull, Albedo), and a live on-chain event feed.',
+    ],
+    stack: ['Next.js', 'PostgreSQL', 'Redis', 'Soroban'],
   },
 ]
 

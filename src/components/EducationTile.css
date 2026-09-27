@@ -318,7 +318,7 @@
     order: -1;
     align-self: start;
     justify-self: center;
-    width: min(100%, 250px);
+    width: min(100%, 310px);
     padding: 0 16% 4px;
   }
 }

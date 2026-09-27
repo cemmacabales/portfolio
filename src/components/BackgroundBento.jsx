@@ -8,12 +8,12 @@ import {
   useTransform,
 } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
-import { shipped, research, certificates, profile } from '../data/portfolio'
+import { research, certificates, profile } from '../data/portfolio'
 import { useLocalTime } from '../hooks/useLocalTime'
-import PetYard from './PetYard'
 import GithubActivity from './GithubActivity'
 import StackTile from './StackTile'
 import EducationTile from './EducationTile'
+import ExperienceTile from './ExperienceTile'
 import IcipcnImage from '../assets/icipcn.png'
 import './BackgroundBento.css'
 
@@ -152,7 +152,7 @@ export default function BackgroundBento() {
         transition={{ duration: 0.8, ease: EASE }}
       >
         <h2 id="about-title" className="section-title">
-          Background. <span className="section-lede">What I’ve shipped, published, and studied.</span>
+          Background. <span className="section-lede">Where I’ve worked, shipped, published, and studied.</span>
         </h2>
       </motion.header>
 
@@ -163,36 +163,7 @@ export default function BackgroundBento() {
         whileInView="show"
         viewport={{ once: true, amount: 0.15 }}
       >
-        <motion.article variants={rise} className="tile tile-shipped">
-          <h3 className="tile-head">Software I’ve shipped</h3>
-          <ul className="shipped-list">
-            {shipped.map((item) => {
-              const body = (
-                <>
-                  <span className="shipped-year">{item.year}</span>
-                  <span className="shipped-main">
-                    <span className="shipped-name">{item.name}</span>
-                    <span className="shipped-what">{item.what}</span>
-                  </span>
-                  <span className="shipped-proof">{item.proof}</span>
-                </>
-              )
-              return (
-                <li key={item.name}>
-                  {item.url ? (
-                    <a href={item.url} target="_blank" rel="noopener noreferrer" className="shipped-row">
-                      {body}
-                      <span className="visually-hidden"> (opens in a new tab)</span>
-                    </a>
-                  ) : (
-                    <div className="shipped-row">{body}</div>
-                  )}
-                </li>
-              )
-            })}
-          </ul>
-          <PetYard />
-        </motion.article>
+        <ExperienceTile variants={rise} />
 
         <EducationTile variants={rise} />
 
