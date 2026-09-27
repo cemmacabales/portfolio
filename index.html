@@ -199,8 +199,8 @@
     </noscript>
     
     <!-- SEO Meta Tags -->
-    <title>cemmacabales</title>
-    <meta name="description" content="Carl Macabales is an AI and software engineer and a 2026 Mapúa University Computer Science graduate. I build the model, and the product around it: Centient, Pink Raft, and two IEEE-published ML projects." />
+    <title>Carl Macabales · AI &amp; Software Engineer</title>
+    <meta name="description" content="Carl Macabales is an AI and software engineer (Mapúa CS ’26) who builds the model and the product around it: Centient, Pink Raft, and two IEEE papers." />
     <meta name="keywords" content="Carl Emmanuel Macabales, Computer Science, Artificial Intelligence, Machine Learning, Web Developer, React, Python, Portfolio, AI Projects, Software Development, Mapua University" />
     <meta name="author" content="Carl Emmanuel Macabales" />
     <meta name="robots" content="index, follow" />
@@ -237,24 +237,198 @@
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "Person",
-      "name": "Carl Emmanuel Macabales",
-      "jobTitle": "AI & Software Engineer",
-      "description": "AI and software engineer; BS Computer Science (AI specialization), Mapúa University, 2026",
-      "url": "https://cemmacabales.com/",
-      "email": "carlmacabales31@gmail.com",
-      "alumniOf": {
-        "@type": "EducationalOrganization",
-        "name": "Mapúa University"
-      },
-      "knowsAbout": ["Artificial Intelligence", "Machine Learning", "Web Development", "React", "Python", "JavaScript", "Computer Science"],
-      "sameAs": [
-        "https://www.linkedin.com/in/carl-emmanuel-macabales-a78742311/",
-        "https://github.com/cemmacabales",
-        "https://www.instagram.com/crlemmanuel_/",
-        "https://www.facebook.com/carl.macabales/"
-      ],
-      "image": "https://cemmacabales.com/og-image.jpg"
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://cemmacabales.com/#website",
+          "url": "https://cemmacabales.com/",
+          "name": "Carl Macabales",
+          "inLanguage": "en",
+          "publisher": {
+            "@id": "https://cemmacabales.com/#carl"
+          }
+        },
+        {
+          "@type": "ProfilePage",
+          "@id": "https://cemmacabales.com/#profile",
+          "url": "https://cemmacabales.com/",
+          "name": "Carl Macabales · AI & Software Engineer",
+          "isPartOf": {
+            "@id": "https://cemmacabales.com/#website"
+          },
+          "mainEntity": {
+            "@id": "https://cemmacabales.com/#carl"
+          }
+        },
+        {
+          "@type": "Person",
+          "@id": "https://cemmacabales.com/#carl",
+          "name": "Carl Emmanuel Macabales",
+          "alternateName": [
+            "Carl Macabales",
+            "Carl Emmanuel M. Macabales",
+            "cemmacabales"
+          ],
+          "givenName": "Carl Emmanuel",
+          "familyName": "Macabales",
+          "jobTitle": "AI & Software Engineer",
+          "description": "AI and software engineer who builds the model and the product around it: published ML research in medical imaging and clinical NLP, and full-stack products on Next.js, PostgreSQL, and Stellar payments.",
+          "url": "https://cemmacabales.com/",
+          "image": "https://cemmacabales.com/og-image.jpg",
+          "email": "mailto:carlmacabales31@gmail.com",
+          "homeLocation": {
+            "@type": "Place",
+            "name": "Quezon City, Philippines",
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Quezon City",
+              "addressCountry": "PH"
+            }
+          },
+          "worksFor": {
+            "@type": "Organization",
+            "name": "Artisam Labs"
+          },
+          "alumniOf": [
+            {
+              "@type": "CollegeOrUniversity",
+              "name": "Mapúa University"
+            },
+            {
+              "@type": "EducationalOrganization",
+              "name": "St. Paul University"
+            },
+            {
+              "@type": "EducationalOrganization",
+              "name": "International Philippine School in Al Khobar"
+            }
+          ],
+          "hasCredential": {
+            "@type": "EducationalOccupationalCredential",
+            "credentialCategory": "degree",
+            "name": "BS Computer Science, AI specialization",
+            "recognizedBy": {
+              "@type": "CollegeOrUniversity",
+              "name": "Mapúa University"
+            }
+          },
+          "award": [
+            "$5,000 Instawards grant for Centient (2026)",
+            "1st runner-up, Stellar Hackathon, for Pink Raft (2026)"
+          ],
+          "knowsAbout": [
+            "Machine learning",
+            "Computer vision",
+            "Medical image segmentation",
+            "Clinical natural language processing",
+            "Retrieval-augmented generation",
+            "Edge AI",
+            "Full-stack web development",
+            "Python",
+            "PyTorch",
+            "React",
+            "Next.js",
+            "Stellar"
+          ],
+          "sameAs": [
+            "https://www.linkedin.com/in/carl-emmanuel-macabales-a78742311/",
+            "https://github.com/cemmacabales",
+            "https://www.instagram.com/crlemmanuel_/",
+            "https://www.facebook.com/carl.macabales/"
+          ]
+        },
+        {
+          "@type": "ScholarlyArticle",
+          "@id": "https://doi.org/10.1109/ICIPCN67432.2026.11438968",
+          "name": "Clinically Oriented Deep Learning Framework for Multi-Class Kidney Abnormality Instance Segmentation in CT Images",
+          "url": "https://doi.org/10.1109/ICIPCN67432.2026.11438968",
+          "identifier": {
+            "@type": "PropertyValue",
+            "propertyID": "DOI",
+            "value": "10.1109/ICIPCN67432.2026.11438968"
+          },
+          "datePublished": "2026-01-27",
+          "author": [
+            {
+              "@type": "Person",
+              "name": "Yñikko Arzee Neo D. Aguas"
+            },
+            {
+              "@type": "Person",
+              "name": "Rolando R. Magat"
+            },
+            {
+              "@id": "https://cemmacabales.com/#carl"
+            },
+            {
+              "@type": "Person",
+              "name": "Ralph Dwayne C. Umali"
+            },
+            {
+              "@type": "Person",
+              "name": "Lysa V. Comia"
+            }
+          ],
+          "isPartOf": {
+            "@type": "CreativeWork",
+            "name": "2026 6th International Conference on Image Processing and Capsule Networks (ICIPCN)"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "IEEE"
+          }
+        },
+        {
+          "@type": "ScholarlyArticle",
+          "@id": "https://doi.org/10.1109/CSPA68262.2026.11517831",
+          "name": "Open-Source LLMs for Evidence-Grounded Clinical Question Answering: A RAG Framework Based on the 2024 ESC Atrial Fibrillation Guidelines",
+          "url": "https://doi.org/10.1109/CSPA68262.2026.11517831",
+          "identifier": {
+            "@type": "PropertyValue",
+            "propertyID": "DOI",
+            "value": "10.1109/CSPA68262.2026.11517831"
+          },
+          "datePublished": "2026-05-01",
+          "author": [
+            {
+              "@id": "https://cemmacabales.com/#carl"
+            },
+            {
+              "@type": "Person",
+              "name": "Rolando R. Magat"
+            },
+            {
+              "@type": "Person",
+              "name": "Yñikko Arzee Neo D. Aguas"
+            },
+            {
+              "@type": "Person",
+              "name": "Lysa V. Comia"
+            }
+          ],
+          "isPartOf": {
+            "@type": "CreativeWork",
+            "name": "2026 22nd IEEE International Colloquium on Signal Processing & Its Applications (CSPA)"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "IEEE"
+          }
+        },
+        {
+          "@type": "SoftwareApplication",
+          "@id": "https://cemmacabales.com/#centient",
+          "name": "Centient",
+          "description": "A human-feedback platform for AI teams: contributors compare two AI answers, say why one is better, and are paid in USDC on Stellar as soon as the answer is accepted.",
+          "url": "https://beta.centient.work",
+          "applicationCategory": "BusinessApplication",
+          "operatingSystem": "Web",
+          "creator": {
+            "@id": "https://cemmacabales.com/#carl"
+          },
+          "sameAs": "https://github.com/cemmacabales/centient"
+        }
+      ]
     }
     </script>
     
