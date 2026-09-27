@@ -1,33 +1,49 @@
-# Carl Emmanuel Macabales – Portfolio
+# Carl Macabales – Portfolio
 
-A personal portfolio website for **Carl Emmanuel Macabales**, a Computer Science student at Mapúa University specializing in Artificial Intelligence. Built with React and Vite, deployed on Netlify.
+Source for **[cemmacabales.com](https://cemmacabales.com/)**, the portfolio of Carl Emmanuel Macabales: an AI and software engineer in Quezon City, Philippines, and a 2026 Mapúa University graduate (BS Computer Science, AI specialization). He builds the model and the product around it, from published ML research in medical imaging and clinical NLP to full-stack products on Next.js, PostgreSQL, and Stellar.
 
-🌐 **Live site:** [cemmacabales.tech](https://cemmacabales.tech/)
+**Live site:** [cemmacabales.com](https://cemmacabales.com/)
+
+## On the site
+
+- **[Centient](https://beta.centient.work)**: a human-feedback platform for AI teams that pays contributors in USDC on Stellar. $5,000 Instawards grant.
+- **Research**: [kidney abnormality segmentation in CT](https://doi.org/10.1109/ICIPCN67432.2026.11438968) (IEEE ICIPCN 2026) and [a RAG assistant for the 2024 ESC atrial fibrillation guidelines](https://doi.org/10.1109/CSPA68262.2026.11517831) (IEEE CSPA 2026, first author).
+- **Pink Raft**: no-code payment flows on Stellar. 1st runner-up, Stellar Hackathon.
+- Experience, education, the tools he reaches for, and an assistant that answers questions about his work.
 
 ---
 
-## Tech Stack
+## Tech stack
 
-- **React 19** – UI library
-- **Vite** – build tool with HMR
-- **Three.js / @react-three/fiber / @react-three/drei** – 3D graphics and animations
-- **Framer Motion / GSAP** – animations
-- **EmailJS** – contact form
-- **Tailwind CSS / PostCSS** – styling
-- **Netlify** – hosting & deployment
+- **React 19** and **Vite 7**
+- **Framer Motion** and **GSAP** for animation
+- **vgpu** (WebGPU) for the hero's shape field, desktop only
+- **Netlify Functions**: `chat` (the site's assistant, on Groq) and `github` (the GitHub activity tile)
+- **EmailJS** for the contact form
+- **Lucide** and **Devicon** for icons, **Inter** for type
+- **Netlify** for hosting
 
-## Getting Started
+## Getting started
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 22 (Vite 7 needs 20.19 or newer; Netlify builds with 22)
 - npm
 
 ### Installation
 
 ```bash
 npm install
+cp .env.example .env
 ```
+
+Then fill in `.env`:
+
+| Variable | Used by |
+|---|---|
+| `VITE_EMAILJS_SERVICE_ID`, `VITE_EMAILJS_TEMPLATE_ID`, `VITE_EMAILJS_PUBLIC_KEY` | Contact form. Without them, sending fails. |
+| `GROQ_API_KEY` | The assistant (`netlify/functions/chat.js`) |
+| `GITHUB_TOKEN` (optional) | Raises the GitHub API limit for the activity tile. It works without one. |
 
 ### Development
 
@@ -35,7 +51,7 @@ npm install
 npm run dev
 ```
 
-Opens the app at `http://localhost:5173` with hot module replacement.
+Opens the site at `http://localhost:3000`. The dev server also serves both Netlify Functions, so the assistant and the GitHub tile work locally.
 
 ### Build
 
@@ -43,13 +59,15 @@ Opens the app at `http://localhost:5173` with hot module replacement.
 npm run build
 ```
 
-Outputs to the `dist/` directory.
+Builds the site into `dist/`, then prerenders it: `src/entry-server.jsx` renders the app once and `scripts/prerender.js` writes that HTML into `dist/index.html`. Crawlers that don't run JavaScript read the full page instead of an empty root. Because of this, components must not read `window`, `document`, or `localStorage` while rendering. Do that in an effect.
 
-### Preview production build
+### Preview the production build
 
 ```bash
 npm run preview
 ```
+
+Serves `dist/` at `http://localhost:4173`.
 
 ### Lint
 
@@ -59,10 +77,11 @@ npm run lint
 
 ## Deployment
 
-The project is configured for [Netlify](https://www.netlify.com/) via `netlify.toml`. Pushing to the main branch triggers an automatic deploy.
+Netlify builds and deploys every push to `main` (see `netlify.toml`). `public/_redirects` sends old section URLs to their anchors, and unknown paths get `404.html` with a real 404 status.
 
 ## Contact
 
+- **Website:** [cemmacabales.com](https://cemmacabales.com/)
 - **Email:** carlmacabales31@gmail.com
 - **LinkedIn:** [Carl Emmanuel Macabales](https://www.linkedin.com/in/carl-emmanuel-macabales-a78742311/)
 - **GitHub:** [@cemmacabales](https://github.com/cemmacabales)
