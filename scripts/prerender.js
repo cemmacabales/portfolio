@@ -20,7 +20,11 @@ const SITEMAP = new URL('../dist/sitemap.xml', import.meta.url)
 const SSR_DIR = new URL('../dist-ssr/', import.meta.url)
 
 const { render } = await import(new URL('entry-server.js', SSR_DIR))
-const markup = render()
+// Every image in this markup is lazy, so the ones below the fold don't
+// compete with the JS bundle for bandwidth while the boot loader is up.
+// The hero's images are on screen and load as before. React replaces this
+// markup (and its loading attributes) on its first commit.
+const markup = render().replace(/<img\b(?![^>]*\sloading=)/g, '<img loading="lazy"')
 
 const html = await readFile(INDEX, 'utf8')
 if (html.split(ROOT).length !== 2) {
