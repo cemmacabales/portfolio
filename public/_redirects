@@ -1,14 +1,13 @@
-# SPA fallback for client-side routing
-/*    /index.html   200
+# The site is one page (index.html) and its sections are #anchors, so there
+# is no client-side routing to fall back to. Unknown paths get 404.html with
+# a real 404 status, not a 200 copy of the homepage (a "soft 404" to Google).
 
-# Redirect common variations to canonical URLs
-/home    /#home    301
-/about   /#about   301
-/projects /#projects 301
-/skills  /#skills  301
-/contact /#contact 301
-
-# Redirect old URLs if any (add as needed)
-/portfolio /#projects 301
-/work     /#projects 301
-/resume   /#about    301
+# Old section URLs
+/home       /                       301
+/about      /#about                 301
+/skills     /#about                 301
+/work       /#work                  301
+/projects   /#work                  301
+/portfolio  /#work                  301
+/contact    /#contact               301
+/resume     /MacabalesResume1.pdf   301

@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="robots" content="noindex" />
+    <title>Page not found · Carl Macabales</title>
+    <link rel="icon" href="/ghost.png" />
+    <script>
+      // Same saved theme as the main page (see useTheme.js).
+      try {
+        document.documentElement.dataset.theme = localStorage.getItem('theme-v2') === 'dark' ? 'dark' : 'light';
+      } catch (e) {
+        document.documentElement.dataset.theme = 'light';
+      }
+    </script>
+    <style>
+      /* Tokens copied from src/index.css; this page ships without the bundle. */
+      :root {
+        --canvas: oklch(0.948 0.004 175);
+        --tile: oklch(0.992 0.0015 175);
+        --line: oklch(0.905 0.005 175);
+        --ink: oklch(0.2 0.008 175);
+        --ink-2: oklch(0.41 0.01 175);
+        --mint: #64ffda;
+        --mint-ink: oklch(0.3 0.06 175);
+        --shadow: 0 1px 2px oklch(0.2 0.02 175 / 0.08), 0 8px 24px oklch(0.2 0.02 175 / 0.06);
+      }
+
+      :root[data-theme='dark'] {
+        --canvas: oklch(0.135 0.004 175);
+        --tile: oklch(0.2 0.005 175);
+        --line: oklch(0.285 0.006 175);
+        --ink: oklch(0.965 0.003 175);
+        --ink-2: oklch(0.79 0.008 175);
+        --shadow: 0 0 0 1px oklch(0.285 0.006 175);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        min-height: 100dvh;
+        display: grid;
+        place-items: center;
+        padding: 24px 16px;
+        background: var(--canvas);
+        color: var(--ink);
+        font-family: 'Inter Variable', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      main {
+        width: min(100%, 440px);
+        padding: 40px 32px 36px;
+        border-radius: 28px;
+        background: var(--tile);
+        box-shadow: var(--shadow);
+      }
+
+      .code {
+        margin: 0 0 12px;
+        color: var(--ink-2);
+        font-size: 14px;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+      }
+
+      h1 {
+        margin: 0 0 10px;
+        font-size: clamp(28px, 6vw, 34px);
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+      }
+
+      p {
+        margin: 0 0 28px;
+        color: var(--ink-2);
+        font-size: 16px;
+        line-height: 1.5;
+      }
+
+      a {
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+        padding: 0 20px;
+        border-radius: 999px;
+        background: var(--mint);
+        color: var(--mint-ink);
+        font-size: 15px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background-color 0.2s ease;
+      }
+
+      /* Same as .btn-mint:hover in App.css. */
+      a:hover {
+        background: color-mix(in oklch, var(--mint) 88%, white);
+      }
+
+      a:focus-visible {
+        outline: 2px solid var(--ink);
+        outline-offset: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="code">404</p>
+      <h1>This page doesn’t exist.</h1>
+      <p>Everything lives on one page: my work, background, and how to reach me.</p>
+      <a href="/">Go to cemmacabales.com</a>
+    </main>
+  </body>
+</html>
