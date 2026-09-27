@@ -11,6 +11,8 @@ import { motion, AnimatePresence } from 'framer-motion' // eslint-disable-line n
 import { X, ArrowUp, SquarePen, CircleAlert } from 'lucide-react'
 import { ASSISTANT_OPEN_EVENT } from '../utils/assistant'
 import { useBooted } from '../hooks/useBooted'
+import posthog from '../posthog'
+import { portfolioLogger } from '../posthog-logger'
 import memoji from '../assets/memoji-assistant.webp'
 import ChatReply from './ChatReply'
 import './AiChatbot.css'
@@ -20,6 +22,11 @@ const STAMP_GAP_MS = 15 * 60 * 1000
 // Matches the sheet's close transition in AiChatbot.css.
 const CLOSE_MS = 420
 const PEEK_KEY = 'assistant-peeked'
+
+const createConversationId = () => {
+  const id = globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`
+  return `chat-${id}`
+}
 
 const SUGGESTIONS = [
   'What is Centient?',
@@ -216,6 +223,7 @@ export default function AiChatbot() {
   const launcherRef = useRef(null)
   const abortRef = useRef(null)
   const sendRef = useRef(null)
+  const conversationIdRef = useRef(createConversationId())
 
   const hasThread = messages.length > 0
   const last = messages[messages.length - 1]
@@ -232,7 +240,10 @@ export default function AiChatbot() {
   }
 
   useEffect(() => {
-    const open = () => setIsOpen(true)
+    const open = () => {
+      posthog.capture('assistant_opened', { source: 'hero_tile' })
+      setIsOpen(true)
+    }
     window.addEventListener(ASSISTANT_OPEN_EVENT, open)
     return () => window.removeEventListener(ASSISTANT_OPEN_EVENT, open)
   }, [])
@@ -383,6 +394,7 @@ export default function AiChatbot() {
       .slice(-WINDOW_SIZE)
       .map(({ role, content }) => ({ role, content }))
 
+    posthog.capture('assistant_question_sent')
     setMessages((prev) => [...prev, userMsg])
     composerRef.current?.clear()
     setPending(replyId)
@@ -393,7 +405,11 @@ export default function AiChatbot() {
       const res = await fetch('/.netlify/functions/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: payload }),
+        body: JSON.stringify({
+          messages: payload,
+          conversationId: conversationIdRef.current,
+          posthogDistinctId: posthog.get_distinct_id(),
+        }),
         signal: controller.signal,
       })
       const data = await res.json().catch(() => ({}))
@@ -402,12 +418,17 @@ export default function AiChatbot() {
           busy: res.status === 503 || res.status === 429,
         })
       }
+      posthog.capture('assistant_reply_received')
+      portfolioLogger.info('assistant_response_received', { response_status: 'received' })
       setMessages((prev) => [
         ...prev,
         { id: replyId, role: 'assistant', content: data.content, at: new Date() },
       ])
     } catch (err) {
       if (controller.signal.aborted) return
+      const failureReason = err.busy ? 'busy' : 'offline'
+      posthog.capture('assistant_reply_failed', { reason: failureReason })
+      portfolioLogger.warn('assistant_response_failed', { failure_reason: failureReason })
       setMessages((prev) =>
         prev.map((m) =>
           m.id === id ? { ...m, status: 'failed', reason: err.busy ? 'busy' : 'offline' } : m,
@@ -438,6 +459,7 @@ export default function AiChatbot() {
     abortRef.current?.abort()
     abortRef.current = null
     setPending(null)
+    conversationIdRef.current = createConversationId()
     setMessages([])
     composerRef.current?.clear()
     textareaRef.current?.focus({ preventScroll: true })
@@ -469,7 +491,10 @@ export default function AiChatbot() {
         type="button"
         className="chat-launcher"
         data-peek={peek}
-        onClick={() => setIsOpen(true)}
+        onClick={() => {
+          posthog.capture('assistant_opened', { source: 'launcher' })
+          setIsOpen(true)
+        }}
         aria-expanded={isOpen}
         aria-controls="chat-sheet"
         aria-haspopup="dialog"

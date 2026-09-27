@@ -14,6 +14,8 @@ import { useGlassSheen } from './hooks/useGlassSheen'
 import { useMobileDetection } from './mobile-detection'
 import { openAssistant } from './utils/assistant'
 import { markReady } from './boot'
+import posthog from './posthog'
+import { portfolioLogger } from './posthog-logger'
 import './App.css'
 
 const SECTIONS = ['home', 'work', 'about', 'contact']
@@ -29,7 +31,10 @@ function App() {
   useGlassSheen()
 
   // First commit is in; the boot loader can count the app as rendered.
-  useEffect(() => markReady('app'), [])
+  useEffect(() => {
+    markReady('app')
+    portfolioLogger.info('portfolio_app_rendered', { entry_point: 'main' })
+  }, [])
 
   const toggleProject = useCallback((slug) => {
     setOpenSlug((current) => (current === slug ? null : slug))
@@ -44,6 +49,7 @@ function App() {
   }, [])
 
   const showModels = useCallback((project) => {
+    posthog.capture('project_model_selector_opened', { project_slug: project.slug })
     setModelProject(project)
     setIsModelModalOpen(true)
   }, [])

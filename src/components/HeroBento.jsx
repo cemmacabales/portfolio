@@ -12,6 +12,7 @@ import { profile, featured } from '../data/portfolio'
 import { usePageVisible } from '../hooks/useCycle'
 import { useBooted } from '../hooks/useBooted'
 import { markReady } from '../boot'
+import posthog from '../posthog'
 import './HeroBento.css'
 
 const HEADLINE = 'I build the model, and the product around it.'
@@ -405,6 +406,7 @@ export default function HeroBento({ theme, showField, onOpenProject, onAskAssist
               href={profile.resume}
               download="Carl-Macabales-Resume.pdf"
               className="tile tile-resume"
+              onClick={() => posthog.capture('resume_downloaded')}
             >
               <span className="resume-stack" aria-hidden="true">
                 <span className="resume-under" />
@@ -473,7 +475,13 @@ export default function HeroBento({ theme, showField, onOpenProject, onAskAssist
             </ul>
 
             <div className="featured-actions">
-              <a href={featured.beta} target="_blank" rel="noopener noreferrer" className="btn btn-mint">
+              <a
+                href={featured.beta}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-mint"
+                onClick={() => posthog.capture('featured_project_beta_opened', { project_slug: featured.slug })}
+              >
                 Try the beta
                 <ArrowUpRight size={18} strokeWidth={1.8} aria-hidden="true" />
                 <span className="visually-hidden"> (opens in a new tab)</span>

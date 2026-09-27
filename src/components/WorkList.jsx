@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion' // eslint-disable-line no-unused-vars
 import { ArrowUpRight, Plus } from 'lucide-react'
 import { projects } from '../data/portfolio'
+import posthog from '../posthog'
 import './WorkList.css'
 
 const EASE = [0.16, 1, 0.3, 1]
@@ -34,7 +35,15 @@ function WorkRow({ project, index, open, onToggle, onShowModels }) {
           className="work-head"
           aria-expanded={open}
           aria-controls={panelId}
-          onClick={() => onToggle(project.slug)}
+          onClick={() => {
+            if (!open) {
+              posthog.capture('project_case_study_opened', {
+                project_slug: project.slug,
+                project_category: project.category,
+              })
+            }
+            onToggle(project.slug)
+          }}
         >
           <span className="work-thumb" aria-hidden="true">
             <img src={project.image} alt="" loading="lazy" decoding="async" />

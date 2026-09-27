@@ -1,3 +1,6 @@
+import { randomUUID } from 'node:crypto';
+import { PostHog } from 'posthog-node';
+
 // SYSTEM_PROMPT: Paste Carl's portfolio description below.
 // This is injected as the first message in every Groq request.
 const SYSTEM_PROMPT = `You are a portfolio assistant for Carl Emmanuel Macabales. Answer questions about Carl — his background, projects, skills, experience, and personality. Be concise, warm, and accurate. If asked something unrelated to Carl, politely redirect back to his portfolio.
@@ -126,6 +129,8 @@ Carl is open to full-time employment, freelance/contract work, and research coll
 - Never fabricate details not listed above. If unsure, say you don't have that information and suggest reaching out via email.`;
 
 const GROQ_BASE_URL = 'https://api.groq.com/openai/v1/chat/completions';
+const CONVERSATION_ID_PATTERN = /^chat-[A-Za-z0-9_-]+$/;
+const POSTHOG_DISTINCT_ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const MODELS = [
   'openai/gpt-oss-120b',
@@ -133,24 +138,90 @@ const MODELS = [
   'qwen/qwen3.8-27b',
 ];
 
-async function callGroq(apiKey, model, messages) {
-  const res = await fetch(GROQ_BASE_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model,
-      messages: [{ role: 'system', content: SYSTEM_PROMPT }, ...messages],
-      max_tokens: 1024,
-      temperature: 0.7,
-    }),
-  });
+function createPostHogClient() {
+  const posthogKey = process.env.VITE_POSTHOG_KEY;
+  const posthogHost = process.env.VITE_POSTHOG_HOST;
 
-  if (res.status === 429) throw new Error('RATE_LIMITED');
-  if (!res.ok) throw new Error(`API_ERROR_${res.status}`);
-  return res.json();
+  if (!posthogKey || !posthogHost) return null;
+  // Visitors' messages and the replies stay out of PostHog: generations carry
+  // model, tokens, latency and errors only.
+  return new PostHog(posthogKey, { host: posthogHost, privacyMode: true });
+}
+
+function isValidConversationId(value) {
+  return typeof value === 'string' && value.length <= 200 && CONVERSATION_ID_PATTERN.test(value);
+}
+
+function isValidPostHogDistinctId(value) {
+  return typeof value === 'string' && POSTHOG_DISTINCT_ID_PATTERN.test(value);
+}
+
+function captureGeneration(posthog, distinctId, properties) {
+  try {
+    posthog?.capture({ distinctId, event: '$ai_generation', properties });
+  } catch {
+    // Analytics delivery must not interfere with the assistant response.
+  }
+}
+
+async function callGroq(apiKey, model, messages, observability) {
+  const startedAt = Date.now();
+  const requestMessages = [{ role: 'system', content: SYSTEM_PROMPT }, ...messages];
+  let status;
+
+  try {
+    const res = await fetch(GROQ_BASE_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model,
+        messages: requestMessages,
+        max_tokens: 1024,
+        temperature: 0.7,
+      }),
+    });
+    status = res.status;
+
+    if (res.status === 429) throw new Error('RATE_LIMITED');
+    if (!res.ok) throw new Error(`API_ERROR_${res.status}`);
+
+    const data = await res.json();
+    captureGeneration(observability.posthog, observability.distinctId, {
+      $ai_trace_id: observability.traceId,
+      $ai_session_id: observability.sessionId,
+      $ai_model: model,
+      $ai_provider: 'groq',
+      $ai_input_tokens: data.usage?.prompt_tokens,
+      $ai_output_tokens: data.usage?.completion_tokens,
+      $ai_latency: (Date.now() - startedAt) / 1000,
+      $ai_http_status: status,
+      $ai_base_url: new URL(GROQ_BASE_URL).origin,
+      $ai_request_url: GROQ_BASE_URL,
+      $ai_stop_reason: data.choices?.[0]?.finish_reason,
+      $ai_temperature: 0.7,
+      $ai_max_tokens: 1024,
+    });
+    return data;
+  } catch (err) {
+    captureGeneration(observability.posthog, observability.distinctId, {
+      $ai_trace_id: observability.traceId,
+      $ai_session_id: observability.sessionId,
+      $ai_model: model,
+      $ai_provider: 'groq',
+      $ai_latency: (Date.now() - startedAt) / 1000,
+      $ai_http_status: status,
+      $ai_base_url: new URL(GROQ_BASE_URL).origin,
+      $ai_request_url: GROQ_BASE_URL,
+      $ai_is_error: true,
+      $ai_error: err.message,
+      $ai_temperature: 0.7,
+      $ai_max_tokens: 1024,
+    });
+    throw err;
+  }
 }
 
 export const handler = async (event) => {
@@ -175,8 +246,10 @@ export const handler = async (event) => {
   }
 
   let messages;
+  let conversationId;
+  let posthogDistinctId;
   try {
-    ({ messages } = JSON.parse(event.body));
+    ({ messages, conversationId, posthogDistinctId } = JSON.parse(event.body));
     if (!Array.isArray(messages)) throw new Error('invalid');
   } catch {
     return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid request body' }) };
@@ -194,28 +267,45 @@ export const handler = async (event) => {
     return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid messages' }) };
   }
 
-  for (const model of MODELS) {
-    try {
-      const data = await callGroq(apiKey, model, messages);
-      const content = data.choices?.[0]?.message?.content;
-      if (!content) throw new Error('EMPTY_RESPONSE');
-      return { statusCode: 200, headers, body: JSON.stringify({ content }) };
-    } catch (err) {
-      // A rejected key fails identically on every model, so stop rather than
-      // burning the whole list on it.
-      if (err.message === 'API_ERROR_401' || err.message === 'API_ERROR_403') {
-        console.error('Groq rejected the API key:', err.message);
-        return { statusCode: 500, headers, body: JSON.stringify({ error: 'Internal server error' }) };
+  const sessionId = isValidConversationId(conversationId) ? conversationId : `chat-${randomUUID()}`;
+  const distinctId = isValidPostHogDistinctId(posthogDistinctId) ? posthogDistinctId : sessionId;
+  const posthog = createPostHogClient();
+  const observability = {
+    posthog,
+    distinctId,
+    sessionId,
+    traceId: randomUUID(),
+  };
+
+  try {
+    for (const model of MODELS) {
+      try {
+        const data = await callGroq(apiKey, model, messages, observability);
+        const content = data.choices?.[0]?.message?.content;
+        if (!content) throw new Error('EMPTY_RESPONSE');
+        return { statusCode: 200, headers, body: JSON.stringify({ content }) };
+      } catch (err) {
+        // A rejected key fails identically on every model, so stop rather than
+        // burning the whole list on it.
+        if (err.message === 'API_ERROR_401' || err.message === 'API_ERROR_403') {
+          console.error('Groq rejected the API key:', err.message);
+          return { statusCode: 500, headers, body: JSON.stringify({ error: 'Internal server error' }) };
+        }
+        // Rate limit, empty reply, or a retired model - fall through to the next.
+        console.error(`Model ${model} failed:`, err.message);
       }
-      // Rate limit, empty reply, or a retired model - fall through to the next.
-      console.error(`Model ${model} failed:`, err.message);
-      continue;
+    }
+
+    return {
+      statusCode: 503,
+      headers,
+      body: JSON.stringify({ error: 'No model available' }),
+    };
+  } finally {
+    try {
+      await posthog?.shutdown();
+    } catch {
+      // Analytics delivery must not interfere with the assistant response.
     }
   }
-
-  return {
-    statusCode: 503,
-    headers,
-    body: JSON.stringify({ error: 'No model available' }),
-  };
 };

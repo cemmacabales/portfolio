@@ -23,6 +23,8 @@ VITE_EMAILJS_PUBLIC_KEY=
 
 Without these, the contact form will error on submit. All env vars must be prefixed `VITE_` to be accessible in the browser.
 
+PostHog analytics needs `VITE_POSTHOG_KEY` and `VITE_POSTHOG_HOST` (dev throws if they're missing; production silently skips analytics). On Netlify they must be scoped to Functions too, since `netlify/functions/chat.js` reads them for AI generation events. `src/posthog.js` is the only import point: it loads `posthog-js` after the boot loader releases and queues calls made before then. Chat events never carry the visitor's messages or the replies.
+
 ## Architecture
 
 This is a single-page portfolio with no router — all sections (home, about, projects, skills, contact) live in one `App.jsx` and are navigated via `scrollIntoView`. The `Dock` component is the nav bar; it calls `scrollToSection` which also updates `activeSection` state for highlighting.
@@ -54,7 +56,7 @@ Deployed to Netlify. `netlify.toml` sets `publish = "dist"` and `command = "npm 
 ## Build Notes
 
 - `console.log` calls are stripped by Terser in production builds — debug logging in the source is safe to leave.
-- Chunks are manually split in `vite.config.js` (`vendor`, `animations`, `icons`, `email`, `components`, `ui`). If you add a heavy new dependency, consider adding it to `manualChunks`.
+- Chunks are manually split in `vite.config.js` (`vendor`, `animations`, `icons`, `email`, `analytics`, `components`, `ui`). If you add a heavy new dependency, consider adding it to `manualChunks`.
 - Source maps are disabled in production (`sourcemap: false`).
 
 ## Design Context

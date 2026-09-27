@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion'; // eslint-disable-line no-unused-vars
 import { X, ArrowUpRight } from 'lucide-react';
+import posthog from '../posthog';
 import './ModelSelectionModal.css';
 
 const MODEL_NOTES = {
@@ -72,6 +73,12 @@ const ModelSelectionModal = ({ isOpen, onClose, project }) => {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="model-card"
+                    onClick={() =>
+                      posthog.capture('project_model_opened', {
+                        project_slug: project.slug,
+                        model_name: model.name,
+                      })
+                    }
                   >
                     <span className="model-info">
                       <span className="model-name">{model.name}</span>

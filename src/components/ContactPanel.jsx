@@ -4,6 +4,7 @@ import emailjs from '@emailjs/browser'
 import { Mail, Github, Linkedin, Phone, ArrowUp, Send } from 'lucide-react'
 import { validateFormData, sanitizeFormData, checkRateLimit } from '../utils/validation'
 import { profile } from '../data/portfolio'
+import posthog from '../posthog'
 import './ContactPanel.css'
 
 const EASE = [0.16, 1, 0.3, 1]
@@ -61,6 +62,7 @@ export default function ContactPanel() {
     }
 
     if (!checkRateLimit()) {
+      posthog.capture('contact_message_failed', { reason: 'rate_limited' })
       setStatus({
         state: 'error',
         message: 'That’s three messages in a minute. Give it a moment, then try again.',
@@ -73,6 +75,7 @@ export default function ContactPanel() {
     const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
 
     if (!serviceId || !templateId || !publicKey) {
+      posthog.capture('contact_message_failed', { reason: 'configuration_missing' })
       console.error('EmailJS configuration missing')
       setStatus({
         state: 'error',
@@ -81,6 +84,7 @@ export default function ContactPanel() {
       return
     }
 
+    posthog.capture('contact_form_submitted')
     setStatus({ state: 'sending', message: 'Sending…' })
     try {
       await emailjs.send(
@@ -98,10 +102,12 @@ export default function ContactPanel() {
         },
         publicKey
       )
+      posthog.capture('contact_message_sent')
       setForm(EMPTY)
       setErrors({})
       setStatus({ state: 'sent', message: `Sent. I’ll reply to ${clean.email}.` })
     } catch (error) {
+      posthog.capture('contact_message_failed', { reason: 'delivery_error' })
       console.error('Email send failed:', error)
       setStatus({
         state: 'error',
