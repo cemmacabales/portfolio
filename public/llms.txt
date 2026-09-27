@@ -1,0 +1,33 @@
+# Carl Macabales
+
+> Carl Emmanuel Macabales is an AI and software engineer in Quezon City, Philippines, and a 2026 Mapúa University graduate (BS Computer Science, AI specialization). He builds the model and the product around it: published ML research in medical imaging and clinical NLP, and full-stack products on Next.js, PostgreSQL, and Stellar payments. He is open to AI/ML and full-stack roles, freelance work, and research collaborations.
+
+The full portfolio is one page: https://cemmacabales.com/
+
+## Projects
+
+- [Centient](https://beta.centient.work): A human-feedback platform for AI teams. Contributors compare two AI answers, say why one is better, and are paid in USDC on Stellar as soon as the answer is accepted. Won a $5,000 Instawards grant. Next.js, TypeScript, PostgreSQL, Stellar. [Source](https://github.com/cemmacabales/centient)
+- [Edge Exercise Coach](https://github.com/cemmacabales/pose_est_v2): Classifies exercises and grades form in real time on a Raspberry Pi 5, using BlazePose landmarks and a dual-head LSTM trained on 451,638 augmented 30-frame windows, with a RAG chat that explains what to fix.
+- [AF Guideline Assistant](https://doi.org/10.1109/CSPA68262.2026.11517831): Answers clinical questions from the 2024 ESC atrial fibrillation guidelines with MedCPT embeddings, FAISS search, and BGE reranking over three quantized open models (Llama 3, Phi-3, Qwen3). Published at IEEE CSPA 2026. [Source](https://github.com/cemmacabales/AFIB)
+- [Renal CT Detection](https://kidney-abnormality-detection.streamlit.app/): Finds cysts, stones, and tumors in axial and coronal CT slices with YOLOv12, trained on 14,761 curated and augmented scans. Presented at IEEE ICIPCN 2026 at Kathmandu University, Nepal. [Source](https://github.com/cemmacabales/KidneyDetection)
+- Pink Raft: No-code payment flows on Stellar. Drag in triggers and actions, and a live Soroban contract deploys in under 60 seconds. 1st runner-up at the Stellar Hackathon (May 2026); Carl was the full-stack and AI integration lead. Next.js, PostgreSQL, Redis, Soroban.
+- [Read My Face](https://readmyfaceai.netlify.app): Reads seven facial expressions from a webcam in the browser with face-api.js and answers each with GSAP-driven visual feedback.
+- [MyApt](https://myapthome.netlify.app): A property management dashboard for tenants and units on live Firebase data.
+- [Petchingu](https://github.com/cemmacabales/petchinguuu): A pet care app for health records, vet appointments, and daily routines, built with React, TypeScript, and Appwrite.
+
+## Research
+
+- [Clinically Oriented Deep Learning Framework for Multi-Class Kidney Abnormality Instance Segmentation in CT Images](https://doi.org/10.1109/ICIPCN67432.2026.11438968): 2026 6th International Conference on Image Processing and Capsule Networks (ICIPCN), IEEE. Co-author.
+- [Open-Source LLMs for Evidence-Grounded Clinical Question Answering: A RAG Framework Based on the 2024 ESC Atrial Fibrillation Guidelines](https://doi.org/10.1109/CSPA68262.2026.11517831): 2026 22nd IEEE International Colloquium on Signal Processing & Its Applications (CSPA). First author.
+
+## Experience
+
+- Lead Developer, Artisam Labs (contract), September 2026 to present: leads the build of Centient.
+- Software Engineer Intern, The Blocklabs, April to June 2026.
+
+## Contact
+
+- [Résumé (PDF)](https://cemmacabales.com/MacabalesResume1.pdf)
+- [GitHub](https://github.com/cemmacabales)
+- [LinkedIn](https://www.linkedin.com/in/carl-emmanuel-macabales-a78742311/)
+- Email: carlmacabales31@gmail.com
