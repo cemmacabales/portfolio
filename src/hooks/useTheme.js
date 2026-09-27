@@ -10,6 +10,8 @@ const THEME_COLORS = { light: '#ebefed', dark: '#090b0a' }
 const flip = (theme) => (theme === 'dark' ? 'light' : 'dark')
 
 function readInitialTheme() {
+  // The build-time prerender (src/entry-server.jsx) has no document.
+  if (typeof document === 'undefined') return 'light'
   const preset = document.documentElement.dataset.theme
   if (preset === 'light' || preset === 'dark') return preset
   try {

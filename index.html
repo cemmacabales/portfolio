@@ -195,6 +195,13 @@
       <style>
         #boot { display: none; }
         html.is-booting { overflow: auto; }
+        /* The prerendered page (scripts/prerender.js) at its resting state:
+           these start at their entrance animation's first frame. */
+        #root :is(.tile, .work-row, .section-head, .word, .edu-card, .portrait, .xp-row) {
+          opacity: 1 !important;
+          transform: none !important;
+          filter: none !important;
+        }
       </style>
     </noscript>
     

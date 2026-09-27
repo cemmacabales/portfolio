@@ -5,7 +5,7 @@ import process from 'node:process'
 import { handler as chatReply } from './netlify/functions/chat.js'
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ isSsrBuild }) => ({
   plugins: [
     react({
       // Enable React Fast Refresh in development
@@ -83,8 +83,10 @@ export default defineConfig({
   ],
   build: {
     assetsDir: 'assets',
+    copyPublicDir: !isSsrBuild,
     sourcemap: false, // Disable source maps in production for security
-    minify: 'terser', // Use terser for better minification
+    // The SSR bundle only runs once, at build time, to prerender index.html.
+    minify: isSsrBuild ? false : 'terser', // Use terser for better minification
     terserOptions: {
       compress: {
         drop_console: true, // Remove console.log in production
@@ -99,8 +101,8 @@ export default defineConfig({
       output: {
         assetFileNames: 'assets/[name]-[hash].[ext]', // Add hash for cache busting
         chunkFileNames: 'assets/[name]-[hash].js',
-        entryFileNames: 'assets/[name]-[hash].js',
-        manualChunks: {
+        entryFileNames: isSsrBuild ? '[name].js' : 'assets/[name]-[hash].js',
+        manualChunks: isSsrBuild ? undefined : {
           vendor: ['react', 'react-dom'],
           animations: ['framer-motion', 'gsap'],
           gpu: ['vgpu'],
@@ -192,4 +194,4 @@ export default defineConfig({
   envPrefix: 'VITE_',
   // Asset handling
   assetsInclude: ['**/*.png', '**/*.jpg', '**/*.jpeg', '**/*.gif', '**/*.svg', '**/*.webp']
-})
+}))
