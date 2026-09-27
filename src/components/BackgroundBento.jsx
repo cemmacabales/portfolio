@@ -8,10 +8,11 @@ import {
   useTransform,
 } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
-import { education, shipped, research, certificates, stack, profile } from '../data/portfolio'
+import { education, shipped, research, certificates, profile } from '../data/portfolio'
 import { useLocalTime } from '../hooks/useLocalTime'
 import PetYard from './PetYard'
 import GithubActivity from './GithubActivity'
+import StackTile from './StackTile'
 import IcipcnImage from '../assets/icipcn.png'
 import './BackgroundBento.css'
 
@@ -136,47 +137,6 @@ function ClockTile() {
       <Skyline />
       <p className="clock-off">Off the clock: video games and building things from scratch.</p>
     </motion.article>
-  )
-}
-
-/* ── Tools: how the stack chains from a model to a deploy ───── */
-const PIPELINE = [
-  { step: 'Train', tool: 'PyTorch' },
-  { step: 'Serve', tool: 'FastAPI' },
-  { step: 'Store', tool: 'PostgreSQL' },
-  { step: 'Ship', tool: 'Next.js' },
-  { step: 'Deploy', tool: 'Docker' },
-]
-
-function Pipeline() {
-  const ref = useRef(null)
-  const inView = useInView(ref, { amount: 0.6 })
-  const nodes = PIPELINE.map((node) => ({ ...node, ...stack.find((s) => s.name === node.tool) }))
-
-  return (
-    <div ref={ref} className={`pipeline${inView ? ' is-live' : ''}`}>
-      <p className="pipeline-title">From model to product</p>
-      <div className="pipeline-track">
-        <span className="pipe-rail" aria-hidden="true">
-          <span className="pipe-comet" />
-        </span>
-        <ol className="pipe-nodes">
-          {nodes.map((node, i) => (
-            <li
-              key={node.step}
-              className="pipe-node"
-              style={{ '--i': i, '--tint': node.tint || 'var(--accent)' }}
-            >
-              <span className="pipe-orb" aria-hidden="true">
-                <span className="pipe-glyph" style={{ '--icon': `url("${node.icon}")` }} />
-              </span>
-              <span className="pipe-step">{node.step}</span>
-              <span className="pipe-tool">{node.tool}</span>
-            </li>
-          ))}
-        </ol>
-      </div>
-    </div>
   )
 }
 
@@ -315,26 +275,7 @@ export default function BackgroundBento() {
           </figure>
         </motion.article>
 
-        <motion.article variants={rise} className="tile tile-stack">
-          <h3 className="tile-head">Tools I reach for</h3>
-          <ul className="tile-body stack-grid">
-            {stack.map((tool) => (
-              <li
-                key={tool.name}
-                className="stack-item"
-                style={tool.tint ? { '--tint': tool.tint } : undefined}
-              >
-                <span
-                  className="stack-glyph"
-                  aria-hidden="true"
-                  style={{ '--icon': `url("${tool.icon}")` }}
-                />
-                <span className="stack-name">{tool.name}</span>
-              </li>
-            ))}
-          </ul>
-          <Pipeline />
-        </motion.article>
+        <StackTile variants={rise} />
 
         <motion.article variants={rise} className="tile tile-certs">
           <h3 className="tile-head">Certificates</h3>

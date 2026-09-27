@@ -537,213 +537,6 @@ a.shipped-row:focus-visible {
   color: var(--city-ink);
 }
 
-/* ── Stack ───────────────────────────────────────────────────── */
-.tile-stack {
-  display: flex;
-  flex-direction: column;
-}
-
-.stack-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
-  gap: 22px 8px;
-}
-
-.stack-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  text-align: center;
-}
-
-/* Icons render as masks so they take the ink color and stay one family. */
-.stack-glyph {
-  width: 34px;
-  height: 34px;
-  background-color: var(--ink);
-  -webkit-mask: var(--icon) center / contain no-repeat;
-  mask: var(--icon) center / contain no-repeat;
-  transition:
-    background-color 0.35s ease,
-    transform 0.45s var(--ease-out);
-}
-
-.stack-name {
-  font-size: var(--text-xs);
-  line-height: 1.2;
-  color: var(--ink-2);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .stack-item:hover .stack-glyph {
-    background-color: var(--tint, var(--ink));
-    transform: translateY(-3px);
-  }
-}
-
-/*
- * Pipeline: five of the tools in the order a project uses them. A pulse runs
- * the rail, and each tool lights in its brand color as the pulse reaches it.
- * The comet and the node glow share one 6s cycle; node i lights at
- * 0.7 × i / 4 of it, when the comet's head arrives.
- */
-.pipeline {
-  --cycle: 6s;
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  justify-content: center;
-  gap: 22px;
-  padding: 24px var(--pad-tile) var(--pad-tile);
-  border-top: 1px solid var(--line);
-}
-
-.pipeline-title {
-  font-size: var(--text-sm);
-  font-weight: 600;
-  color: var(--ink);
-}
-
-.pipeline-track {
-  position: relative;
-}
-
-.pipe-rail {
-  position: absolute;
-  top: 25px;
-  left: 10%;
-  right: 10%;
-  height: 10px;
-  margin-top: -5px;
-  overflow: hidden;
-}
-
-.pipe-rail::before {
-  content: '';
-  position: absolute;
-  inset: 4px 0;
-  border-radius: 999px;
-  background: repeating-linear-gradient(
-    90deg,
-    var(--line-strong) 0 6px,
-    transparent 6px 11px
-  );
-}
-
-.pipe-comet {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at calc(100% - 5px) 50%, var(--mint) 0 4px, transparent 5px),
-    linear-gradient(90deg, transparent 35%, color-mix(in oklch, var(--mint) 85%, transparent)) center / 100% 2px no-repeat;
-  transform: translateX(-100%);
-  opacity: 0;
-}
-
-.pipe-nodes {
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 4px;
-}
-
-.pipe-node {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  text-align: center;
-}
-
-.pipe-orb {
-  display: grid;
-  place-items: center;
-  width: 50px;
-  height: 50px;
-  margin-bottom: 8px;
-  border-radius: 50%;
-  border: 1px solid var(--line-strong);
-  background: var(--tile);
-}
-
-.pipe-glyph {
-  width: 24px;
-  height: 24px;
-  background-color: var(--ink);
-  -webkit-mask: var(--icon) center / contain no-repeat;
-  mask: var(--icon) center / contain no-repeat;
-}
-
-.pipe-step {
-  font-size: var(--text-xs);
-  font-weight: 600;
-  line-height: 1.2;
-  color: var(--ink);
-}
-
-.pipe-tool {
-  font-size: var(--text-xs);
-  line-height: 1.2;
-  color: var(--ink-2);
-}
-
-.pipeline.is-live .pipe-comet {
-  animation: pipe-comet var(--cycle) linear infinite;
-}
-
-.pipeline.is-live .pipe-orb {
-  animation: pipe-orb var(--cycle) linear infinite;
-  animation-delay: calc(var(--cycle) * 0.175 * var(--i));
-}
-
-.pipeline.is-live .pipe-glyph {
-  animation: pipe-glyph var(--cycle) linear infinite;
-  animation-delay: calc(var(--cycle) * 0.175 * var(--i));
-}
-
-@keyframes pipe-comet {
-  0% {
-    transform: translateX(-100%);
-    opacity: 1;
-  }
-  70% {
-    transform: translateX(0);
-    opacity: 1;
-  }
-  84%,
-  100% {
-    transform: translateX(0);
-    opacity: 0;
-  }
-}
-
-@keyframes pipe-orb {
-  0% {
-    transform: scale(1.12);
-    border-color: var(--tint);
-    box-shadow:
-      0 0 0 5px color-mix(in oklch, var(--tint) 14%, transparent),
-      0 10px 22px -10px color-mix(in oklch, var(--tint) 70%, transparent);
-  }
-  24%,
-  100% {
-    transform: scale(1);
-    border-color: var(--line-strong);
-    box-shadow: 0 0 0 0 transparent;
-  }
-}
-
-@keyframes pipe-glyph {
-  0% {
-    background-color: var(--tint);
-  }
-  24%,
-  100% {
-    background-color: var(--ink);
-  }
-}
-
 /* ── Responsive ──────────────────────────────────────────────── */
 @media (max-width: 1100px) {
   .background-grid {
@@ -770,29 +563,6 @@ a.shipped-row:focus-visible {
       'clock';
   }
 
-  .stack-grid {
-    grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
-  }
-
-  .pipe-orb {
-    width: 44px;
-    height: 44px;
-  }
-
-  .pipe-rail {
-    top: 22px;
-  }
-
-  /* Five columns can't fit the tool names at phone width; the icons carry them. */
-  .pipe-tool {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    white-space: nowrap;
-  }
-
   .shipped-row {
     grid-template-columns: minmax(0, 1fr);
     gap: 6px;
@@ -809,23 +579,18 @@ a.shipped-row:focus-visible {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .row-icon,
-  .stack-glyph {
+  .row-icon {
     transition: none;
   }
 
   .stars i,
   .orb-sun,
   .skyline .win,
-  .span-now::after,
-  .pipeline.is-live .pipe-comet,
-  .pipeline.is-live .pipe-orb,
-  .pipeline.is-live .pipe-glyph {
+  .span-now::after {
     animation: none;
   }
 
-  a.row-link:hover .row-icon,
-  .stack-item:hover .stack-glyph {
+  a.row-link:hover .row-icon {
     transform: none;
   }
 }

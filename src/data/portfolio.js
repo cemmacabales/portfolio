@@ -356,27 +356,28 @@ export const certificates = [
   },
 ]
 
-// `tint` is the brand color shown on hover. Omit it for marks that are
-// black or white, which would vanish in one of the two themes.
+// `group` is the Tools tile's filter (ml, web, infra). `tint` is the brand
+// color shown on hover. Omit it for marks that are black or white, which
+// would vanish in one of the two themes.
 export const stack = [
-  { name: 'Python', icon: pythonIcon, tint: '#3776ab' },
-  { name: 'PyTorch', icon: pytorchIcon, tint: '#ee4c2c' },
-  { name: 'TensorFlow', icon: tensorflowIcon, tint: '#ff6f00' },
-  { name: 'scikit-learn', icon: sklearnIcon, tint: '#f7931e' },
-  { name: 'OpenCV', icon: opencvIcon, tint: '#5c3ee8' },
-  { name: 'NumPy', icon: numpyIcon, tint: '#4dabcf' },
-  { name: 'pandas', icon: pandasIcon, tint: '#e70488' },
-  { name: 'FastAPI', icon: fastapiIcon, tint: '#009688' },
-  { name: 'Flask', icon: flaskIcon },
-  { name: 'TypeScript', icon: typescriptIcon, tint: '#3178c6' },
-  { name: 'JavaScript', icon: javascriptIcon, tint: '#e5c700' },
-  { name: 'React', icon: reactIcon, tint: '#149eca' },
-  { name: 'Next.js', icon: nextIcon },
-  { name: 'Node.js', icon: nodeIcon, tint: '#5fa04e' },
-  { name: 'PostgreSQL', icon: postgresIcon, tint: '#4169e1' },
-  { name: 'Prisma', icon: prismaIcon, tint: '#5a67d8' },
-  { name: 'Redis', icon: redisIcon, tint: '#dc382d' },
-  { name: 'Firebase', icon: firebaseIcon, tint: '#f5a100' },
-  { name: 'Docker', icon: dockerIcon, tint: '#2496ed' },
-  { name: 'Git', icon: gitIcon, tint: '#f05032' },
+  { name: 'Python', group: 'ml', icon: pythonIcon, tint: '#3776ab' },
+  { name: 'PyTorch', group: 'ml', icon: pytorchIcon, tint: '#ee4c2c' },
+  { name: 'TensorFlow', group: 'ml', icon: tensorflowIcon, tint: '#ff6f00' },
+  { name: 'scikit-learn', group: 'ml', icon: sklearnIcon, tint: '#f7931e' },
+  { name: 'OpenCV', group: 'ml', icon: opencvIcon, tint: '#5c3ee8' },
+  { name: 'NumPy', group: 'ml', icon: numpyIcon, tint: '#4dabcf' },
+  { name: 'pandas', group: 'ml', icon: pandasIcon, tint: '#e70488' },
+  { name: 'FastAPI', group: 'web', icon: fastapiIcon, tint: '#009688' },
+  { name: 'Flask', group: 'web', icon: flaskIcon },
+  { name: 'TypeScript', group: 'web', icon: typescriptIcon, tint: '#3178c6' },
+  { name: 'JavaScript', group: 'web', icon: javascriptIcon, tint: '#e5c700' },
+  { name: 'React', group: 'web', icon: reactIcon, tint: '#149eca' },
+  { name: 'Next.js', group: 'web', icon: nextIcon },
+  { name: 'Node.js', group: 'web', icon: nodeIcon, tint: '#5fa04e' },
+  { name: 'PostgreSQL', group: 'infra', icon: postgresIcon, tint: '#4169e1' },
+  { name: 'Prisma', group: 'infra', icon: prismaIcon, tint: '#5a67d8' },
+  { name: 'Redis', group: 'infra', icon: redisIcon, tint: '#dc382d' },
+  { name: 'Firebase', group: 'infra', icon: firebaseIcon, tint: '#f5a100' },
+  { name: 'Docker', group: 'infra', icon: dockerIcon, tint: '#2496ed' },
+  { name: 'Git', group: 'infra', icon: gitIcon, tint: '#f05032' },
 ]
