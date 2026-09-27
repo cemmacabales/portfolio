@@ -37,6 +37,8 @@
   display: inline-flex;
   align-items: center;
   gap: 0.55em;
+  /* Gives way before the actions do (see .nav-actions). */
+  min-width: 0;
   height: 48px;
   padding: 0 22px;
   border-radius: 999px;
@@ -48,13 +50,23 @@
   white-space: nowrap;
 }
 
+.nav-brand-name {
+  flex-shrink: 0;
+}
+
 .nav-brand-role {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-weight: 500;
   color: var(--ink-2);
 }
 
+/* The theme toggle never gets pushed off-screen: when space runs out (say,
+   zoomed-in or larger text), the role truncates instead. */
 .nav-actions {
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   gap: 10px;
 }
@@ -181,7 +193,13 @@
   }
 }
 
-@media (max-width: 380px) {
+/*
+ * The role only fits beside the actions once the viewport clears the pill
+ * (399px), gap, toggle, and 4vw gutters: about 500px on phones, and about
+ * 866px once the section links join the toggle. Below each, the pill shows
+ * just the name (the hero says the role anyway).
+ */
+@media (max-width: 520px), (min-width: 761px) and (max-width: 900px) {
   .nav-brand-role {
     display: none;
   }
