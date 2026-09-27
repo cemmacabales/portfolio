@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from 'framer-motion' // eslint-disable-line no-unused-vars
+import { motion } from 'framer-motion' // eslint-disable-line no-unused-vars
 import { ArrowUpRight, Plus } from 'lucide-react'
 import { projects } from '../data/portfolio'
 import './WorkList.css'
@@ -50,75 +50,73 @@ function WorkRow({ project, index, open, onToggle, onShowModels }) {
         </button>
       </h3>
 
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div
-            key="panel"
-            id={panelId}
-            className="work-panel"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ height: { duration: 0.6, ease: EASE }, opacity: { duration: 0.3 } }}
-          >
-            <div className="work-panel-inner">
-              <figure className="work-figure">
-                <img src={project.image} alt={project.imageAlt} loading="lazy" decoding="async" />
-              </figure>
+      {/* Always mounted, so search and AI crawlers can read every case study.
+          A closed panel is collapsed to nothing and inert: no focus, no
+          find-in-page, no screen reader. */}
+      <motion.div
+        id={panelId}
+        className="work-panel"
+        initial={false}
+        animate={open ? { height: 'auto', opacity: 1 } : { height: 0, opacity: 0 }}
+        transition={{ height: { duration: 0.6, ease: EASE }, opacity: { duration: 0.3 } }}
+        inert={!open}
+      >
+        <div className="work-panel-inner">
+          <figure className="work-figure">
+            <img src={project.image} alt={project.imageAlt} loading="lazy" decoding="async" />
+          </figure>
 
-              <div className="work-detail">
-                <p className="work-summary">{project.summary}</p>
+          <div className="work-detail">
+            <p className="work-summary">{project.summary}</p>
 
-                {project.metrics.length > 0 && (
-                  <dl className="work-metrics">
-                    {project.metrics.map((metric) => (
-                      <div key={metric.label} className="work-metric">
-                        <dt>{metric.label}</dt>
-                        <dd>{metric.value}</dd>
-                      </div>
-                    ))}
-                  </dl>
-                )}
+            {project.metrics.length > 0 && (
+              <dl className="work-metrics">
+                {project.metrics.map((metric) => (
+                  <div key={metric.label} className="work-metric">
+                    <dt>{metric.label}</dt>
+                    <dd>{metric.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            )}
 
-                <ul className="work-tech" aria-label="Built with">
-                  {project.tech.map((tech) => (
-                    <li key={tech}>{tech}</li>
-                  ))}
-                </ul>
+            <ul className="work-tech" aria-label="Built with">
+              {project.tech.map((tech) => (
+                <li key={tech}>{tech}</li>
+              ))}
+            </ul>
 
-                <div className="work-actions">
-                  {project.models && (
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-mint"
-                      onClick={() => onShowModels(project)}
-                    >
-                      Try the models
-                      <ArrowUpRight size={16} strokeWidth={1.8} aria-hidden="true" />
-                    </button>
-                  )}
-                  {demo && (
-                    <ExternalButton href={demo} variant="btn-mint">
-                      {project.demoLabel ?? 'Live demo'}
-                    </ExternalButton>
-                  )}
-                  {paper && (
-                    <ExternalButton href={paper} variant="btn-line">
-                      Read the paper
-                    </ExternalButton>
-                  )}
-                  {code && (
-                    <ExternalButton href={code} variant="btn-line">
-                      Source code
-                    </ExternalButton>
-                  )}
-                  {project.note && <p className="work-note">{project.note}</p>}
-                </div>
-              </div>
+            <div className="work-actions">
+              {project.models && (
+                <button
+                  type="button"
+                  className="btn btn-sm btn-mint"
+                  onClick={() => onShowModels(project)}
+                >
+                  Try the models
+                  <ArrowUpRight size={16} strokeWidth={1.8} aria-hidden="true" />
+                </button>
+              )}
+              {demo && (
+                <ExternalButton href={demo} variant="btn-mint">
+                  {project.demoLabel ?? 'Live demo'}
+                </ExternalButton>
+              )}
+              {paper && (
+                <ExternalButton href={paper} variant="btn-line">
+                  Read the paper
+                </ExternalButton>
+              )}
+              {code && (
+                <ExternalButton href={code} variant="btn-line">
+                  Source code
+                </ExternalButton>
+              )}
+              {project.note && <p className="work-note">{project.note}</p>}
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+        </div>
+      </motion.div>
     </motion.li>
   )
 }
