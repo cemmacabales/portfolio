@@ -8,11 +8,12 @@ import {
   useTransform,
 } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
-import { education, shipped, research, certificates, profile } from '../data/portfolio'
+import { shipped, research, certificates, profile } from '../data/portfolio'
 import { useLocalTime } from '../hooks/useLocalTime'
 import PetYard from './PetYard'
 import GithubActivity from './GithubActivity'
 import StackTile from './StackTile'
+import EducationTile from './EducationTile'
 import IcipcnImage from '../assets/icipcn.png'
 import './BackgroundBento.css'
 
@@ -140,44 +141,6 @@ function ClockTile() {
   )
 }
 
-/* ── Education: the whole span, 2009 to 2026, as one bar ────── */
-function EduSpan() {
-  // Oldest first; each segment's width is its share of the years.
-  const spans = [...education].reverse().map((item) => {
-    const [from, to] = item.period.split('–').map(Number)
-    return { school: item.school, years: to - from }
-  })
-
-  return (
-    <div className="edu-span" aria-hidden="true">
-      <p className="span-caption">
-        <span>Al Khobar to Makati</span>
-        <span className="span-years">2009–2026</span>
-      </p>
-      <div className="span-bar">
-        {spans.map((span, i) => (
-          <motion.span
-            key={span.school}
-            className="span-seg"
-            style={{ flexGrow: span.years }}
-            initial={{ scaleX: 0 }}
-            whileInView={{ scaleX: 1 }}
-            viewport={{ once: true, amount: 1 }}
-            transition={{ duration: 0.9, ease: EASE, delay: 0.15 + i * 0.3 }}
-          />
-        ))}
-        <motion.span
-          className="span-now"
-          initial={{ opacity: 0, scale: 0.4 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true, amount: 1 }}
-          transition={{ duration: 0.5, ease: EASE, delay: 0.15 + spans.length * 0.3 + 0.3 }}
-        />
-      </div>
-    </div>
-  )
-}
-
 export default function BackgroundBento() {
   return (
     <section id="about" className="section shell" aria-labelledby="about-title">
@@ -231,22 +194,7 @@ export default function BackgroundBento() {
           <PetYard />
         </motion.article>
 
-        <motion.article variants={rise} className="tile tile-education">
-          <h3 className="tile-head">Education</h3>
-          <ol className="tile-body edu-list">
-            {education.map((item) => (
-              <li key={item.school} className="edu-item">
-                <img src={item.logo} alt="" className="edu-logo" loading="lazy" />
-                <div className="edu-text">
-                  <p className="edu-school">{item.school}</p>
-                  <p className="edu-detail">{item.detail}</p>
-                </div>
-                <p className="edu-period">{item.period}</p>
-              </li>
-            ))}
-          </ol>
-          <EduSpan />
-        </motion.article>
+        <EducationTile variants={rise} />
 
         <motion.article variants={rise} className="tile tile-research">
           <h3 className="tile-head">Research</h3>

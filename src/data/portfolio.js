@@ -12,6 +12,9 @@ import PetchinguImage from '../assets/petchingu.png'
 import MapuaImage from '../assets/Mapua.png'
 import StPaulImage from '../assets/stpaul.png'
 import IpsaImage from '../assets/ipsa.jpg'
+import GradPhoto from '../assets/me.jpeg'
+import BarongPhoto from '../assets/me-barong.jpg'
+import IpsaPhoto from '../assets/me-ipsa.jpg'
 
 import pythonIcon from 'devicon/icons/python/python-plain.svg'
 import pytorchIcon from 'devicon/icons/pytorch/pytorch-original.svg'
@@ -283,19 +286,29 @@ export const education = [
     school: 'Mapúa University',
     detail: 'BS Computer Science, AI specialization',
     period: '2023–2026',
+    place: 'Makati',
     logo: MapuaImage,
+    photo: { src: GradPhoto, alt: 'Carl in Mapúa graduation robes', position: '50% 35%' },
   },
   {
     school: 'St. Paul University',
     detail: 'Senior high school, STEM',
     period: '2021–2023',
+    place: 'Quezon City',
     logo: StPaulImage,
+    photo: { src: BarongPhoto, alt: 'Carl smiling in a white barong', position: '50% 35%' },
   },
   {
     school: 'International Philippine School in Al Khobar',
     detail: 'Grade school to high school, Saudi Arabia',
     period: '2009–2021',
+    place: 'Al Khobar',
     logo: IpsaImage,
+    photo: {
+      src: IpsaPhoto,
+      alt: 'Young Carl in his school uniform, next to his Ben 10 school bag',
+      position: '50% 30%',
+    },
   },
 ]
 

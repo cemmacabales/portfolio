@@ -1,0 +1,340 @@
+/* ── Education: three schools, a photo from each ─────────────── */
+.tile-education {
+  display: flex;
+  flex-direction: column;
+  container-type: inline-size;
+
+  --card-shadow:
+    0 16px 30px -16px oklch(0.2 0.02 175 / 0.5),
+    0 2px 6px oklch(0.2 0.02 175 / 0.12);
+  --card-ring: oklch(0.2 0.02 175 / 0.08);
+}
+
+:root[data-theme='dark'] .tile-education {
+  --card-shadow:
+    0 18px 36px -14px oklch(0 0 0 / 0.75),
+    0 2px 6px oklch(0 0 0 / 0.4);
+  --card-ring: oklch(1 0 0 / 0.12);
+}
+
+.edu-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(128px, 34cqi, 196px);
+  align-items: start;
+  gap: 20px clamp(10px, 2.5cqi, 20px);
+}
+
+/* ── Rows ── */
+.edu-list {
+  display: flex;
+  flex-direction: column;
+  /* The hover highlight reaches into the tile's padding. */
+  margin: -10px -12px;
+}
+
+.edu-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 16px;
+  text-align: left;
+  color: var(--ink);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.edu-row:focus-visible {
+  outline-offset: -2px;
+}
+
+.edu-highlight {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--tile-sunk);
+}
+
+.edu-logo,
+.edu-text {
+  position: relative;
+}
+
+.edu-logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 11px;
+  object-fit: cover;
+  background: oklch(1 0 0);
+  border: 1px solid var(--line);
+  transition: box-shadow 0.4s var(--ease-out);
+}
+
+@supports (corner-shape: squircle) {
+  .edu-logo {
+    corner-shape: squircle;
+    border-radius: 19px;
+  }
+}
+
+.edu-row.is-on .edu-logo {
+  box-shadow: 0 8px 16px -8px oklch(0.2 0.02 175 / 0.4);
+}
+
+.edu-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.edu-period {
+  font-size: var(--text-xs);
+  line-height: 1.3;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.edu-school {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+.edu-detail {
+  font-size: var(--text-xs);
+  line-height: 1.4;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+
+/* ── Photo stack ── */
+.edu-stack-wrap {
+  align-self: center;
+  /* Leaves room for the fanned cards and the tilt inside the tile. */
+  padding: 4px 13% 12px;
+}
+
+.edu-stack {
+  position: relative;
+  aspect-ratio: 4 / 5;
+}
+
+.edu-card {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 18px;
+  background: var(--screen);
+  box-shadow: var(--card-shadow);
+  transform-origin: 50% 85%;
+}
+
+@supports (corner-shape: squircle) {
+  .edu-card {
+    corner-shape: squircle;
+    border-radius: 30px;
+  }
+}
+
+.edu-card img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.edu-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px var(--card-ring);
+  pointer-events: none;
+}
+
+.edu-sheen {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* ── The whole run, 2009 to 2026, as one bar ── */
+.edu-span {
+  margin-top: auto;
+  padding: 4px var(--pad-tile) var(--pad-tile);
+}
+
+.span-caption {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  font-size: var(--text-xs);
+  line-height: 1.3;
+  color: var(--ink-2);
+}
+
+.span-label {
+  overflow: hidden;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.span-years {
+  display: inline-flex;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Rolling text: the old and new values share one grid cell. */
+.roll {
+  display: inline-grid;
+}
+
+.roll > * {
+  grid-area: 1 / 1;
+}
+
+.roll-in {
+  animation: roll-in 0.42s var(--ease-out) both;
+}
+
+.roll-out {
+  animation: roll-out 0.42s var(--ease-out) both;
+}
+
+@keyframes roll-in {
+  from {
+    opacity: 0;
+    filter: blur(3px);
+    transform: translateY(calc(0.7em * var(--dir, 1)));
+  }
+}
+
+@keyframes roll-out {
+  to {
+    opacity: 0;
+    filter: blur(3px);
+    transform: translateY(calc(-0.7em * var(--dir, 1)));
+  }
+}
+
+.span-bar {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 12px;
+}
+
+.span-seg {
+  position: relative;
+  flex: 1 1 0;
+  height: 8px;
+  border-radius: 999px;
+  transform-origin: left center;
+  background: color-mix(in oklch, var(--ink) 16%, transparent);
+  transition:
+    height 0.35s var(--ease-out),
+    background-color 0.35s var(--ease-out),
+    box-shadow 0.35s var(--ease-out);
+}
+
+/* A taller hit area, so the bar can be scrubbed without pixel hunting. */
+.span-seg::before {
+  content: '';
+  position: absolute;
+  inset: -12px 0;
+}
+
+.span-age-1 {
+  background: color-mix(in oklch, var(--ink) 32%, transparent);
+}
+
+.span-age-2 {
+  background: var(--mint);
+  box-shadow: 0 0 0 1px color-mix(in oklch, var(--accent) 30%, transparent);
+}
+
+/* Scrubbing: the bar thickens like a media scrubber and only the picked stretch keeps its color. */
+.edu-span.is-scrubbing .span-seg {
+  height: 10px;
+  background: color-mix(in oklch, var(--ink) 14%, transparent);
+  box-shadow: none;
+}
+
+.edu-span.is-scrubbing .span-seg.is-on {
+  height: 12px;
+  background: var(--mint);
+  box-shadow: 0 0 0 1px color-mix(in oklch, var(--accent) 30%, transparent);
+}
+
+.span-now {
+  position: relative;
+  flex: 0 0 auto;
+  width: 12px;
+  height: 12px;
+  margin-left: 3px;
+  border-radius: 50%;
+  background: var(--mint);
+  box-shadow: 0 0 0 2px var(--tile), 0 0 0 3px color-mix(in oklch, var(--accent) 55%, transparent);
+}
+
+.span-now::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  border: 1px solid var(--accent);
+  animation: span-ping 2.8s var(--ease-out) infinite;
+}
+
+@keyframes span-ping {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  70%,
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+/* ── Narrow tiles: the photos sit above the list ── */
+@container (max-width: 430px) {
+  .edu-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .edu-stack-wrap {
+    order: -1;
+    align-self: start;
+    justify-self: center;
+    width: min(100%, 250px);
+    padding: 0 16% 4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .edu-logo,
+  .span-seg {
+    transition: none;
+  }
+
+  .span-now::after,
+  .roll-in {
+    animation: none;
+  }
+
+  .roll-out {
+    display: none;
+  }
+}
