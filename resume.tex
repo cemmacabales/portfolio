@@ -1,0 +1,204 @@
+%-------------------------
+% Resume in Latex
+% Author : Jake Gutierrez
+% Based off of: https://github.com/sb2nov/resume
+% License : MIT
+%------------------------
+% Carl's résumé. Compile with pdfLaTeX (Overleaf's default) and copy the PDF to
+% public/MacabalesResume1.pdf. resume.md is a plain-text mirror; keep it in sync.
+
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\hypersetup{pdftitle={Carl Emmanuel M. Macabales -- R\'esum\'e}, pdfauthor={Carl Emmanuel M. Macabales}}
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\input{glyphtounicode}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\addtolength{\oddsidemargin}{-0.5in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1in}
+\addtolength{\topmargin}{-.5in}
+\addtolength{\textheight}{1.2in}
+
+\urlstyle{same}
+
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+\titleformat{\section}{
+  \vspace{-4pt}\scshape\raggedright\large
+}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
+
+\pdfgentounicode=1
+
+%-------------------------
+% Custom commands
+\newcommand{\resumeItem}[1]{
+  \item\small{
+    {#1 \vspace{-2pt}}
+  }
+}
+
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-2pt}\item
+    \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & #2 \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubSubheading}[2]{
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \textit{\small#1} & \textit{\small #2} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeProjectHeading}[2]{
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \small#1 & #2 \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{-4pt}}
+
+\renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.15in, label={}, itemsep=7pt, topsep=3pt]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}[itemsep=3pt, topsep=2pt, parsep=0pt, partopsep=0pt, leftmargin=*]}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-4pt}}
+
+%-------------------------------------------
+%%%%%%  RESUME STARTS HERE  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+%----------HEADING----------
+\begin{center}
+    \textbf{\Huge \scshape Carl Emmanuel M. Macabales} \\ \vspace{1pt}
+    \small 0956 389 3104 $|$
+    \href{mailto:carlmacabales31@gmail.com}{\underline{carlmacabales31@gmail.com}} $|$
+    \href{https://cemmacabales.com}{\underline{cemmacabales.com}} $|$
+    \href{https://www.linkedin.com/in/carl-emmanuel-macabales-a78742311}{\underline{linkedin/cemmacabales}} $|$
+    \href{https://github.com/cemmacabales}{\underline{github/cemmacabales}}
+\end{center}
+
+
+%-----------EDUCATION-----------
+\section{Education}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {Map\'{u}a University}{Makati, Philippines}
+      {Bachelor of Science in Computer Science, Specializing in Artificial Intelligence}{Aug. 2023 -- Jul. 2026}
+  \resumeSubHeadingListEnd
+
+
+%-----------EXPERIENCE-----------
+\section{Experience}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {Artisam Labs --- Centient}{}
+      {Lead Developer (Contract) $|$ Next.js, TypeScript, PostgreSQL, Prisma, Redis, Stellar SDK}{Sep. 2026 -- Present}
+      \resumeItemListStart
+        \resumeItem{Lead the build of \textbf{Centient}, a human-feedback platform that won a \textbf{\$5,000} Instawards grant: contributors rank AI answers and are paid in \textbf{USDC on Stellar}, with gold tasks and agreement checks guarding quality.}
+        \resumeItem{Replaced withdrawals with instant per-answer payouts after \textbf{8 of 10} balances sat stuck under the 1 USDC minimum.}
+        \resumeItem{Secured payouts with \textbf{2-of-3} multisig co-signing, plus a CI race test proving \textbf{zero} double-pays.}
+      \resumeItemListEnd
+
+    \resumeSubheading
+      {The BLOKC (BLOCKLABS Inc.)}{}
+      {Software Engineering Intern}{Apr. -- Jun. 2026}
+      \resumeItemListStart
+        \resumeItem{Led a \textbf{5-intern} engineering pod across three products, standardizing code review and test workflows to cut average feature turnaround from \textbf{4 weeks to 2 weeks} while lowering post-release error rate by \textbf{$\sim$40\%}.}
+        \resumeItem{Ran security-focused QA for a Learning Management System, filing \textbf{30+} reproducible issues covering IDOR, broken access control, and rate-limit bypass, cutting the pre-release defect escape rate by \textbf{$\sim$35\%}.}
+        \resumeItem{Built a multi-provider LLM adapter (\textbf{Groq, Anthropic, Gemini, Vertex AI, Ollama}) for Paiflow that turns prompts into Stellar payment flows: \textbf{$\sim$94\%} success, \textbf{$\sim$70\%} fewer malformed-output crashes.}
+        \resumeItem{Shipped a \textbf{6-phase} on-chain payout system with atomic withdrawals and anti-fraud controls, stress-testing \textbf{10K+} simulated payouts on Stellar testnet with \textbf{zero} double-spends and \textbf{5/5} supervisor ratings.}
+      \resumeItemListEnd
+  \resumeSubHeadingListEnd
+
+
+%-----------PUBLICATIONS-----------
+\section{Publications}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {Multi-Class Kidney Abnormality Segmentation}{Aug. 2025 -- Jan. 2026}
+      {AI -- Deep Learning Computer Vision $|$ IEEE ICIPCN 2026, Kathmandu University, Nepal}{}
+      \resumeItemListStart
+        \resumeItem{Developed a YOLOv12 model to detect kidney cysts, stones, and tumors, trained on \textbf{14,761} augmented CT images.}
+        \resumeItem{Achieved \textbf{mAP@0.5 of 0.946} (axial) and \textbf{0.885} (coronal), reducing radiologist workload.}
+      \resumeItemListEnd
+    \resumeSubheading
+      {RAG-Based Clinical Guideline Chatbot for Atrial Fibrillation}{Dec. 2025 -- Mar. 2026}
+      {AI -- Natural Language Processing $|$ IEEE CSPA 2026 $|$ First Author}{}
+      \resumeItemListStart
+        \resumeItem{Built a RAG chatbot (\textbf{Llama-3, Phi-3, Qwen3}) for querying \textbf{100+ pages} of ESC AF guidelines.}
+        \resumeItem{Improved retrieval with MedCPT, FAISS, and BGE reranking, reaching \textbf{BERTScore F1 0.835}, \textbf{ROUGE-1 0.456}.}
+        \resumeItem{Evaluated on \textbf{20} clinical queries, hitting faithfulness up to \textbf{8.75/10} at \textbf{$\sim$0.7s} latency and \textbf{7.9 tok/s}.}
+      \resumeItemListEnd
+  \resumeSubHeadingListEnd
+
+
+%-----------PROJECTS-----------
+\section{Projects}
+    \resumeSubHeadingListStart
+
+      \resumeSubheading
+          {Real-Time AI Exercise Coaching System}{Apr. -- Jun. 2026}
+          {AI -- Computer Vision $|$ Python, MediaPipe BlazePose, TFLite, ONNX, Raspberry Pi 5}{}
+          \resumeItemListStart
+            \resumeItem{Trained a dual-head LSTM on \textbf{451,638} windows from \textbf{174 videos}: \textbf{97.15\%} exercise and \textbf{92.81\%} form accuracy.}
+            \resumeItem{Exported to a \textbf{219 KB} TFLite model with BlazePose Lite, hitting \textbf{25--30 FPS} on a Raspberry Pi 5.}
+            \resumeItem{Built a \textbf{$\sim$115 MB} on-device RAG chatbot over PDF fitness manuals, removing PyTorch from the Pi runtime.}
+          \resumeItemListEnd
+
+    \resumeSubHeadingListEnd
+
+
+%-----------ACTIVITIES-----------
+\section{Activities}
+    \resumeSubHeadingListStart
+
+      \resumeSubheading
+          {Pink Raft --- 1st Runner-Up, Stellar Hackathon 2026}{May 2026}
+          {Full-Stack Engineer \& AI Integration Lead}{}
+          \resumeItemListStart
+            \resumeItem{Built a no-code Stellar/Soroban payment flow builder that deploys live smart contracts in under \textbf{60 seconds}.}
+            \resumeItem{Cut AI response latency \textbf{$\sim$80\%} (10s $\to$ 2s) via schema hardening; shipped WebAuthn 2FA and non-custodial wallets.}
+          \resumeItemListEnd
+
+    \resumeSubHeadingListEnd
+
+
+\vspace{-4pt}
+%-----------TECHNICAL SKILLS-----------
+\section{Technical Skills}
+ \begin{itemize}[leftmargin=0.15in, label={}]
+    \small{\item{
+     \textbf{Languages}{: Python, TypeScript, JavaScript, Java, SQL, R, HTML/CSS} \\
+     \textbf{Frameworks \& Libraries}{: React, Next.js, React Native, Expo, Node.js, FastAPI, Flask, Stellar SDK, Soroban} \\
+     \textbf{AI/ML}{: RAG, NLP, Computer Vision, Object Detection, PyTorch, TFLite, ONNX, OpenCV, NumPy, pandas} \\
+     \textbf{Developer Tools}{: Git, Docker, Railway, Sentry, Streamlit, NVIDIA CUDA} \\
+     \textbf{Cloud \& Databases}{: PostgreSQL, Prisma, Redis, Firebase, Appwrite, Google Cloud Platform, RESTful APIs}
+    }}
+ \end{itemize}
+
+%-------------------------------------------
+\end{document}

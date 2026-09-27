@@ -23,7 +23,7 @@ The full portfolio is one page: https://cemmacabales.com/
 ## Experience
 
 - Lead Developer, Artisam Labs (contract), September 2026 to present: leads the build of Centient.
-- Software Engineer Intern, The Blocklabs, April to June 2026.
+- Software Engineering Intern, The BLOKC (Blocklabs Inc.), April to June 2026: led a 5-intern pod across three products, ran security QA on a learning management system, and built a multi-provider LLM adapter and an on-chain payout system on Stellar.
 
 ## Contact
 

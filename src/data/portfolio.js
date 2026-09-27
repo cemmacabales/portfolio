@@ -318,8 +318,8 @@ export const education = [
 // newest first in each group. `start`/`end` are ISO dates (an `end` of null
 // means the role is current); the tile works out the tenure from them. In
 // `points`, **double asterisks** mark the figures the tile sets in bold.
-// Artisam's title and dates are from Carl's contract; Blocklabs' bullets are
-// from his LinkedIn.
+// Artisam's title and dates are from Carl's contract; the BLOKC's name and title
+// follow his résumé, and its bullets are from his LinkedIn.
 export const experience = [
   {
     id: 'artisam',
@@ -341,8 +341,8 @@ export const experience = [
   {
     id: 'blocklabs',
     group: 'roles',
-    name: 'The Blocklabs',
-    title: 'Software Engineer Intern',
+    name: 'The BLOKC',
+    title: 'Software Engineering Intern',
     kind: 'Internship',
     start: '2026-04',
     end: '2026-06',
