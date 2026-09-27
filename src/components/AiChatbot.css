@@ -6,10 +6,21 @@
  * and a typing bubble that grows into the reply.
  */
 
-@property --chat-spin {
-  syntax: '<angle>';
+/* Set by AiChatbot.jsx on the one element that reads each. Inherited, a
+   change would restyle every word in the thread. */
+@property --compose-h {
+  syntax: '*';
   inherits: false;
-  initial-value: 0deg;
+}
+
+@property --vvh {
+  syntax: '*';
+  inherits: false;
+}
+
+@property --vvt {
+  syntax: '*';
+  inherits: false;
 }
 
 .chat {
@@ -179,14 +190,12 @@
 }
 
 /* ── Sheet ────────────────────────────────────────────────────── */
-/* The drop shadow lives on a wrapper so it follows the clipped shape. */
 .chat-frame {
   position: absolute;
   right: 0;
   bottom: 0;
   width: var(--sheet-w);
   height: var(--sheet-h);
-  filter: var(--sheet-shadow);
   visibility: hidden;
   transition: visibility 0s linear var(--close-ms);
 }
@@ -196,6 +205,23 @@
   transition-delay: 0s;
 }
 
+/* The drop shadow follows the clipped shape, so it's cast by a plate that
+   morphs in step with the sheet. On the sheet's own wrapper it would be
+   redrawn for every frame of every animation inside the thread. */
+.chat-shade {
+  position: absolute;
+  inset: 0;
+  filter: var(--sheet-shadow);
+}
+
+.chat-shade::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--sheet-r);
+  background: var(--tile);
+}
+
 .chat-sheet {
   position: absolute;
   inset: 0;
@@ -203,6 +229,12 @@
   border-radius: var(--sheet-r);
   background: var(--tile);
   outline: none;
+  /* Nothing inside can change the page's layout or paint outside the box. */
+  contain: strict;
+}
+
+.chat-sheet,
+.chat-shade::before {
   clip-path: inset(
     calc(100% - var(--launch) - var(--dy)) var(--dx) var(--dy) calc(100% - var(--launch) - var(--dx))
       round calc(var(--launch) / 2)
@@ -210,7 +242,8 @@
   transition: clip-path var(--close-ms) var(--ease-sheet);
 }
 
-.chat[data-open='true'] .chat-sheet {
+.chat[data-open='true'] .chat-sheet,
+.chat[data-open='true'] .chat-shade::before {
   clip-path: inset(0 0 0 0 round var(--sheet-r));
   transition-duration: 580ms;
 }
@@ -783,21 +816,15 @@
   box-shadow: 0 0 0 3px color-mix(in oklch, var(--mint) 18%, transparent);
 }
 
-/* Thinking: a mint light travels the rim, Apple Intelligence style. */
-.chat-field::before {
-  content: '';
+/* Thinking: a mint light travels the rim, Apple Intelligence style. The ring
+   is a mask; the light is a conic gradient rotated underneath it, so the
+   compositor turns it without repainting a frame. */
+.chat-rim {
   position: absolute;
   inset: -1px;
   padding: 1.5px;
+  overflow: hidden;
   border-radius: inherit;
-  background: conic-gradient(
-    from var(--chat-spin),
-    transparent 0deg,
-    var(--mint) 70deg,
-    color-mix(in oklch, var(--mint) 45%, var(--accent)) 120deg,
-    transparent 180deg,
-    transparent 360deg
-  );
   -webkit-mask:
     linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);
@@ -810,18 +837,39 @@
   transition: opacity 0.4s ease;
 }
 
+/* Centred on the field and wide enough to cover its corners at full height. */
+.chat-rim::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 112%;
+  aspect-ratio: 1;
+  background: conic-gradient(
+    transparent 0deg,
+    var(--mint) 70deg,
+    color-mix(in oklch, var(--mint) 45%, var(--accent)) 120deg,
+    transparent 180deg,
+    transparent 360deg
+  );
+  transform: translate(-50%, -50%);
+}
+
 .chat-field[data-busy='true'] {
   box-shadow: 0 0 22px -6px color-mix(in oklch, var(--mint) 70%, transparent);
 }
 
-.chat-field[data-busy='true']::before {
+.chat-field[data-busy='true'] .chat-rim {
   opacity: 1;
+}
+
+.chat-field[data-busy='true'] .chat-rim::before {
   animation: chat-spin 2.2s linear infinite;
 }
 
 @keyframes chat-spin {
   to {
-    --chat-spin: 360deg;
+    transform: translate(-50%, -50%) rotate(1turn);
   }
 }
 
@@ -951,7 +999,9 @@
   }
 
   .chat-sheet,
-  .chat[data-open='true'] .chat-sheet {
+  .chat-shade::before,
+  .chat[data-open='true'] .chat-sheet,
+  .chat[data-open='true'] .chat-shade::before {
     clip-path: inset(0 0 0 0 round var(--sheet-r));
     transition: none;
   }
@@ -989,7 +1039,7 @@
     opacity: 0.6;
   }
 
-  .chat-field[data-busy='true']::before {
+  .chat-field[data-busy='true'] .chat-rim::before {
     animation: none;
   }
 

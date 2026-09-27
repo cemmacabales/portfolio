@@ -1,4 +1,12 @@
-import { useState, useRef, useEffect, useLayoutEffect } from 'react'
+import {
+  useState,
+  useRef,
+  useEffect,
+  useLayoutEffect,
+  useCallback,
+  useImperativeHandle,
+  memo,
+} from 'react'
 import { motion, AnimatePresence } from 'framer-motion' // eslint-disable-line no-unused-vars
 import { X, ArrowUp, SquarePen, CircleAlert } from 'lucide-react'
 import { ASSISTANT_OPEN_EVENT } from '../utils/assistant'
@@ -53,29 +61,168 @@ function Tail({ side, layout = false }) {
   )
 }
 
+// One message, with the timestamp above it when a new sitting starts. Memoized
+// so that a new message (or a keystroke) doesn't re-render, re-parse and
+// re-measure every bubble already in the thread.
+const Message = memo(function Message({ msg, stamp, tail, busy, onRetry }) {
+  let time = null
+  if (stamp) {
+    const [day, clock] = stampParts(msg.at)
+    time = (
+      <p className="chat-stamp">
+        <b>{day}</b> {clock}
+      </p>
+    )
+  }
+
+  if (msg.role === 'user') {
+    return (
+      <>
+        {time}
+        {/* A whole transform (not x/scale) so the spring runs on the compositor. */}
+        <motion.div
+          data-msg={msg.id}
+          className={`chat-row is-user${tail ? ' ends-group' : ''}`}
+          initial={{ opacity: 0, transform: 'translateY(22px) scale(0.94)' }}
+          animate={{ opacity: 1, transform: 'translateY(0px) scale(1)' }}
+          transition={settle}
+          style={{ transformOrigin: '100% 100%' }}
+        >
+          <div className={`chat-bubble is-user${msg.status ? ' is-failed' : ''}`}>
+            {msg.content}
+            {tail && <Tail side="right" />}
+          </div>
+          {msg.status === 'failed' && (
+            <div className="chat-failed">
+              <CircleAlert size={14} strokeWidth={2.4} aria-hidden="true" />
+              <span>
+                {msg.reason === 'busy' ? 'Not delivered: the assistant is busy.' : 'Not delivered.'}
+              </span>
+              <button type="button" onClick={() => onRetry(msg)} disabled={busy}>
+                Try again
+              </button>
+            </div>
+          )}
+        </motion.div>
+      </>
+    )
+  }
+
+  return (
+    <>
+      {time}
+      <div data-msg={msg.id} className={`chat-row is-assistant${tail ? ' ends-group' : ''}`}>
+        <motion.div
+          layoutId={`bubble-${msg.id}`}
+          transition={morph}
+          className="chat-bubble is-assistant"
+          style={{ borderRadius: 19 }}
+        >
+          {/* layout keeps the words unstretched while the bubble grows */}
+          <motion.div layout transition={morph}>
+            <ChatReply text={msg.content} />
+          </motion.div>
+          {tail && <Tail side="left" layout />}
+        </motion.div>
+      </div>
+    </>
+  )
+})
+
+// The field owns the draft, so typing re-renders the field and nothing else.
+// The parent only hears when the draft goes from empty to not, or back.
+const Composer = memo(function Composer({ controls, fieldRef, busy, onSend, onDraftChange }) {
+  const [input, setInput] = useState('')
+  const hadDraft = useRef(false)
+  const canSend = input.trim().length > 0 && !busy
+
+  const update = (value) => {
+    setInput(value)
+    const hasDraft = value.length > 0
+    if (hasDraft !== hadDraft.current) {
+      hadDraft.current = hasDraft
+      onDraftChange(hasDraft)
+    }
+  }
+
+  useImperativeHandle(controls, () => ({
+    clear() {
+      update('')
+      if (fieldRef.current) fieldRef.current.style.height = ''
+    },
+  }))
+
+  const handleInput = (e) => {
+    update(e.target.value)
+    e.target.style.height = 'auto'
+    e.target.style.height = `${Math.min(e.target.scrollHeight, 132)}px`
+  }
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
+      e.preventDefault()
+      if (canSend) onSend(input)
+    }
+  }
+
+  return (
+    <form
+      className="chat-field"
+      data-busy={busy}
+      onSubmit={(e) => {
+        e.preventDefault()
+        if (canSend) onSend(input)
+      }}
+    >
+      <span className="chat-rim" aria-hidden="true" />
+      <textarea
+        ref={fieldRef}
+        value={input}
+        onChange={handleInput}
+        onKeyDown={handleKeyDown}
+        placeholder="Ask about Carl"
+        rows={1}
+        maxLength={500}
+        enterKeyHint="send"
+        aria-label="Message"
+      />
+      <button
+        type="submit"
+        className="chat-send"
+        data-ready={canSend}
+        disabled={!canSend}
+        aria-label="Send message"
+      >
+        <ArrowUp size={17} strokeWidth={2.6} aria-hidden="true" />
+      </button>
+    </form>
+  )
+})
+
 export default function AiChatbot() {
   const booted = useBooted()
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState([])
-  const [input, setInput] = useState('')
+  const [hasDraft, setHasDraft] = useState(false)
   const [pending, setPending] = useState(null)
   const [peek, setPeek] = useState(false)
 
-  const rootRef = useRef(null)
+  const frameRef = useRef(null)
   const sheetRef = useRef(null)
   const scrollRef = useRef(null)
   const composeRef = useRef(null)
   const textareaRef = useRef(null)
+  const composerRef = useRef(null)
   const launcherRef = useRef(null)
   const abortRef = useRef(null)
+  const sendRef = useRef(null)
 
   const hasThread = messages.length > 0
   const last = messages[messages.length - 1]
   const asked = new Set(messages.filter((m) => m.role === 'user').map((m) => m.content))
   const followUps = SUGGESTIONS.filter((s) => !asked.has(s)).slice(0, 3)
   const showFollowUps =
-    hasThread && !pending && last?.role === 'assistant' && !input && followUps.length > 0
-  const canSend = input.trim().length > 0 && !pending
+    hasThread && !pending && last?.role === 'assistant' && !hasDraft && followUps.length > 0
 
   // ── Open / close ────────────────────────────────────────────────
   const close = () => {
@@ -135,15 +282,17 @@ export default function AiChatbot() {
   // follow the visual viewport so the keyboard never covers the field.
   useEffect(() => {
     if (!isOpen || !window.matchMedia('(max-width: 760px)').matches) return
-    const root = rootRef.current
+    // Set on the frame, the only thing that reads them: on the root they'd
+    // restyle the whole thread on every keyboard frame.
+    const frame = frameRef.current
     const vv = window.visualViewport
     const html = document.documentElement
     const previous = html.style.overflow
     html.style.overflow = 'hidden'
     const sync = () => {
       if (!vv) return
-      root.style.setProperty('--vvh', `${vv.height}px`)
-      root.style.setProperty('--vvt', `${vv.offsetTop}px`)
+      frame.style.setProperty('--vvh', `${vv.height}px`)
+      frame.style.setProperty('--vvt', `${vv.offsetTop}px`)
     }
     sync()
     vv?.addEventListener('resize', sync)
@@ -154,8 +303,8 @@ export default function AiChatbot() {
       vv?.removeEventListener('scroll', sync)
       // Let the sheet finish closing before it snaps back to full height.
       setTimeout(() => {
-        root.style.removeProperty('--vvh')
-        root.style.removeProperty('--vvt')
+        frame.style.removeProperty('--vvh')
+        frame.style.removeProperty('--vvt')
       }, CLOSE_MS)
     }
   }, [isOpen])
@@ -191,11 +340,13 @@ export default function AiChatbot() {
   }, [booted])
 
   // ── Layout: the thread scrolls under the header and composer ────
+  // --compose-h doesn't inherit (see AiChatbot.css), so it's set where it's
+  // read and a taller field restyles one element, not the thread.
   useLayoutEffect(() => {
     const compose = composeRef.current
-    const sheet = sheetRef.current
+    const scroll = scrollRef.current
     const ro = new ResizeObserver(([entry]) => {
-      sheet.style.setProperty('--compose-h', `${entry.borderBoxSize[0].blockSize}px`)
+      scroll.style.setProperty('--compose-h', `${entry.borderBoxSize[0].blockSize}px`)
     })
     ro.observe(compose)
     return () => ro.disconnect()
@@ -233,8 +384,7 @@ export default function AiChatbot() {
       .map(({ role, content }) => ({ role, content }))
 
     setMessages((prev) => [...prev, userMsg])
-    setInput('')
-    if (textareaRef.current) textareaRef.current.style.height = ''
+    composerRef.current?.clear()
     setPending(replyId)
 
     const controller = new AbortController()
@@ -277,99 +427,43 @@ export default function AiChatbot() {
     send(msg.content)
   }
 
+  // Stable handles for the memoized rows and field, calling the latest render.
+  useLayoutEffect(() => {
+    sendRef.current = { send, retry }
+  })
+  const onSend = useCallback((text) => sendRef.current.send(text), [])
+  const onRetry = useCallback((msg) => sendRef.current.retry(msg), [])
+
   const startOver = () => {
     abortRef.current?.abort()
     abortRef.current = null
     setPending(null)
     setMessages([])
-    setInput('')
+    composerRef.current?.clear()
     textareaRef.current?.focus({ preventScroll: true })
   }
 
-  const handleInput = (e) => {
-    setInput(e.target.value)
-    e.target.style.height = 'auto'
-    e.target.style.height = `${Math.min(e.target.scrollHeight, 132)}px`
-  }
-
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
-      e.preventDefault()
-      send(input)
-    }
-  }
-
   // ── Thread ──────────────────────────────────────────────────────
-  const rows = []
-  messages.forEach((msg, i) => {
+  const rows = messages.map((msg, i) => {
     const prev = messages[i - 1]
     const next = messages[i + 1]
-    if (!prev || msg.at - prev.at > STAMP_GAP_MS) {
-      const [day, time] = stampParts(msg.at)
-      rows.push(
-        <p key={`stamp-${msg.id}`} className="chat-stamp">
-          <b>{day}</b> {time}
-        </p>,
-      )
-    }
     // Only the last bubble of a run gets a tail, as in Messages.
     const tail =
       !next || next.role !== msg.role || next.at - msg.at > STAMP_GAP_MS || Boolean(msg.status)
-
-    if (msg.role === 'user') {
-      rows.push(
-        <motion.div
-          key={msg.id}
-          data-msg={msg.id}
-          className={`chat-row is-user${tail ? ' ends-group' : ''}`}
-          initial={{ opacity: 0, y: 22, scale: 0.94 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={settle}
-          style={{ originX: 1, originY: 1 }}
-        >
-          <div className={`chat-bubble is-user${msg.status ? ' is-failed' : ''}`}>
-            {msg.content}
-            {tail && <Tail side="right" />}
-          </div>
-          {msg.status === 'failed' && (
-            <div className="chat-failed">
-              <CircleAlert size={14} strokeWidth={2.4} aria-hidden="true" />
-              <span>
-                {msg.reason === 'busy' ? 'Not delivered: the assistant is busy.' : 'Not delivered.'}
-              </span>
-              <button type="button" onClick={() => retry(msg)} disabled={!!pending}>
-                Try again
-              </button>
-            </div>
-          )}
-        </motion.div>,
-      )
-    } else {
-      rows.push(
-        <div
-          key={msg.id}
-          data-msg={msg.id}
-          className={`chat-row is-assistant${tail ? ' ends-group' : ''}`}
-        >
-          <motion.div
-            layoutId={`bubble-${msg.id}`}
-            transition={morph}
-            className="chat-bubble is-assistant"
-            style={{ borderRadius: 19 }}
-          >
-            {/* layout keeps the words unstretched while the bubble grows */}
-            <motion.div layout transition={morph}>
-              <ChatReply text={msg.content} />
-            </motion.div>
-            {tail && <Tail side="left" layout />}
-          </motion.div>
-        </div>,
-      )
-    }
+    return (
+      <Message
+        key={msg.id}
+        msg={msg}
+        stamp={!prev || msg.at - prev.at > STAMP_GAP_MS}
+        tail={tail}
+        busy={msg.status === 'failed' && Boolean(pending)}
+        onRetry={onRetry}
+      />
+    )
   })
 
   return (
-    <div ref={rootRef} className="chat" data-open={isOpen}>
+    <div className="chat" data-open={isOpen}>
       <button
         ref={launcherRef}
         type="button"
@@ -391,7 +485,11 @@ export default function AiChatbot() {
         </span>
       </button>
 
-      <div className="chat-frame">
+      <div ref={frameRef} className="chat-frame">
+        {/* The drop shadow is cast by this plate, which morphs with the sheet
+            but holds no content: nothing animating in the thread can make the
+            GPU redraw a 40px shadow around the whole sheet. */}
+        <div className="chat-shade" aria-hidden="true" />
         <section
           ref={sheetRef}
           id="chat-sheet"
@@ -486,9 +584,17 @@ export default function AiChatbot() {
                     key="follow-ups"
                     className="chat-followups"
                     aria-label="Suggested questions"
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0, transition: { ...settle, delay: 0.5 } }}
-                    exit={{ opacity: 0, y: 6, transition: { duration: 0.12 } }}
+                    initial={{ opacity: 0, transform: 'translateY(8px)' }}
+                    animate={{
+                      opacity: 1,
+                      transform: 'translateY(0px)',
+                      transition: { ...settle, delay: 0.5 },
+                    }}
+                    exit={{
+                      opacity: 0,
+                      transform: 'translateY(6px)',
+                      transition: { duration: 0.12 },
+                    }}
                   >
                     {followUps.map((q) => (
                       <li key={q}>
@@ -500,35 +606,13 @@ export default function AiChatbot() {
                   </motion.ul>
                 )}
               </AnimatePresence>
-              <form
-                className="chat-field"
-                data-busy={!!pending}
-                onSubmit={(e) => {
-                  e.preventDefault()
-                  send(input)
-                }}
-              >
-                <textarea
-                  ref={textareaRef}
-                  value={input}
-                  onChange={handleInput}
-                  onKeyDown={handleKeyDown}
-                  placeholder="Ask about Carl"
-                  rows={1}
-                  maxLength={500}
-                  enterKeyHint="send"
-                  aria-label="Message"
-                />
-                <button
-                  type="submit"
-                  className="chat-send"
-                  data-ready={canSend}
-                  disabled={!canSend}
-                  aria-label="Send message"
-                >
-                  <ArrowUp size={17} strokeWidth={2.6} aria-hidden="true" />
-                </button>
-              </form>
+              <Composer
+                controls={composerRef}
+                fieldRef={textareaRef}
+                busy={Boolean(pending)}
+                onSend={onSend}
+                onDraftChange={setHasDraft}
+              />
             </div>
           </div>
         </section>

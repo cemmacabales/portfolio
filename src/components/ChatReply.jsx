@@ -1,8 +1,12 @@
 // Renders an assistant reply. The model answers in light Markdown, so this
 // turns a small, safe subset of it (paragraphs, lists, bold, italics, code,
-// links) into React elements; nothing is ever injected as HTML. Every word is
-// wrapped so the reply can blur in word by word, the way Apple Intelligence
-// writes (see .chat-md.is-revealing in AiChatbot.css).
+// links) into React elements; nothing is ever injected as HTML. While a reply
+// writes itself in, every word is wrapped so it can blur in word by word, the
+// way Apple Intelligence writes (see .chat-md.is-revealing in AiChatbot.css).
+// Once the last word is in, the reply renders as plain text again: a finished
+// reply full of animated spans would keep costing a GPU layer per word.
+
+import { memo, useEffect, useMemo, useState } from 'react'
 
 const SAFE_HREF = /^(https?:|mailto:)/i
 const TOKEN =
@@ -12,6 +16,9 @@ const TRAILING_PUNCTUATION = /[.,;:!?)]+$/
 // The whole reply takes at most this long to write itself in.
 const REVEAL_MS = 900
 const MAX_STEP_MS = 26
+// Match .chat-md.is-revealing .w in AiChatbot.css.
+const WORD_DELAY_MS = 140
+const WORD_MS = 500
 
 function parseBlocks(source) {
   const blocks = []
@@ -80,8 +87,9 @@ function parseBlocks(source) {
   return blocks
 }
 
-// Wraps each word in a span carrying its reveal index.
+// Wraps each word in a span carrying its reveal index, while revealing.
 function words(text, counter) {
+  if (!counter.wrap) return text
   return text.split(/(\s+)/).map((part, i) =>
     !part || /^\s+$/.test(part) ? (
       part
@@ -104,10 +112,12 @@ function inline(text, counter) {
 
     if (/^(\*\*|__)/.test(part)) return <strong key={i}>{words(part.slice(2, -2), counter)}</strong>
     if (part.startsWith('`')) {
-      return (
+      return counter.wrap ? (
         <code key={i} className="w" style={{ '--i': counter.n++ }}>
           {part.slice(1, -1)}
         </code>
+      ) : (
+        <code key={i}>{part.slice(1, -1)}</code>
       )
     }
     if (part.startsWith('[')) {
@@ -140,8 +150,8 @@ function inline(text, counter) {
   })
 }
 
-export default function ChatReply({ text, reveal = true }) {
-  const counter = { n: 0 }
+function render(text, wrap) {
+  const counter = { n: 0, wrap }
   const blocks = parseBlocks(text)
 
   const content = blocks.map((block, b) => {
@@ -174,14 +184,33 @@ export default function ChatReply({ text, reveal = true }) {
     )
   })
 
-  const step = Math.min(MAX_STEP_MS, REVEAL_MS / Math.max(counter.n, 1))
+  return { content, count: counter.n }
+}
+
+function ChatReply({ text, reveal = true }) {
+  const [revealing, setRevealing] = useState(
+    () => reveal && !window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+  )
+  const { content, count } = useMemo(() => render(text, revealing), [text, revealing])
+  const step = Math.min(MAX_STEP_MS, REVEAL_MS / Math.max(count, 1))
+
+  useEffect(() => {
+    if (!revealing) return
+    const timer = setTimeout(
+      () => setRevealing(false),
+      WORD_DELAY_MS + count * step + WORD_MS + 60,
+    )
+    return () => clearTimeout(timer)
+  }, [revealing, count, step])
 
   return (
     <div
-      className={`chat-md${reveal ? ' is-revealing' : ''}`}
-      style={{ '--step': `${step.toFixed(2)}ms` }}
+      className={`chat-md${revealing ? ' is-revealing' : ''}`}
+      style={revealing ? { '--step': `${step.toFixed(2)}ms` } : undefined}
     >
       {content}
     </div>
   )
 }
+
+export default memo(ChatReply)
