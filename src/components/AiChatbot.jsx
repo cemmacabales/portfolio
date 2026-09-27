@@ -28,6 +28,7 @@ const createConversationId = () => {
   return `chat-${id}`
 }
 
+// Also the fallback follow-ups, for a reply that arrives without its own.
 const SUGGESTIONS = [
   'What is Centient?',
   'Is Carl open to work?',
@@ -39,6 +40,16 @@ const SUGGESTIONS = [
 // Critically damped: quick, settled, no overshoot.
 const settle = { type: 'spring', stiffness: 520, damping: 42, mass: 0.8 }
 const morph = { type: 'spring', stiffness: 380, damping: 36 }
+
+// The visitor's own clock, read when the sheet opens (never at render, which
+// the prerender would bake in).
+function greetingFor(date) {
+  const h = date.getHours()
+  if (h < 5) return 'Hello, night owl!'
+  if (h < 12) return 'Good morning!'
+  if (h < 18) return 'Good afternoon!'
+  return 'Good evening!'
+}
 
 function stampParts(date) {
   const time = date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
@@ -101,13 +112,18 @@ const Message = memo(function Message({ msg, stamp, tail, busy, onRetry }) {
           </div>
           {msg.status === 'failed' && (
             <div className="chat-failed">
-              <CircleAlert size={14} strokeWidth={2.4} aria-hidden="true" />
-              <span>
-                {msg.reason === 'busy' ? 'Not delivered: the assistant is busy.' : 'Not delivered.'}
-              </span>
-              <button type="button" onClick={() => onRetry(msg)} disabled={busy}>
-                Try again
-              </button>
+              <p>
+                <CircleAlert size={14} strokeWidth={2.4} aria-hidden="true" />
+                {msg.reason === 'busy'
+                  ? 'Too many questions at once. Give it a second.'
+                  : 'Couldn\u2019t send. Check your connection.'}
+              </p>
+              <div className="chat-failed-actions">
+                <button type="button" onClick={() => onRetry(msg)} disabled={busy}>
+                  Try again
+                </button>
+                <a href="mailto:carlmacabales31@gmail.com">Email Carl instead</a>
+              </div>
             </div>
           )}
         </motion.div>
@@ -187,7 +203,7 @@ const Composer = memo(function Composer({ controls, fieldRef, busy, onSend, onDr
         value={input}
         onChange={handleInput}
         onKeyDown={handleKeyDown}
-        placeholder="Ask about Carl"
+        placeholder="Ask anything about Carl"
         rows={1}
         maxLength={500}
         enterKeyHint="send"
@@ -213,6 +229,7 @@ export default function AiChatbot() {
   const [hasDraft, setHasDraft] = useState(false)
   const [pending, setPending] = useState(null)
   const [peek, setPeek] = useState(false)
+  const [greeting, setGreeting] = useState('Hi there!')
 
   const frameRef = useRef(null)
   const sheetRef = useRef(null)
@@ -227,8 +244,13 @@ export default function AiChatbot() {
 
   const hasThread = messages.length > 0
   const last = messages[messages.length - 1]
-  const asked = new Set(messages.filter((m) => m.role === 'user').map((m) => m.content))
-  const followUps = SUGGESTIONS.filter((s) => !asked.has(s)).slice(0, 3)
+  const asked = new Set(
+    messages.filter((m) => m.role === 'user').map((m) => m.content.toLowerCase()),
+  )
+  // The reply's own next questions when it sent some, else the standing list.
+  const followUps = (last?.followUps?.length ? last.followUps : SUGGESTIONS)
+    .filter((q) => !asked.has(q.toLowerCase()))
+    .slice(0, 3)
   const showFollowUps =
     hasThread && !pending && last?.role === 'assistant' && !hasDraft && followUps.length > 0
 
@@ -250,6 +272,7 @@ export default function AiChatbot() {
 
   useEffect(() => {
     if (!isOpen) return
+    setGreeting(greetingFor(new Date()))
     // A phone's keyboard would cover the suggestions, so only a mouse and
     // keyboard setup gets the caret straight away.
     const fine = window.matchMedia('(pointer: fine)').matches
@@ -383,7 +406,7 @@ export default function AiChatbot() {
   }, [messages, pending]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Sending ─────────────────────────────────────────────────────
-  const send = async (raw) => {
+  const send = async (raw, source = 'typed') => {
     const text = raw.trim()
     if (!text || pending) return
 
@@ -394,7 +417,7 @@ export default function AiChatbot() {
       .slice(-WINDOW_SIZE)
       .map(({ role, content }) => ({ role, content }))
 
-    posthog.capture('assistant_question_sent')
+    posthog.capture('assistant_question_sent', { source })
     setMessages((prev) => [...prev, userMsg])
     composerRef.current?.clear()
     setPending(replyId)
@@ -422,7 +445,13 @@ export default function AiChatbot() {
       portfolioLogger.info('assistant_response_received', { response_status: 'received' })
       setMessages((prev) => [
         ...prev,
-        { id: replyId, role: 'assistant', content: data.content, at: new Date() },
+        {
+          id: replyId,
+          role: 'assistant',
+          content: data.content,
+          followUps: Array.isArray(data.followUps) ? data.followUps : [],
+          at: new Date(),
+        },
       ])
     } catch (err) {
       if (controller.signal.aborted) return
@@ -445,7 +474,7 @@ export default function AiChatbot() {
   const retry = (msg) => {
     if (pending) return
     setMessages((prev) => prev.filter((m) => m.id !== msg.id))
-    send(msg.content)
+    send(msg.content, 'retry')
   }
 
   // Stable handles for the memoized rows and field, calling the latest render.
@@ -580,18 +609,27 @@ export default function AiChatbot() {
               ) : (
                 <div className="chat-empty">
                   <div className="chat-card">
-                    <Avatar size="lg" />
+                    <div className="chat-card-face">
+                      <Avatar size="lg" />
+                      <span className="chat-wave" aria-hidden="true">
+                        👋
+                      </span>
+                    </div>
                     <motion.h2 layoutId="chat-name" transition={morph} className="chat-card-name">
                       Carl&rsquo;s assistant
                     </motion.h2>
                     <p className="chat-card-sub">
-                      Ask about his projects, his research, or whether he&rsquo;s free for a role.
+                      {greeting} I know Carl&rsquo;s projects, his research, and what he&rsquo;s
+                      looking for next.
                     </p>
                   </div>
-                  <ul className="chat-suggest" aria-label="Suggested questions">
+                  <p id="chat-suggest-label" className="chat-suggest-label">
+                    Try asking
+                  </p>
+                  <ul className="chat-suggest" aria-labelledby="chat-suggest-label">
                     {SUGGESTIONS.slice(0, 4).map((q, i) => (
                       <li key={q} style={{ '--i': i }}>
-                        <button type="button" onClick={() => send(q)}>
+                        <button type="button" onClick={() => send(q, 'suggestion')}>
                           {q}
                         </button>
                       </li>
@@ -621,9 +659,9 @@ export default function AiChatbot() {
                       transition: { duration: 0.12 },
                     }}
                   >
-                    {followUps.map((q) => (
-                      <li key={q}>
-                        <button type="button" onClick={() => send(q)}>
+                    {followUps.map((q, i) => (
+                      <li key={q} style={{ '--i': i }}>
+                        <button type="button" onClick={() => send(q, 'follow_up')}>
                           {q}
                         </button>
                       </li>

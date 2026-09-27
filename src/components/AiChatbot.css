@@ -389,7 +389,8 @@
 .chat-send:focus-visible,
 .chat-suggest button:focus-visible,
 .chat-followups button:focus-visible,
-.chat-failed button:focus-visible {
+.chat-failed button:focus-visible,
+.chat-failed a:focus-visible {
   outline: 2px solid var(--focus);
   outline-offset: 2px;
 }
@@ -427,6 +428,55 @@
   text-align: center;
 }
 
+.chat-card-face {
+  position: relative;
+}
+
+/* Carl's Memoji waves hello each time the sheet opens. */
+.chat-wave {
+  position: absolute;
+  right: -10px;
+  bottom: -4px;
+  font-size: 30px;
+  line-height: 1;
+  transform-origin: 70% 85%;
+  user-select: none;
+}
+
+.chat[data-open='true'] .chat-wave {
+  animation: chat-wave 1.5s ease-in-out 0.45s both;
+}
+
+@keyframes chat-wave {
+  0% {
+    opacity: 0;
+    scale: 0.4;
+    rotate: 0deg;
+  }
+  12% {
+    opacity: 1;
+    scale: 1;
+  }
+  24% {
+    rotate: 16deg;
+  }
+  38% {
+    rotate: -8deg;
+  }
+  52% {
+    rotate: 14deg;
+  }
+  66% {
+    rotate: -4deg;
+  }
+  80%,
+  100% {
+    opacity: 1;
+    scale: 1;
+    rotate: 0deg;
+  }
+}
+
 .chat-card-name {
   margin: 14px 0 0;
   font-size: var(--text-lg);
@@ -437,12 +487,22 @@
 }
 
 .chat-card-sub {
-  max-width: 29ch;
+  max-width: 31ch;
   margin: 6px 0 0;
   font-size: var(--text-sm);
   line-height: 1.45;
   color: var(--ink-2);
   text-wrap: pretty;
+}
+
+/* Says the tinted bubbles below are questions to tap, not messages sent. */
+.chat-suggest-label {
+  margin: 0 4px 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.3;
+  text-align: right;
+  color: var(--ink-2);
 }
 
 /* Tinted like a message you haven't sent yet. */
@@ -487,9 +547,16 @@
   scale: 0.96;
 }
 
-.chat[data-open='true'] .chat-suggest li {
+.chat[data-open='true'] .chat-suggest li,
+.chat[data-open='true'] .chat-suggest-label {
   animation: chat-draft-in 0.6s var(--ease-out) both;
-  animation-delay: calc(0.26s + var(--i) * 60ms);
+  animation-delay: calc(0.26s + var(--i, 0) * 60ms);
+}
+
+.chat-followups li {
+  transform-origin: 100% 100%;
+  animation: chat-draft-in 0.5s var(--ease-out) both;
+  animation-delay: calc(0.5s + var(--i) * 60ms);
 }
 
 @keyframes chat-draft-in {
@@ -596,11 +663,19 @@
 
 .chat-failed {
   display: flex;
-  align-items: center;
-  gap: 5px;
-  margin-top: 4px;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-top: 5px;
   font-size: 0.75rem;
   line-height: 1.3;
+  text-align: right;
+}
+
+.chat-failed p {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 0;
   color: var(--danger);
 }
 
@@ -608,7 +683,13 @@
   flex: none;
 }
 
-.chat-failed button {
+.chat-failed-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.chat-failed button,
+.chat-failed a {
   padding: 4px 2px;
   border: 0;
   background: none;
@@ -618,6 +699,11 @@
   text-decoration: underline;
   text-underline-offset: 2px;
   cursor: pointer;
+}
+
+.chat-failed a {
+  font-weight: 500;
+  color: var(--ink-2);
 }
 
 .chat-failed button:disabled {
@@ -771,30 +857,20 @@
   mask-image: linear-gradient(transparent, #000 28px);
 }
 
+/* Wrapped, not a sideways scroller: every question is readable at once. */
 .chat-followups {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 6px;
-  margin: 0 -12px 10px;
-  padding: 0 12px;
-  overflow-x: auto;
+  margin: 0 0 10px;
+  padding: 0;
   list-style: none;
-  scrollbar-width: none;
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 12px, #000 calc(100% - 12px), transparent);
-  mask-image: linear-gradient(to right, transparent, #000 12px, #000 calc(100% - 12px), transparent);
-}
-
-.chat-followups::-webkit-scrollbar {
-  display: none;
-}
-
-.chat-followups li {
-  flex: none;
 }
 
 .chat-followups button {
   padding: 7px 13px;
   font-size: 0.875rem;
-  white-space: nowrap;
 }
 
 .chat-field {
@@ -1044,6 +1120,9 @@
   }
 
   .chat[data-open='true'] .chat-suggest li,
+  .chat[data-open='true'] .chat-suggest-label,
+  .chat[data-open='true'] .chat-wave,
+  .chat-followups li,
   .chat-md.is-revealing .w {
     animation: none;
   }
