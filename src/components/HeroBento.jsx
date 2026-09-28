@@ -1,8 +1,9 @@
 import { Fragment, useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence, useInView, useReducedMotion } from 'framer-motion' // eslint-disable-line no-unused-vars
-import { ArrowUpRight, ArrowDown, MessageCircle, Github, Trophy, Pause, Play } from 'lucide-react'
+import { ArrowUpRight, ArrowDown, Github, Trophy, Pause, Play } from 'lucide-react'
 import ShapeWaves from './ShapeWaves'
 import HeroDesk from './HeroDesk'
+import AssistantTile from './AssistantTile'
 import GradPhoto from '../assets/me.jpeg'
 import BarongPhoto from '../assets/me-barong.jpg'
 import ResumePage from '../assets/resume-page.jpg'
@@ -42,12 +43,6 @@ const word = {
   hidden: { opacity: 0, y: '0.45em', filter: 'blur(6px)' },
   show: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.8, ease: EASE } },
 }
-
-// Bar heights for the "token stream" on the assistant tile (0–1).
-const BARS = [
-  0.35, 0.6, 0.45, 0.8, 0.55, 0.3, 0.7, 0.95, 0.5, 0.65, 0.4, 0.85, 0.6, 0.3, 0.75, 0.5, 0.9,
-  0.45, 0.6, 0.35, 0.7, 0.55, 0.8, 0.4, 0.65, 0.5, 0.85, 0.35, 0.6, 0.45,
-]
 
 // `backdrop` is each photo's own top-edge color, so the zoomed-out frame
 // blends into the studio background instead of showing a band. `theme` is the
@@ -376,27 +371,7 @@ export default function HeroBento({ theme, showField, onOpenProject, onAskAssist
 
         {/* ── Side: assistant, résumé, GitHub ─────────────────────── */}
         <div className="hero-side">
-          <motion.button
-            variants={rise}
-            type="button"
-            className="tile tile-mint"
-            onClick={onAskAssistant}
-          >
-            <span className="mint-top">
-              <span className="token-bars" aria-hidden="true">
-                {BARS.map((h, i) => (
-                  <span key={i} style={{ '--h': h, '--i': i }} />
-                ))}
-              </span>
-              <span className="mint-icon" aria-hidden="true">
-                <MessageCircle size={20} strokeWidth={2} />
-              </span>
-            </span>
-            <span className="mint-copy">
-              <span className="mint-title">Ask my assistant</span>
-              <span className="mint-sub">It knows my projects, papers, and stack.</span>
-            </span>
-          </motion.button>
+          <AssistantTile variants={rise} onClick={onAskAssistant} />
 
           <div className="duo">
             <motion.a

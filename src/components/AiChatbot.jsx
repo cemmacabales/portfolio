@@ -14,6 +14,7 @@ import { useBooted } from '../hooks/useBooted'
 import posthog from '../posthog'
 import { portfolioLogger } from '../posthog-logger'
 import memoji from '../assets/memoji-assistant.webp'
+import { TAIL_PATH } from './messageTail'
 import ChatReply from './ChatReply'
 import './AiChatbot.css'
 
@@ -63,12 +64,6 @@ function Avatar({ size }) {
       <img src={memoji} alt="" width="288" height="288" draggable="false" />
     </motion.span>
   )
-}
-
-// The Messages tail: it overlaps the bubble's corner by 12px and curls out 8px.
-const TAIL_PATH = {
-  right: 'M0 0H12V7A10 10 0 0 0 20 16.8V17H16A16 14 0 0 1 0 3Z',
-  left: 'M20 0H8V7A10 10 0 0 1 0 16.8V17H4A16 14 0 0 0 20 3Z',
 }
 
 function Tail({ side, layout = false }) {

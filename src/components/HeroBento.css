@@ -304,97 +304,6 @@
   min-width: 0;
 }
 
-.tile-mint {
-  display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 24px;
-  min-height: 220px;
-  padding: 22px;
-  background: var(--mint);
-  border-color: color-mix(in oklch, var(--mint) 80%, var(--mint-ink));
-  color: var(--mint-ink);
-}
-
-.mint-top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 20px;
-}
-
-.mint-icon {
-  display: grid;
-  flex-shrink: 0;
-  place-items: center;
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
-  background: oklch(1 0 0);
-  color: var(--mint-ink);
-  box-shadow: 0 6px 16px -6px oklch(0.3 0.06 175 / 0.5);
-  transition: transform 0.5s var(--ease-out);
-}
-
-.token-bars {
-  display: flex;
-  flex: 1;
-  align-items: center;
-  gap: 3px;
-  height: 46px;
-  overflow: hidden;
-}
-
-.token-bars span {
-  flex: 0 0 3px;
-  height: calc(var(--h) * 100%);
-  border-radius: 2px;
-  background: var(--mint-ink);
-  opacity: 0.78;
-}
-
-.mint-copy {
-  display: block;
-}
-
-.mint-title {
-  display: block;
-  font-size: var(--text-lg);
-  font-weight: 650;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
-}
-
-.mint-sub {
-  display: block;
-  margin-top: 4px;
-  font-size: var(--text-sm);
-  line-height: 1.4;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .tile-mint:hover .mint-icon {
-    transform: scale(1.08);
-  }
-
-  /* The bars only "stream" while someone is paying attention. */
-  .tile-mint:hover .token-bars span {
-    animation: token-stream 1s var(--ease-soft) infinite;
-    animation-delay: calc(var(--i) * 40ms);
-  }
-}
-
-@keyframes token-stream {
-  0%,
-  100% {
-    transform: scaleY(1);
-  }
-  50% {
-    transform: scaleY(0.3);
-  }
-}
-
 .duo {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -981,22 +890,16 @@
   .hero-side {
     display: flex;
   }
-
-  .tile-mint {
-    min-height: 190px;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .status-dot::after,
-  .tile-mint:hover .token-bars span {
+  .status-dot::after {
     animation: none;
   }
 
   .reel-window,
   .reel-pip,
   .gh-arrow,
-  .mint-icon,
   .resume-sheet,
   .resume-under,
   .resume-badge,
@@ -1006,7 +909,6 @@
 
   .tile-featured:hover .reel-window,
   .tile-gh:hover .gh-arrow,
-  .tile-mint:hover .mint-icon,
   .tile-resume:hover .resume-badge {
     transform: none;
   }
