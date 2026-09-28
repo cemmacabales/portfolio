@@ -417,6 +417,70 @@ button.wf-row:focus-visible {
   }
 }
 
+/*
+ * Coming up: the stage rises into place, the Shortcuts pop in one after the
+ * other, and the steps follow down the thread as it draws. It plays whenever
+ * the view is shown, and the steps replay it when the Shortcut changes.
+ */
+.wf[data-shown] .wf-stage {
+  animation: wf-rise 0.8s var(--ease-out) 0.04s backwards;
+}
+
+.wf[data-shown] .wf-tile {
+  animation: wf-pop 0.65s var(--ease-out) calc(0.14s + var(--i) * 0.08s) backwards;
+}
+
+.wf[data-shown] .wf-steps {
+  animation: wf-fade 0.5s ease 0.2s backwards;
+}
+
+.wf[data-shown] .wf-step {
+  animation: wf-rise-step 0.55s var(--ease-out) calc(0.28s + var(--i) * 0.05s) backwards;
+}
+
+/* The lens waits for its row, or it would arrive first, on its own. */
+.wf[data-shown] .wf-lens.is-on {
+  animation: wf-fade 0.4s ease 0.32s backwards;
+}
+
+.wf[data-shown] .wf-thread {
+  transform-origin: 50% 0;
+  animation: wf-draw 0.9s var(--ease-soft) 0.3s backwards;
+}
+
+@keyframes wf-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.96);
+  }
+}
+
+@keyframes wf-pop {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.88);
+  }
+}
+
+@keyframes wf-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes wf-rise-step {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@keyframes wf-draw {
+  from {
+    transform: scaleY(0);
+  }
+}
+
 /* ── Tall panels: the stage on top, the steps in two columns ─── */
 @container wf (aspect-ratio < 1.5) {
   .wf-grid {
@@ -488,5 +552,9 @@ button.wf-row:focus-visible {
   .wf-run-ring,
   .wf-tile {
     transition: none;
+  }
+
+  .wf[data-shown] :is(.wf-stage, .wf-tile, .wf-steps, .wf-step, .wf-thread, .wf-lens) {
+    animation: none;
   }
 }

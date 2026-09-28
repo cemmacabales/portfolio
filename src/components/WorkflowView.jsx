@@ -95,13 +95,14 @@ function Stage({ flow, step, live }) {
 }
 
 /* ── A Shortcut tile, with its run button's progress ring ─────── */
-function ShortcutTile({ flow, on, running, done, progress, runnable, onRun }) {
+function ShortcutTile({ flow, index, on, running, done, progress, runnable, onRun }) {
   const Glyph = GLYPHS[flow.id]
   const state = on && running ? 'running' : on && done ? 'done' : 'idle'
   return (
     <button
       type="button"
       className={`wf-tile wf-tile-${flow.id}${on ? ' is-on' : ''}`}
+      style={{ '--i': index }}
       aria-pressed={on}
       onClick={onRun}
     >
@@ -250,8 +251,9 @@ export default function WorkflowView({ className = '', active = true, paused = f
 
   const progress = running || done ? (step + 1) / flow.steps.length : 0
 
+  // data-shown plays the entrance each time the view comes up.
   return (
-    <div ref={ref} className={`wf${stage ? '' : ' is-list'} ${className}`}>
+    <div ref={ref} className={`wf${stage ? '' : ' is-list'} ${className}`} data-shown={active || undefined}>
       <div className="wf-grid">
         {stage && <Stage flow={flow.id} step={step} live={active && !paused && inView && pageVisible} />}
 
@@ -261,6 +263,7 @@ export default function WorkflowView({ className = '', active = true, paused = f
               <ShortcutTile
                 key={f.id}
                 flow={f}
+                index={i}
                 on={i === flowIndex}
                 running={running}
                 done={done}
@@ -325,7 +328,12 @@ export default function WorkflowView({ className = '', active = true, paused = f
                 </>
               )
               return (
-                <li key={`${flow.id}-${s.id}`} className={`wf-step${on ? ' is-on' : ''}`} data-step={i}>
+                <li
+                  key={`${flow.id}-${s.id}`}
+                  className={`wf-step${on ? ' is-on' : ''}`}
+                  style={{ '--i': i }}
+                  data-step={i}
+                >
                   {stage ? (
                     <button
                       type="button"

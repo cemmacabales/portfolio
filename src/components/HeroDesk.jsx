@@ -20,10 +20,52 @@ const SHEET = { type: 'spring', bounce: 0, duration: 0.55 }
 const whenIdle = (fn) =>
   window.requestIdleCallback ? window.requestIdleCallback(fn, { timeout: 4000 }) : setTimeout(fn, 300)
 const cancelIdle = (id) => (window.cancelIdleCallback ? window.cancelIdleCallback(id) : clearTimeout(id))
-// Workflow ships in its own chunk, fetched once the desk is warming or open,
-// so the first switch to it is already loaded.
-const loadWorkflow = () => import('./WorkflowView')
-const WorkflowView = lazy(loadWorkflow)
+// Workflow ships in its own chunk, fetched once the desk is warming or open.
+// Once it's here it renders in the same frame as the switch, so its entrance
+// starts with the click; only a switch that beats the download waits on
+// Suspense (which React holds back a beat).
+let WorkflowLoaded = null
+const loadWorkflow = () =>
+  import('./WorkflowView').then((module) => {
+    WorkflowLoaded = module.default
+    return module
+  })
+const WorkflowLazy = lazy(loadWorkflow)
+
+function WorkflowView(props) {
+  if (WorkflowLoaded) return <WorkflowLoaded {...props} />
+  return (
+    <Suspense fallback={null}>
+      <WorkflowLazy {...props} />
+    </Suspense>
+  )
+}
+
+// Building Workflow's ten scenes takes a long task (120–250ms on a busy
+// Mac). Done on the click, it ate the entrance's opening frames, so it's
+// built hidden once the desk has settled and the page is idle, and the
+// switch only has to reveal it. A switch before then builds it on the spot.
+function usePrebuild(ready) {
+  const [built, setBuilt] = useState(false)
+  useEffect(() => {
+    if (!ready || built) return undefined
+    let idle = null
+    let cancelled = false
+    const settle = setTimeout(() => {
+      idle = whenIdle(() => {
+        loadWorkflow().then(() => {
+          if (!cancelled) setBuilt(true)
+        })
+      })
+    }, 900)
+    return () => {
+      cancelled = true
+      clearTimeout(settle)
+      if (idle !== null) cancelIdle(idle)
+    }
+  }, [ready, built])
+  return [built, setBuilt]
+}
 const VIEWS = [
   { id: 'gear', label: 'Gear' },
   { id: 'workflow', label: 'Workflow' },
@@ -95,9 +137,9 @@ export default function HeroDesk({ variants }) {
   const [warm, setWarm] = useState(false)
   const [spinning, setSpinning] = useState(false)
   const [view, setView] = useState('gear')
-  const [flowSeen, setFlowSeen] = useState(false)
   const spinTimer = useRef(0)
   const refocus = useRef(false)
+  const [flowSeen, setFlowSeen] = usePrebuild(mode === 'stage' && open && layout !== null)
 
   useEffect(() => setMounted(true), [])
 
@@ -312,7 +354,7 @@ export default function HeroDesk({ variants }) {
       cancelAnimationFrame(frame)
       controls?.stop()
     }
-  }, [open, layout, mode, progress, reduce, release])
+  }, [open, layout, mode, progress, reduce, release, setFlowSeen])
 
   // Opening: bring the whole row into view and hand focus to the close button.
   useEffect(() => {
@@ -368,7 +410,7 @@ export default function HeroDesk({ variants }) {
       document.removeEventListener('keydown', onKey)
       query.removeEventListener('change', onQuery)
     }
-  }, [open, mode, close, measure, progress, release])
+  }, [open, mode, close, measure, progress, release, setFlowSeen])
 
   const stage = mode === 'stage' && shown
   const slotStyle = (id) => {
@@ -460,9 +502,7 @@ export default function HeroDesk({ variants }) {
                 </div>
                 {flowSeen && (
                   <div className="setup-view setup-view-workflow" inert={view !== 'workflow'}>
-                    <Suspense fallback={null}>
-                      <WorkflowView active={view === 'workflow'} paused={!stage} />
-                    </Suspense>
+                    <WorkflowView active={view === 'workflow'} paused={!stage} />
                   </div>
                 )}
               </div>
@@ -510,9 +550,11 @@ function SetupSheet({ onClose }) {
   const reduce = useReducedMotion()
   const [phone, setPhone] = useState(() => window.matchMedia(PHONE).matches)
   const [view, setView] = useState('gear')
+  const [flowSeen, setFlowSeen] = usePrebuild(true)
 
   const switchView = (next) => {
     setView(next)
+    if (next === 'workflow') setFlowSeen(true)
     posthog.capture('setup_view_switched', { view: next, layout: 'sheet' })
   }
 
@@ -584,15 +626,15 @@ function SetupSheet({ onClose }) {
           <Segmented options={VIEWS} value={view} onChange={switchView} label="What to show" />
         </div>
         <div className="setup-sheet-body">
-          <div key={view} className="setup-sheet-view">
-            {view === 'gear' ? (
-              <SetupDesk className="desk-sheet" scene={!phone} />
-            ) : (
-              <Suspense fallback={null}>
-                <WorkflowView className="wf-sheet" stage={!phone} />
-              </Suspense>
-            )}
+          {/* Both stay built; showing one again replays its entrance. */}
+          <div className="setup-sheet-view" hidden={view !== 'gear'}>
+            <SetupDesk className="desk-sheet" scene={!phone} />
           </div>
+          {flowSeen && (
+            <div className="setup-sheet-view" hidden={view !== 'workflow'}>
+              <WorkflowView className="wf-sheet" stage={!phone} active={view === 'workflow'} />
+            </div>
+          )}
         </div>
       </motion.div>
     </div>
