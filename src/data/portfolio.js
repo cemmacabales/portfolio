@@ -5,18 +5,26 @@ import CentientAccount from '../assets/centient/account.jpg'
 import CentientOwl from '../assets/centient-owl.png'
 import BlocklabsLogo from '../assets/blocklabs.png'
 import PinkRaftLogo from '../assets/pinkraft.svg'
-import PoseEstimationImage from '../assets/Pose Estimation.png'
-import EscImage from '../assets/esc.png'
-import AxialModelTestingImage from '../assets/axial model testing.png'
-import ReadMyFaceImage from '../assets/readmyface.png'
-import MyAptImage from '../assets/myapt.png'
-import PetchinguImage from '../assets/petchingu.png'
-import MapuaImage from '../assets/Mapua.png'
-import StPaulImage from '../assets/stpaul.png'
-import IpsaImage from '../assets/ipsa.jpg'
-import GradPhoto from '../assets/me.jpeg'
-import BarongPhoto from '../assets/me-barong.jpg'
+import PoseEstimationImage from '../assets/Pose Estimation.webp'
+import EscImage from '../assets/esc.webp'
+import AxialModelTestingImage from '../assets/axial model testing.webp'
+import ReadMyFaceImage from '../assets/readmyface.webp'
+import MyAptImage from '../assets/myapt.webp'
+import PetchinguImage from '../assets/petchingu.webp'
+import MapuaImage from '../assets/Mapua.webp'
+import StPaulImage from '../assets/stpaul.webp'
+import IpsaImage from '../assets/ipsa.webp'
+import GradPhoto from '../assets/me.webp'
+import BarongPhoto from '../assets/me-barong.webp'
 import IpsaPhoto from '../assets/me-ipsa.jpg'
+// Row thumbnails: small copies, so the list never decodes full screenshots.
+import CentientThumb from '../assets/thumbs/home.webp'
+import PoseEstimationThumb from '../assets/thumbs/Pose Estimation.webp'
+import EscThumb from '../assets/thumbs/esc.webp'
+import AxialModelTestingThumb from '../assets/thumbs/axial model testing.webp'
+import ReadMyFaceThumb from '../assets/thumbs/readmyface.webp'
+import MyAptThumb from '../assets/thumbs/myapt.webp'
+import PetchinguThumb from '../assets/thumbs/petchingu.webp'
 import IcipcnCert from '../assets/cert-icipcn.webp'
 import CspaCert from '../assets/cert-cspa.webp'
 import SpiderMan2Cover from '../assets/games/spiderman-2.webp'
@@ -211,6 +219,7 @@ export const projects = [
     category: 'Full-stack · USDC on Stellar',
     year: '2026',
     image: CentientHome,
+    thumb: CentientThumb,
     imageAlt: 'Centient home screen: “Train AI, cent by cent.” with a Connect Freighter button',
     summary:
       'A human-feedback platform for AI teams: contributors compare two AI answers, say why one is better, and are paid in USDC on Stellar as soon as the answer is accepted. Gold tasks, rate limits, and agreement checks keep the rankings honest. Payouts are co-signed from a multisig account, and after most balances sat stuck below the old withdrawal minimum, the Withdraw button went away: every accepted answer now pays the wallet directly.',
@@ -231,6 +240,7 @@ export const projects = [
     category: 'Computer vision · Edge AI',
     year: '2026',
     image: PoseEstimationImage,
+    thumb: PoseEstimationThumb,
     imageAlt: 'Raspberry Pi desktop showing a live skeleton overlay on a person doing a shoulder abduction, graded correct',
     summary:
       'Classifies exercises and grades form in real time on a Raspberry Pi 5. BlazePose landmarks feed a dual-head LSTM trained on 451,638 augmented 30-frame windows. After a session, a RAG chat explains what to fix: retrieval runs on the Pi with an ONNX encoder, so PyTorch never ships to the device.',
@@ -248,6 +258,7 @@ export const projects = [
     category: 'Clinical NLP · RAG',
     year: '2026',
     image: EscImage,
+    thumb: EscThumb,
     imageAlt: 'Cardiology AI assistant answering a question about the ESC 2024 atrial fibrillation guidelines, with cited source pages',
     summary:
       'Answers clinical questions from 100+ pages of the 2024 ESC atrial fibrillation guidelines. MedCPT embeddings, FAISS search, and BGE reranking ground three quantized models (Llama 3, Phi-3, Qwen3), tested on 20 clinical queries with a case-by-case look at every hallucination.',
@@ -272,6 +283,7 @@ export const projects = [
     category: 'Medical imaging · YOLOv12',
     year: '2026',
     image: AxialModelTestingImage,
+    thumb: AxialModelTestingThumb,
     imageAlt: 'Six axial CT slices of the abdomen with detection boxes around kidney cysts, stones, and tumors',
     summary:
       'Finds cysts, stones, and tumors in axial and coronal CT slices with YOLOv12, trained on 14,761 curated and augmented scans. Presented at IEEE ICIPCN 2026 at Kathmandu University, Nepal.',
@@ -292,6 +304,7 @@ export const projects = [
     category: 'Real-time emotion detection',
     year: '2025',
     image: ReadMyFaceImage,
+    thumb: ReadMyFaceThumb,
     imageAlt: 'Read My Face start screen listing the seven emotions it detects',
     summary:
       'Reads seven facial expressions from a webcam and answers each one with GSAP-driven visual feedback. The face-api.js models run entirely in the browser.',
@@ -308,6 +321,7 @@ export const projects = [
     category: 'Property management dashboard',
     year: '2025',
     image: MyAptImage,
+    thumb: MyAptThumb,
     imageAlt: 'MyApt sign-in screen',
     summary:
       'A dashboard for running apartment properties: tenants, units, and live Firebase data with charts. Demo login: test@test.com / test123.',
@@ -324,6 +338,7 @@ export const projects = [
     category: 'Pet care app',
     year: '2025',
     image: PetchinguImage,
+    thumb: PetchinguThumb,
     imageAlt: 'Petchingu banner: the pet app for a pet parent',
     summary:
       'Keeps a pet’s health records, vet appointments, and daily care routines in one place. Built with React and TypeScript on an Appwrite backend.',

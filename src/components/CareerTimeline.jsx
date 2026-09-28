@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronDown, ChevronUp, GraduationCap, School, BookOpen } from 'lucide-react';
-import MapuaImage from '../assets/Mapua.png';
-import StPaulImage from '../assets/stpaul.png';
-import IpsaImage from '../assets/ipsa.jpg';
+import MapuaImage from '../assets/Mapua.webp';
+import StPaulImage from '../assets/stpaul.webp';
+import IpsaImage from '../assets/ipsa.webp';
 import DecryptedText from './DecryptedText';
 
 const careerData = [

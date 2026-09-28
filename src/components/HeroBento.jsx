@@ -4,8 +4,8 @@ import { ArrowUpRight, ArrowDown, Github, Trophy, Pause, Play } from 'lucide-rea
 import ShapeWaves from './ShapeWaves'
 import HeroDesk from './HeroDesk'
 import AssistantTile from './AssistantTile'
-import GradPhoto from '../assets/me.jpeg'
-import BarongPhoto from '../assets/me-barong.jpg'
+import GradPhoto from '../assets/me.webp'
+import BarongPhoto from '../assets/me-barong.webp'
 import ResumePage from '../assets/resume-page.jpg'
 import { profile, featured } from '../data/portfolio'
 import { usePageVisible } from '../hooks/useCycle'
@@ -48,8 +48,8 @@ const word = {
 // blends into the studio background instead of showing a band. `theme` is the
 // site theme the outfit matches: flipping the theme brings that photo up.
 const PORTRAITS = [
-  { src: BarongPhoto, alt: 'Carl smiling in a white barong', width: 1320, height: 1342, backdrop: '#2e323d', theme: 'light' },
-  { src: GradPhoto, alt: 'Carl in graduation robes', width: 1320, height: 1365, backdrop: '#0b0b0b', theme: 'dark' },
+  { src: BarongPhoto, alt: 'Carl smiling in a white barong', width: 1080, height: 1098, backdrop: '#2e323d', theme: 'light' },
+  { src: GradPhoto, alt: 'Carl in graduation robes', width: 1080, height: 1117, backdrop: '#0b0b0b', theme: 'dark' },
 ]
 
 const FADE = 0.9

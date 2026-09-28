@@ -1,5 +1,5 @@
-import GradPhoto from './assets/me.jpeg'
-import BarongPhoto from './assets/me-barong.jpg'
+import GradPhoto from './assets/me.webp'
+import BarongPhoto from './assets/me-barong.webp'
 import ResumePage from './assets/resume-page.jpg'
 import { featured } from './data/portfolio'
 

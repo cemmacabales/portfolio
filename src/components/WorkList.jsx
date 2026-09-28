@@ -46,7 +46,7 @@ function WorkRow({ project, index, open, onToggle, onShowModels }) {
           }}
         >
           <span className="work-thumb" aria-hidden="true">
-            <img src={project.image} alt="" loading="lazy" decoding="async" />
+            <img src={project.thumb ?? project.image} alt="" loading="lazy" decoding="async" />
           </span>
           <span className="work-name">{project.name}</span>
           <span className="work-sub">
