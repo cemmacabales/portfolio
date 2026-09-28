@@ -81,6 +81,8 @@ export default function HeroDesk({ variants }) {
   const [peek, setPeek] = useState(null)
   const [mounted, setMounted] = useState(false)
   const [warm, setWarm] = useState(false)
+  const [spinning, setSpinning] = useState(false)
+  const spinTimer = useRef(0)
   const refocus = useRef(false)
 
   useEffect(() => setMounted(true), [])
@@ -188,7 +190,29 @@ export default function HeroDesk({ variants }) {
     }
   }, [])
 
+  // The + spins once, then the desk opens. The desk is normally built by
+  // then; pressed before the page went idle, it gets built under the spin.
   const expand = () => {
+    if (open || spinning) return
+    if (reduce) {
+      start()
+      return
+    }
+    setSpinning(true)
+    if (window.matchMedia(WIDE).matches) setWarm(true)
+    // In case the spin's animationend never arrives.
+    spinTimer.current = setTimeout(spun, 900)
+  }
+
+  const spun = () => {
+    clearTimeout(spinTimer.current)
+    setSpinning(false)
+    start()
+  }
+
+  useEffect(() => () => clearTimeout(spinTimer.current), [])
+
+  const start = () => {
     if (open) return
     const wide = window.matchMedia(WIDE).matches
     setMode(wide ? 'stage' : 'sheet')
@@ -360,7 +384,14 @@ export default function HeroDesk({ variants }) {
           <SocialTile variants={variants} />
         </div>
         <div className="desk-setup" inert={stage}>
-          <SetupTile variants={variants} expanded={open} onExpand={expand} toggleRef={toggleRef} />
+          <SetupTile
+            variants={variants}
+            expanded={open}
+            spinning={spinning}
+            onExpand={expand}
+            onSpun={spun}
+            toggleRef={toggleRef}
+          />
         </div>
       </div>
 

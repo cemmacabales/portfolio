@@ -53,6 +53,24 @@
   transition-duration: 0.12s;
 }
 
+/*
+ * Pressed, the + spins once before the desk opens. The button settles back to
+ * its resting size meanwhile, so the panel's + takes over without a jump.
+ */
+.tile-setup .setup-toggle.is-spinning {
+  transform: none;
+}
+
+.setup-toggle.is-spinning svg {
+  animation: setup-spin 0.5s cubic-bezier(0.6, 0, 0.3, 1);
+}
+
+@keyframes setup-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .setup-body {
   flex: 1 0 auto;
   display: grid;
@@ -229,6 +247,10 @@
   .dock-icon,
   .setup-toggle {
     transition: none;
+  }
+
+  .setup-toggle.is-spinning svg {
+    animation: none;
   }
 
   .dock-app:hover .dock-icon,
