@@ -230,6 +230,7 @@
   position: absolute;
   inset: 0;
   background: oklch(0.2 0.02 175 / 0.34);
+  -webkit-tap-highlight-color: transparent;
 }
 
 :root[data-theme='dark'] .setup-sheet-backdrop {

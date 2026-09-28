@@ -447,6 +447,13 @@
     grid-template-columns: 52px minmax(0, 1fr);
   }
 
+  /* No room beside the titles: Now sits under them, not in the mark's column. */
+  .xp-badge-now {
+    grid-column: 2;
+    justify-self: start;
+    margin-top: 8px;
+  }
+
   .xp-mark-lg {
     width: 52px;
     height: 52px;

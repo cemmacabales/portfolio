@@ -6,6 +6,7 @@
   flex-direction: column;
   container-type: inline-size;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
 :root[data-theme='dark'] .tile-setup {
@@ -32,6 +33,9 @@
   border-radius: 50%;
   background: color-mix(in oklch, var(--ink) 8%, transparent);
   color: var(--ink);
+  /* iOS paints its highlight where the button was and leaves it there once
+     the sheet has slid away. */
+  -webkit-tap-highlight-color: transparent;
   transition:
     background-color 0.25s ease,
     transform 0.45s var(--ease-out);
