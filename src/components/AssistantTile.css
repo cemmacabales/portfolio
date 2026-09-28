@@ -1,0 +1,365 @@
+/*
+ * "Ask my assistant": a Messages conversation in miniature. A question types
+ * itself into the field, sends, and the assistant answers under Carl's Memoji.
+ * The tile is mint in both themes, so its colors are set here, not per theme.
+ */
+.tile-mint {
+  --as-ink: var(--mint-ink);
+  --as-paper: oklch(1 0 0);
+  /* ≥7:1 on the field, but plainly quieter than typed text. */
+  --as-hint: oklch(0.43 0.045 175);
+  --as-pad: clamp(18px, 1.7vw, 22px);
+  --as-gap: 12px;
+  --as-field-h: 40px;
+
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: var(--as-gap);
+  min-height: 276px;
+  padding: var(--as-pad);
+  background: var(--mint);
+  border-color: color-mix(in oklch, var(--mint) 80%, var(--mint-ink));
+  color: var(--as-ink);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── Header: who you're talking to ─────────────────────────────── */
+.as-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.as-avatar {
+  flex: none;
+  width: 46px;
+  height: 46px;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--as-paper);
+  box-shadow:
+    0 0 0 1px color-mix(in oklch, var(--as-ink) 8%, transparent),
+    0 6px 16px -6px oklch(0.3 0.06 175 / 0.5);
+  transition: transform 0.5s var(--ease-out);
+}
+
+.as-avatar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: translateY(6%) scale(1.06);
+  transform-origin: 50% 100%;
+  transition: transform 0.6s var(--ease-out);
+}
+
+.as-copy {
+  display: block;
+  min-width: 0;
+}
+
+.as-title {
+  display: block;
+  font-size: var(--text-lg);
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.as-sub {
+  display: block;
+  margin-top: 2px;
+  font-size: var(--text-sm);
+  line-height: 1.35;
+  text-wrap: balance;
+}
+
+/* ── Thread: bottom-anchored, older messages slide up under a fade.
+   It runs on under the field, so a sent question rises out from behind it. */
+.as-thread {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 8px;
+  min-height: calc(112px + var(--as-field-h) + var(--as-gap));
+  /* Sideways: room for the tails, which curl 8px past their bubbles. */
+  margin: 0 -10px calc(-1 * (var(--as-field-h) + var(--as-gap)));
+  padding: 0 10px calc(var(--as-field-h) + var(--as-gap) + 2px);
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 44px);
+  mask-image: linear-gradient(to bottom, transparent, #000 44px);
+}
+
+.as-row {
+  display: flex;
+  flex: none;
+  max-width: 84%;
+  animation: as-fade 0.24s ease-out both;
+}
+
+.as-row.is-q {
+  align-self: flex-end;
+}
+
+.as-row.is-a {
+  align-self: flex-start;
+}
+
+.as-bubble {
+  position: relative;
+  display: block;
+  padding: 7px 12px 8px;
+  border-radius: 18px;
+  font-size: 0.875rem;
+  line-height: 1.36;
+  text-wrap: pretty;
+}
+
+.as-bubble.is-q {
+  background: var(--as-ink);
+  color: var(--mint);
+}
+
+.as-bubble.is-a {
+  background: var(--as-paper);
+  color: var(--as-ink);
+  box-shadow: 0 1px 1px oklch(0.3 0.06 175 / 0.08);
+}
+
+.as-text {
+  display: block;
+  /* Waits a beat, so the words land once the bubble has mostly grown. */
+  animation: as-fade 0.32s var(--ease-out) 0.1s both;
+}
+
+@keyframes as-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+.as-tail {
+  position: absolute;
+  bottom: 0;
+  width: 20px;
+  height: 17px;
+  pointer-events: none;
+}
+
+.is-q > .as-tail {
+  right: -8px;
+  fill: var(--as-ink);
+}
+
+.is-a > .as-tail {
+  left: -8px;
+  fill: var(--as-paper);
+}
+
+/* Typing: three breathing dots, with the thought-bubble tail. */
+.as-bubble.is-typing {
+  padding: 12px 13px;
+}
+
+.as-bubble.is-typing::before,
+.as-bubble.is-typing::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  background: var(--as-paper);
+}
+
+.as-bubble.is-typing::before {
+  left: -2px;
+  bottom: -2px;
+  width: 11px;
+  height: 11px;
+}
+
+.as-bubble.is-typing::after {
+  left: -7px;
+  bottom: -7px;
+  width: 5px;
+  height: 5px;
+}
+
+.as-dots {
+  display: flex;
+  gap: 4px;
+}
+
+.as-dots i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: color-mix(in oklch, var(--as-ink) 50%, transparent);
+  animation: as-dot 1.3s ease-in-out infinite;
+}
+
+.as-dots i:nth-child(2) {
+  animation-delay: 0.16s;
+}
+
+.as-dots i:nth-child(3) {
+  animation-delay: 0.32s;
+}
+
+@keyframes as-dot {
+  0%,
+  60%,
+  100% {
+    opacity: 0.4;
+    transform: scale(0.9);
+  }
+  30% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+/* ── Compose field ─────────────────────────────────────────────── */
+.as-compose {
+  position: relative;
+  z-index: 1;
+  display: block;
+}
+
+.as-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: var(--as-field-h);
+  padding: 0 5px 0 15px;
+  border-radius: 999px;
+  /* Solid, so a question hides behind it until it rises clear. */
+  background: color-mix(in oklab, var(--mint) 26%, var(--as-paper));
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklch, var(--as-ink) 12%, transparent),
+    0 1px 2px oklch(0.3 0.06 175 / 0.08);
+  transition: box-shadow 0.3s ease, background-color 0.3s ease;
+}
+
+.as-draft {
+  display: block;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 0.9375rem;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.as-placeholder {
+  color: var(--as-hint);
+}
+
+.as-caret {
+  display: inline-block;
+  width: 2px;
+  height: 1.1em;
+  margin-left: 1px;
+  vertical-align: -0.2em;
+  border-radius: 1px;
+  background: var(--as-ink);
+  animation: as-blink 1s steps(1) infinite;
+}
+
+@keyframes as-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* The trailing button is dictation while the field is empty and Send once
+   there's text, as in Messages. */
+.as-send {
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  color: var(--as-ink);
+  transition:
+    background-color 0.25s ease,
+    transform 0.4s var(--ease-out);
+}
+
+.as-send svg {
+  grid-area: 1 / 1;
+  transition:
+    opacity 0.2s ease,
+    transform 0.35s var(--ease-out);
+}
+
+.as-send-go {
+  opacity: 0;
+  transform: scale(0.4);
+}
+
+.as-field[data-armed] .as-send {
+  background: var(--as-ink);
+  color: var(--mint);
+}
+
+.as-field[data-armed] .as-send-idle {
+  opacity: 0;
+  transform: scale(0.4);
+}
+
+.as-field[data-armed] .as-send-go {
+  opacity: 1;
+  transform: none;
+}
+
+/* ── Hover ─────────────────────────────────────────────────────── */
+@media (hover: hover) and (pointer: fine) {
+  .tile-mint:hover .as-avatar {
+    transform: scale(1.06);
+  }
+
+  .tile-mint:hover .as-avatar img {
+    transform: translateY(2%) scale(1.06) rotate(-5deg);
+  }
+
+  .tile-mint:hover .as-field {
+    background: color-mix(in oklab, var(--mint) 10%, var(--as-paper));
+    box-shadow:
+      inset 0 0 0 1px color-mix(in oklch, var(--as-ink) 22%, transparent),
+      0 4px 12px -4px oklch(0.3 0.06 175 / 0.25);
+  }
+}
+
+@media (max-width: 760px) {
+  .tile-mint {
+    min-height: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .as-row,
+  .as-text,
+  .as-dots i,
+  .as-caret {
+    animation: none;
+  }
+
+  .as-avatar,
+  .as-avatar img,
+  .as-field,
+  .as-send,
+  .as-send svg {
+    transition: none;
+  }
+
+  .tile-mint:hover .as-avatar {
+    transform: none;
+  }
+
+  .tile-mint:hover .as-avatar img {
+    transform: translateY(6%) scale(1.06);
+  }
+}
