@@ -8,13 +8,13 @@ import {
   useTransform,
 } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
-import { research, certificates, profile } from '../data/portfolio'
+import { certificates, profile } from '../data/portfolio'
 import { useLocalTime } from '../hooks/useLocalTime'
 import GithubActivity from './GithubActivity'
 import StackTile from './StackTile'
 import EducationTile from './EducationTile'
 import ExperienceTile from './ExperienceTile'
-import IcipcnImage from '../assets/icipcn.png'
+import ResearchTile from './ResearchTile'
 import './BackgroundBento.css'
 
 const EASE = [0.16, 1, 0.3, 1]
@@ -167,32 +167,7 @@ export default function BackgroundBento() {
 
         <EducationTile variants={rise} />
 
-        <motion.article variants={rise} className="tile tile-research">
-          <h3 className="tile-head">Research</h3>
-          <ul className="row-list">
-            {research.map((item) => (
-              <li key={item.title}>
-                <a href={item.url} target="_blank" rel="noopener noreferrer" className="row-link">
-                  <span className="row-text">
-                    <span className="row-title">{item.title}</span>
-                    <span className="row-sub">{item.venue}</span>
-                  </span>
-                  <span className="row-icon row-icon-end" aria-hidden="true">
-                    <ArrowUpRight size={18} strokeWidth={1.8} />
-                  </span>
-                  <span className="visually-hidden"> (opens in a new tab)</span>
-                </a>
-              </li>
-            ))}
-          </ul>
-          <figure className="research-figure">
-            <img
-              src={IcipcnImage}
-              alt="IEEE certificate of presentation for the kidney abnormality paper at ICIPCN 2026"
-              loading="lazy"
-            />
-          </figure>
-        </motion.article>
+        <ResearchTile variants={rise} />
 
         <StackTile variants={rise} />
 

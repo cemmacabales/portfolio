@@ -17,6 +17,8 @@ import IpsaImage from '../assets/ipsa.jpg'
 import GradPhoto from '../assets/me.jpeg'
 import BarongPhoto from '../assets/me-barong.jpg'
 import IpsaPhoto from '../assets/me-ipsa.jpg'
+import IcipcnCert from '../assets/cert-icipcn.webp'
+import CspaCert from '../assets/cert-cspa.webp'
 
 import pythonIcon from 'devicon/icons/python/python-plain.svg'
 import pytorchIcon from 'devicon/icons/pytorch/pytorch-original.svg'
@@ -393,16 +395,35 @@ export const experience = [
   },
 ]
 
+// Newest first. `paper` is the title as printed on the certificate; `date` is
+// the day it was presented, drawn on the row as a Calendar icon.
 export const research = [
   {
-    title: 'Multi-class kidney abnormality segmentation in CT',
-    venue: 'IEEE ICIPCN 2026 · presented at Kathmandu University',
-    url: 'https://doi.org/10.1109/ICIPCN67432.2026.11438968',
+    id: 'cspa',
+    title: 'RAG clinical guideline chatbot for atrial fibrillation',
+    venue: 'IEEE CSPA 2026 · IEEE Xplore',
+    url: 'https://ieeexplore.ieee.org/document/11517831',
+    paper:
+      'Open-Source LLMs for Evidence-Grounded Clinical Question Answering: A RAG Framework Based on the 2024 ESC Atrial Fibrillation Guidelines',
+    event: '22nd IEEE International Colloquium on Signal Processing & Its Applications',
+    when: '1–2 May 2026',
+    date: { month: 'May', day: 1, weekday: 'Fri' },
+    cert: CspaCert,
+    certAlt:
+      'CSPA 2026 certificate of participation for the RAG framework paper on the 2024 ESC atrial fibrillation guidelines',
   },
   {
-    title: 'RAG clinical guideline chatbot for atrial fibrillation',
-    venue: 'CSPA 2026 · IEEE Xplore',
-    url: 'https://ieeexplore.ieee.org/document/11517831',
+    id: 'icipcn',
+    title: 'Multi-class kidney abnormality segmentation in CT',
+    venue: 'IEEE ICIPCN 2026 · Kathmandu University',
+    url: 'https://doi.org/10.1109/ICIPCN67432.2026.11438968',
+    paper:
+      'Clinically Oriented Deep Learning Framework for Multi-Class Kidney Abnormality Instance Segmentation in CT Images',
+    event: '6th International Conference on Image Processing and Capsule Networks · Dhulikhel, Nepal',
+    when: '27–29 January 2026',
+    date: { month: 'Jan', day: 27, weekday: 'Tue' },
+    cert: IcipcnCert,
+    certAlt: 'IEEE certificate of presentation for the kidney abnormality paper at ICIPCN 2026',
   },
 ]
 
