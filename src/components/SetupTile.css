@@ -45,10 +45,68 @@
   outline-offset: 2px;
 }
 
+/*
+ * On the tile the + wears a label, tinted like the App Store's Get button.
+ * Pressed, the label folds away while the + spins, leaving the same gray
+ * circle as the open desk's close button, so the handoff still lines up.
+ */
+.setup-expand {
+  display: inline-flex;
+  align-items: center;
+  width: auto;
+  min-width: 30px;
+  padding-left: 12px;
+  border-radius: 999px;
+  /* A touch of ink keeps the label at 7:1 on the hover gray. */
+  color: color-mix(in oklch, var(--accent) 80%, var(--ink));
+  font-size: var(--text-xs);
+  font-weight: 600;
+  line-height: 1;
+  transition:
+    background-color 0.25s ease,
+    color 0.3s ease,
+    padding 0.4s var(--ease-out),
+    transform 0.45s var(--ease-out);
+}
+
+.setup-expand svg {
+  flex-shrink: 0;
+  margin-inline: 7px;
+}
+
+.setup-expand-label {
+  display: grid;
+  grid-template-columns: 1fr;
+  transition:
+    grid-template-columns 0.4s var(--ease-out),
+    opacity 0.25s ease;
+}
+
+.setup-expand-label > span {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.setup-expand.is-compact {
+  padding-left: 0;
+  color: var(--ink);
+}
+
+.setup-expand.is-compact .setup-expand-label {
+  grid-template-columns: 0fr;
+  opacity: 0;
+}
+
 @media (hover: hover) and (pointer: fine) {
   .tile-setup:hover .setup-toggle {
     background: color-mix(in oklch, var(--ink) 14%, transparent);
     transform: scale(1.08);
+  }
+
+  .tile-setup:hover .setup-expand {
+    background: color-mix(in oklch, var(--ink) 11%, transparent);
+    transform: scale(1.04);
   }
 }
 
@@ -249,7 +307,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .dock-icon,
-  .setup-toggle {
+  .setup-toggle,
+  .setup-expand-label {
     transition: none;
   }
 

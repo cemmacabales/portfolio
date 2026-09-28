@@ -11,7 +11,15 @@ import './SetupTile.css'
  * My setup: About This Mac, plus a Dock of what stays open. The + in the
  * corner (or anywhere on the tile) opens the whole desk; HeroDesk runs that.
  */
-export default function SetupTile({ variants, expanded = false, spinning = false, onExpand, onSpun, toggleRef }) {
+export default function SetupTile({
+  variants,
+  expanded = false,
+  spinning = false,
+  compact = false,
+  onExpand,
+  onSpun,
+  toggleRef,
+}) {
   const ref = useRef(null)
   const inView = useInView(ref, { amount: 0.4 })
   const booted = useBooted()
@@ -31,7 +39,7 @@ export default function SetupTile({ variants, expanded = false, spinning = false
         <button
           ref={toggleRef}
           type="button"
-          className={`setup-toggle${spinning ? ' is-spinning' : ''}`}
+          className={`setup-toggle setup-expand${compact ? ' is-compact' : ''}${spinning ? ' is-spinning' : ''}`}
           aria-expanded={expanded}
           aria-busy={spinning || undefined}
           onClick={(event) => {
@@ -42,8 +50,11 @@ export default function SetupTile({ variants, expanded = false, spinning = false
             if (event.animationName === 'setup-spin') onSpun?.()
           }}
         >
+          <span className="setup-expand-label">
+            <span>Expand</span>
+          </span>
+          <span className="visually-hidden"> my setup</span>
           <Plus size={16} strokeWidth={2.4} aria-hidden="true" />
-          <span className="visually-hidden">Show my whole desk</span>
         </button>
       </div>
 

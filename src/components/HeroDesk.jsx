@@ -461,6 +461,7 @@ export default function HeroDesk({ variants }) {
             variants={variants}
             expanded={open}
             spinning={spinning}
+            compact={spinning || mode !== null}
             onExpand={expand}
             onSpun={spun}
             toggleRef={toggleRef}
