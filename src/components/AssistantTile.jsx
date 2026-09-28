@@ -7,22 +7,22 @@ import { usePageVisible } from '../hooks/useCycle'
 import { useBooted } from '../hooks/useBooted'
 import './AssistantTile.css'
 
-// The chat's own first suggestions, each with a short version of the answer.
-// Non-breaking spaces keep a sentence from starting at the end of a line.
-// The last one is where the preview comes to rest, so it's the one a
+// Questions about Carl himself, each with a short version of the chat's
+// answer. Non-breaking spaces keep a sentence from starting at the end of a
+// line. The last one is where the preview comes to rest, so it's the one a
 // recruiter most needs to see.
 const EXCHANGES = [
   {
-    q: 'What is Centient?',
-    a: 'It pays people in USDC to rank AI answers. It\u00a0won a $5,000 grant.',
+    q: 'Who is Carl?',
+    a: 'An AI and software engineer, Mapúa class of 2026, who ships both research and real\u00a0apps.',
   },
   {
-    q: 'What research has he published?',
-    a: 'Two IEEE papers: a RAG chatbot for AFib guidelines, and kidney\u00a0CT segmentation.',
+    q: 'Where is he from?',
+    a: 'He grew up in Al\u00a0Khobar, Saudi Arabia, and he’s based in Quezon\u00a0City now.',
   },
   {
-    q: 'What does he build with?',
-    a: 'PyTorch for the models. Next.js, TypeScript, and PostgreSQL for the product around them.',
+    q: 'What does he do for fun?',
+    a: 'Basketball, lifting, and games. He can also solve a Rubik’s cube with one\u00a0hand.',
   },
   {
     q: 'Is Carl open to work?',
@@ -227,7 +227,7 @@ export default function AssistantTile({ variants, onClick }) {
         </span>
         <span className="as-copy">
           <span className="as-title">Ask my assistant</span>
-          <span className="as-sub">It knows my projects, papers, and stack.</span>
+          <span className="as-sub">It knows me, my work, and what I’m into.</span>
         </span>
       </span>
 
