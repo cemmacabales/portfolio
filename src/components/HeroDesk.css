@@ -391,8 +391,10 @@
   }
 }
 
-/* The workflow in a sheet: the stage on top at its own shape, then the steps. */
-.wf-sheet {
+/* The workflow in a sheet: the stage on top at its own shape, then the steps.
+   Two classes, because WorkflowView.css arrives later in its own chunk and
+   its `.wf` size container would otherwise win and collapse this to 0 tall. */
+.wf.wf-sheet {
   container-type: inline-size;
   height: auto;
 }
