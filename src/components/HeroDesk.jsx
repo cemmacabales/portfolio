@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { Suspense, lazy, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence, animate, useDragControls, useMotionValue, useReducedMotion } from 'framer-motion' // eslint-disable-line no-unused-vars
 import { Plus } from 'lucide-react'
@@ -6,6 +6,7 @@ import AboutTile from './AboutTile'
 import SocialTile from './SocialTile'
 import SetupTile from './SetupTile'
 import SetupDesk from './SetupDesk'
+import Segmented from './Segmented'
 import { useBooted } from '../hooks/useBooted'
 import posthog from '../posthog'
 import './HeroDesk.css'
@@ -19,6 +20,14 @@ const SHEET = { type: 'spring', bounce: 0, duration: 0.55 }
 const whenIdle = (fn) =>
   window.requestIdleCallback ? window.requestIdleCallback(fn, { timeout: 4000 }) : setTimeout(fn, 300)
 const cancelIdle = (id) => (window.cancelIdleCallback ? window.cancelIdleCallback(id) : clearTimeout(id))
+// Workflow ships in its own chunk, fetched once the desk is warming or open,
+// so the first switch to it is already loaded.
+const loadWorkflow = () => import('./WorkflowView')
+const WorkflowView = lazy(loadWorkflow)
+const VIEWS = [
+  { id: 'gear', label: 'Gear' },
+  { id: 'workflow', label: 'Workflow' },
+]
 const THUMB_GAP = 22
 const LABEL_H = 26
 
@@ -35,6 +44,7 @@ const DRIVEN = [
   '.gear',
   '.gear-item',
   '.desk-restore',
+  '.desk-switch',
 ].join(', ')
 
 // The panel's box: the row, less the thumbnail strip on its left.
@@ -84,6 +94,8 @@ export default function HeroDesk({ variants }) {
   const [mounted, setMounted] = useState(false)
   const [warm, setWarm] = useState(false)
   const [spinning, setSpinning] = useState(false)
+  const [view, setView] = useState('gear')
+  const [flowSeen, setFlowSeen] = useState(false)
   const spinTimer = useRef(0)
   const refocus = useRef(false)
 
@@ -223,9 +235,19 @@ export default function HeroDesk({ variants }) {
     posthog.capture('setup_desk_opened', { layout: wide ? 'stage' : 'sheet' })
   }
 
+  // Gear or Workflow. Workflow is only built once it's asked for.
+  const switchView = (next) => {
+    setView(next)
+    if (next === 'workflow') setFlowSeen(true)
+    posthog.capture('setup_view_switched', { view: next, layout: 'stage' })
+  }
+
+  // Closing always goes back through the gear: the pull-back lands on its
+  // MacBook, so that's what has to be showing while the frame shrinks.
   const close = useCallback(() => {
     setOpen(false)
     setPeek(null)
+    setView('gear')
     refocus.current = true
   }, [])
 
@@ -236,6 +258,10 @@ export default function HeroDesk({ variants }) {
     const frame = requestAnimationFrame(() => toggleRef.current?.focus({ preventScroll: true }))
     return () => cancelAnimationFrame(frame)
   }, [open, mode])
+
+  useEffect(() => {
+    if (warm || mode) loadWorkflow()
+  }, [warm, mode])
 
   // Waiting: keep the hidden panel at the size it will open to, so opening
   // doesn't lay the whole drawing out again.
@@ -269,6 +295,7 @@ export default function HeroDesk({ variants }) {
           setLayout(null)
           setMode(null)
           setWarm(false)
+          setFlowSeen(false)
         })
       }
     }
@@ -322,6 +349,8 @@ export default function HeroDesk({ variants }) {
       setLayout(null)
       setMode(null)
       setWarm(false)
+      setView('gear')
+      setFlowSeen(false)
     }
     let frame = 0
     const observer = new ResizeObserver(() => {
@@ -408,6 +437,9 @@ export default function HeroDesk({ variants }) {
             <div className="setup-panel-frame">
               <div className="tile-head setup-head">
                 <h2 id="setup-panel-title">My setup</h2>
+                <div className="desk-switch">
+                  <Segmented options={VIEWS} value={view} onChange={switchView} label="What to show" />
+                </div>
                 <button
                   ref={closeRef}
                   type="button"
@@ -422,7 +454,18 @@ export default function HeroDesk({ variants }) {
               </div>
             </div>
             <div className="setup-panel-body">
-              <SetupDesk sceneRef={sceneRef} paused={!stage} />
+              <div className="setup-views" data-view={view}>
+                <div className="setup-view setup-view-gear" inert={view !== 'gear'}>
+                  <SetupDesk sceneRef={sceneRef} paused={!stage || view !== 'gear'} />
+                </div>
+                {flowSeen && (
+                  <div className="setup-view setup-view-workflow" inert={view !== 'workflow'}>
+                    <Suspense fallback={null}>
+                      <WorkflowView active={view === 'workflow'} paused={!stage} />
+                    </Suspense>
+                  </div>
+                )}
+              </div>
             </div>
           </section>
 
@@ -466,6 +509,12 @@ function SetupSheet({ onClose }) {
   const closeRef = useRef(null)
   const reduce = useReducedMotion()
   const [phone, setPhone] = useState(() => window.matchMedia(PHONE).matches)
+  const [view, setView] = useState('gear')
+
+  const switchView = (next) => {
+    setView(next)
+    posthog.capture('setup_view_switched', { view: next, layout: 'sheet' })
+  }
 
   useEffect(() => {
     const query = window.matchMedia(PHONE)
@@ -531,8 +580,19 @@ function SetupSheet({ onClose }) {
             </button>
           </div>
         </div>
+        <div className="setup-sheet-switch">
+          <Segmented options={VIEWS} value={view} onChange={switchView} label="What to show" />
+        </div>
         <div className="setup-sheet-body">
-          <SetupDesk className="desk-sheet" scene={!phone} />
+          <div key={view} className="setup-sheet-view">
+            {view === 'gear' ? (
+              <SetupDesk className="desk-sheet" scene={!phone} />
+            ) : (
+              <Suspense fallback={null}>
+                <WorkflowView className="wf-sheet" stage={!phone} />
+              </Suspense>
+            )}
+          </div>
         </div>
       </motion.div>
     </div>

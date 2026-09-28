@@ -162,6 +162,48 @@
   );
 }
 
+/* ── Gear | Workflow: two views of the same frame ────────────── */
+.setup-panel .setup-head {
+  position: relative;
+}
+
+/* Centered in the title bar, as a toolbar control; it arrives as the frame lands. */
+.desk-switch {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+}
+
+.setup-panel .desk-switch {
+  opacity: clamp(0, (var(--dp) - 0.7) * 5, 1);
+}
+
+.setup-views {
+  position: relative;
+  height: 100%;
+}
+
+.setup-view {
+  position: absolute;
+  inset: 0;
+  transition:
+    opacity 0.4s ease 0.05s,
+    transform 0.55s var(--ease-out) 0.05s,
+    visibility 0s;
+}
+
+.setup-views[data-view='gear'] > .setup-view-workflow,
+.setup-views[data-view='workflow'] > .setup-view-gear {
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.985);
+  transition:
+    opacity 0.22s ease,
+    transform 0.45s var(--ease-out),
+    visibility 0s linear 0.45s;
+}
+
 /* The pull-back: the desk starts with its MacBook on the tile's MacBook. */
 .setup-panel .desk-stage-move {
   transform: translate(calc(var(--tx, 0) * (1 - var(--dp)) * 1px), calc(var(--ty, 0) * (1 - var(--dp)) * 1px))
@@ -278,6 +320,31 @@
   transform: rotate(45deg);
 }
 
+.setup-sheet-switch {
+  flex-shrink: 0;
+  padding: 12px var(--pad-tile) 0;
+}
+
+.setup-sheet-switch .segmented {
+  display: flex;
+  width: 100%;
+}
+
+.setup-sheet-switch .segment {
+  flex: 1;
+}
+
+.setup-sheet-view {
+  animation: setup-view-in 0.4s var(--ease-out);
+}
+
+@keyframes setup-view-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
 .setup-sheet-body {
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -320,9 +387,47 @@
   }
 }
 
+/* The workflow in a sheet: the stage on top at its own shape, then the steps. */
+.wf-sheet {
+  container-type: inline-size;
+  height: auto;
+}
+
+.wf-sheet .wf-grid {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: none;
+  align-items: stretch;
+  height: auto;
+}
+
+.wf-sheet .wf-stage {
+  aspect-ratio: 3 / 2;
+}
+
+@container (width > 520px) {
+  .wf-sheet .wf-steps {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 2px;
+  }
+
+  .wf-sheet .wf-thread {
+    display: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hero-desk[data-stage] .desk-slot {
     transition: none;
+  }
+
+  .setup-view,
+  .setup-views[data-view] > .setup-view {
+    transform: none;
+  }
+
+  .setup-sheet-view {
+    animation: none;
   }
 
   .setup-panel[data-ready] {

@@ -1,0 +1,492 @@
+/* ── My workflow: the stage, and the Shortcuts that drive it ──── */
+.wf {
+  /* A size container, like the desk: beside or below depends on shape. */
+  container: wf / size;
+  height: 100%;
+}
+
+.wf-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(250px, 284px);
+  grid-template-rows: minmax(0, 1fr);
+  align-items: center;
+  gap: 18px 24px;
+  height: 100%;
+}
+
+.wf.is-list .wf-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* ── Stage ───────────────────────────────────────────────────── */
+.wf-stage {
+  position: relative;
+  align-self: stretch;
+  min-width: 0;
+  min-height: 0;
+}
+
+.wf-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 720px;
+  height: 480px;
+  transform-origin: 0 0;
+  transform: translate(var(--cx, 0), var(--cy, 0)) scale(var(--k, 1));
+  visibility: hidden;
+}
+
+.wf-canvas[data-ready] {
+  visibility: visible;
+}
+
+/* One scene on at a time: the old one settles back as the new one rises. */
+.wf-canvas .ws-scene {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px) scale(0.975);
+  transition:
+    opacity 0.3s ease,
+    transform 0.45s var(--ease-out),
+    visibility 0s linear 0.45s;
+}
+
+.wf-canvas .ws-scene.is-on {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition:
+    opacity 0.45s ease 0.06s,
+    transform 0.6s var(--ease-out) 0.06s,
+    visibility 0s;
+}
+
+/* Off screen, or behind the gear, nothing in the scenes moves. */
+.wf-stage:not(.is-live) .ws-scene *,
+.wf-stage:not(.is-live) .ws-scene *::before,
+.wf-stage:not(.is-live) .ws-scene *::after {
+  animation-play-state: paused !important;
+}
+
+/* ── The side: two Shortcuts over their steps ────────────────── */
+.wf-side {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.wf-tiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+/* A Shortcut, as the Shortcuts app draws one: glyph, run button, name. */
+.wf-tile {
+  --tile-ink: #fff;
+  --tile-ink-2: oklch(1 0 0 / 0.72);
+  --tile-run: oklch(1 0 0 / 0.2);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 86px;
+  padding: 10px 10px 10px 12px;
+  border-radius: 16px;
+  color: var(--tile-ink);
+  text-align: left;
+  box-shadow:
+    inset 0 1px 0 oklch(1 0 0 / 0.16),
+    0 2px 6px -2px oklch(0.2 0.02 175 / 0.3);
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform 0.45s var(--ease-out),
+    box-shadow 0.3s ease;
+}
+
+@supports (corner-shape: squircle) {
+  .wf-tile {
+    corner-shape: squircle;
+    border-radius: calc(16px * 1.75);
+  }
+}
+
+.wf-tile-ship {
+  background: linear-gradient(170deg, oklch(0.39 0.012 175), oklch(0.25 0.01 175));
+}
+
+.wf-tile-train {
+  --tile-ink: var(--mint-ink);
+  --tile-ink-2: oklch(0.3 0.06 175 / 0.78);
+  --tile-run: oklch(0.3 0.06 175 / 0.14);
+  background: linear-gradient(170deg, #7dffe2, oklch(0.84 0.13 173));
+  box-shadow:
+    inset 0 1px 0 oklch(1 0 0 / 0.45),
+    0 2px 6px -2px oklch(0.4 0.08 175 / 0.4);
+}
+
+/* The one that's running is the one ringed. */
+.wf-tile.is-on {
+  box-shadow:
+    0 0 0 2px var(--tile),
+    0 0 0 3.5px var(--ink),
+    0 6px 14px -6px oklch(0.2 0.02 175 / 0.4);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .wf-tile:hover {
+    transform: translateY(-1px);
+  }
+}
+
+.wf-tile:active {
+  transform: scale(0.97);
+  transition-duration: 0.12s;
+}
+
+.wf-tile:focus-visible {
+  outline-offset: 5px;
+}
+
+.wf-tile-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  align-self: stretch;
+  margin-bottom: auto;
+}
+
+.wf-tile-glyph {
+  opacity: 0.95;
+}
+
+.wf-tile-name {
+  margin-top: 12px;
+  font-size: var(--text-sm);
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.wf-tile-count {
+  font-size: var(--text-xs);
+  line-height: 1.3;
+  color: var(--tile-ink-2);
+}
+
+/* The run button: a play glyph, or a stop square inside the progress ring. */
+.wf-run {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--tile-run);
+}
+
+.wf-run svg:first-child {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.wf-run-track,
+.wf-run-ring {
+  fill: none;
+  stroke-width: 2;
+}
+
+.wf-run-track {
+  stroke: transparent;
+}
+
+.wf-run-ring {
+  stroke: var(--tile-ink);
+  stroke-dasharray: 1;
+  stroke-dashoffset: calc(1 - var(--p, 0));
+  stroke-linecap: round;
+  opacity: 0;
+  transition:
+    stroke-dashoffset 0.6s var(--ease-out),
+    opacity 0.3s ease;
+}
+
+.wf-run:is(.is-running, .is-done) .wf-run-ring {
+  opacity: 1;
+}
+
+.wf-run.is-running .wf-run-track {
+  stroke: var(--tile-run);
+}
+
+.wf-run > svg:last-child {
+  position: relative;
+}
+
+.wf-run.is-idle > svg:last-child {
+  margin-left: 1px;
+}
+
+/* ── Steps: a grouped list, with a thread through the icons ──── */
+.wf-steps {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px;
+  border-radius: var(--r-inner);
+  background: var(--tile-sunk);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+@supports (corner-shape: squircle) {
+  .wf-steps {
+    corner-shape: squircle;
+    border-radius: calc(var(--r-inner) * 1.75);
+  }
+}
+
+.wf-lens {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--w, 0);
+  height: var(--h, 0);
+  border-radius: 14px;
+  background: var(--glass-lens);
+  box-shadow:
+    var(--glass-lens-shadow),
+    0 0 0 0.5px var(--glass-border);
+  opacity: 0;
+  transform: translate(var(--x, 0), var(--y, 0));
+  transition:
+    transform 0.45s var(--ease-out),
+    width 0.45s var(--ease-out),
+    height 0.45s var(--ease-out),
+    opacity 0.25s ease;
+  pointer-events: none;
+}
+
+.wf-lens.is-on {
+  opacity: 1;
+}
+
+/* The thread runs icon to icon; the part already walked is solid. */
+.wf-thread {
+  position: absolute;
+  top: var(--top, 0);
+  bottom: var(--top, 0);
+  left: 32px;
+  width: 1.5px;
+  margin-left: -0.75px;
+  background: var(--line-strong);
+  pointer-events: none;
+}
+
+.wf-thread::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--fill, 0);
+  background: var(--ink-2);
+  transition: height 0.45s var(--ease-out);
+}
+
+.wf-step {
+  position: relative;
+  z-index: 1;
+}
+
+.wf-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 52px;
+  padding: 8px 12px 8px 11px;
+  border-radius: 14px;
+  text-align: left;
+  color: var(--ink);
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.25s ease;
+}
+
+button.wf-row:focus-visible {
+  outline-offset: -2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .wf-step:not(.is-on) button.wf-row:hover {
+    background: color-mix(in oklch, var(--ink) 5%, transparent);
+  }
+}
+
+.wf-icon {
+  --r-icon: 8px;
+  position: relative;
+  width: 30px;
+  height: 30px;
+}
+
+.wf-logo {
+  background: #fff;
+  box-shadow:
+    inset 0 0 0 0.5px oklch(0 0 0 / 0.1),
+    0 2px 4px -2px oklch(0 0 0 / 0.3);
+}
+
+.wf-logo img {
+  width: 64%;
+  height: 64%;
+  object-fit: contain;
+}
+
+.wf-glyph svg {
+  width: 56%;
+  height: 56%;
+}
+
+.wf-glyph-check {
+  background: linear-gradient(180deg, #7dffe2, oklch(0.84 0.13 173));
+  color: var(--mint-ink);
+}
+
+.wf-glyph-chart {
+  background: linear-gradient(180deg, oklch(0.39 0.012 175), oklch(0.25 0.01 175));
+  color: #fff;
+}
+
+.wf-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.wf-name {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.wf-detail {
+  font-size: var(--text-xs);
+  line-height: 1.35;
+  color: var(--ink-2);
+}
+
+/* How long this step has left before the next one. */
+.wf-progress {
+  position: absolute;
+  left: 53px;
+  right: 12px;
+  bottom: 4px;
+  height: 2px;
+  overflow: hidden;
+  border-radius: 1px;
+  background: color-mix(in oklch, var(--ink) 8%, transparent);
+}
+
+.wf-progress::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: color-mix(in oklch, var(--ink) 34%, transparent);
+  transform-origin: 0 50%;
+  animation: wf-progress var(--ms) linear both;
+  animation-play-state: paused;
+}
+
+.wf-progress.is-live::after {
+  animation-play-state: running;
+}
+
+@keyframes wf-progress {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+/* ── Tall panels: the stage on top, the steps in two columns ─── */
+@container wf (aspect-ratio < 1.5) {
+  .wf-grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+    align-items: stretch;
+  }
+
+  .wf-side {
+    display: grid;
+    grid-template-columns: minmax(180px, 0.62fr) minmax(0, 2fr);
+    align-items: start;
+  }
+
+  .wf-tiles {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .wf-tile {
+    min-height: 0;
+  }
+
+  .wf-tile-name {
+    margin-top: 6px;
+  }
+
+  .wf-steps {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 2px;
+  }
+
+  .wf-thread {
+    display: none;
+  }
+}
+
+/* Narrow: everything in one column. */
+@container wf (max-width: 520px) {
+  .wf-side {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .wf-tiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .wf-steps {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wf-canvas .ws-scene {
+    transform: none;
+    transition:
+      opacity 0.2s ease,
+      visibility 0s linear 0.2s;
+  }
+
+  .wf-canvas .ws-scene.is-on {
+    transition:
+      opacity 0.2s ease,
+      visibility 0s;
+  }
+
+  .wf-lens,
+  .wf-thread::after,
+  .wf-run-ring,
+  .wf-tile {
+    transition: none;
+  }
+}

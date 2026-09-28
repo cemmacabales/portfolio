@@ -1,0 +1,93 @@
+/* ── Segmented control (iOS) ─────────────────────────────────── */
+.segmented {
+  position: relative;
+  display: inline-flex;
+  padding: 2px;
+  border-radius: 999px;
+  background: var(--tile-sunk);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.segment {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  height: 30px;
+  padding: 0 14px;
+  border-radius: 999px;
+  font-size: var(--text-xs);
+  font-weight: 500;
+  line-height: 1;
+  color: var(--ink-2);
+  transition:
+    color 0.25s ease,
+    font-weight 0.25s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Taller hit area than the drawn segment; the neighbors sit side by side, not above. */
+.segment::before {
+  content: '';
+  position: absolute;
+  inset: -7px 0;
+}
+
+.segment.is-on {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.segment:focus-visible {
+  outline-offset: 1px;
+}
+
+.segment-thumb {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  left: 0;
+  width: var(--w, 0);
+  border-radius: 999px;
+  background: var(--glass-lens);
+  box-shadow:
+    var(--glass-lens-shadow),
+    0 0 0 0.5px var(--glass-border);
+  transform: translateX(var(--x, 0));
+}
+
+.segment-thumb[data-glide] {
+  transition:
+    transform 0.45s var(--ease-out),
+    width 0.45s var(--ease-out);
+}
+
+/* The bold width is reserved up front, so selecting a segment never nudges its neighbors. */
+.segment-label {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.segment-label::after {
+  content: attr(data-label);
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  font-weight: 600;
+  pointer-events: none;
+  user-select: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .segment:not(.is-on):hover {
+    color: var(--ink);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .segment-thumb[data-glide] {
+    transition: none;
+  }
+}

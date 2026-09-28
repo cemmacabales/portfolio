@@ -8,6 +8,7 @@ import {
 import { Check, ChevronsUpDown, RotateCcw } from 'lucide-react'
 import { stack } from '../data/portfolio'
 import { usePageVisible } from '../hooks/useCycle'
+import Segmented from './Segmented'
 import { useBooted } from '../hooks/useBooted'
 import './StackTile.css'
 
@@ -16,43 +17,13 @@ const THUMB_SPRING = { type: 'spring', bounce: 0, duration: 0.45 }
 const byName = Object.fromEntries(stack.map((tool) => [tool.name, tool]))
 const glyph = (tool) => ({ '--icon': `url("${tool.icon}")`, '--tint': tool.tint || 'var(--ink)' })
 
-/* ── Filter: an iOS segmented control ─────────────────────────── */
+/* ── Filter: an iOS segmented control (Segmented.jsx) ──────────── */
 const GROUPS = [
   { id: 'all', label: 'All' },
   { id: 'ml', label: 'ML' },
   { id: 'web', label: 'Web' },
   { id: 'infra', label: 'Infra' },
 ]
-
-function Segmented({ value, onChange }) {
-  return (
-    <div className="segmented" role="group" aria-label="Highlight tools by area">
-      {GROUPS.map((group) => {
-        const on = group.id === value
-        return (
-          <button
-            key={group.id}
-            type="button"
-            className={`segment${on ? ' is-on' : ''}`}
-            aria-pressed={on}
-            onClick={() => onChange(group.id)}
-          >
-            {on && (
-              <motion.span
-                layoutId="stack-segment-thumb"
-                className="segment-thumb"
-                transition={THUMB_SPRING}
-              />
-            )}
-            <span className="segment-label" data-label={group.label}>
-              {group.label}
-            </span>
-          </button>
-        )
-      })}
-    </div>
-  )
-}
 
 /*
  * The Dock's magnification, in two dimensions: each icon grows with how close
@@ -386,7 +357,7 @@ export default function StackTile({ variants }) {
     <motion.article variants={variants} className="tile tile-stack">
       <div className="tile-head stack-head">
         <h3 className="stack-title">Tools I reach for</h3>
-        <Segmented value={filter} onChange={setFilter} />
+        <Segmented options={GROUPS} value={filter} onChange={setFilter} label="Highlight tools by area" />
       </div>
       <ToolGrid filter={filter} />
       <Pipeline />

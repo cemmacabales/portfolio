@@ -138,6 +138,35 @@ export const setup = {
   ],
 }
 
+// My setup's second view: how work moves across that desk, as two Shortcuts.
+// `app` picks each step's icon; the stage draws the step by its `id`. The
+// Colab picks and the thesis run (nnU-Net v2, 290 3D CT scans, A100) came
+// from Carl; the Space is his live one on Hugging Face.
+export const workflow = [
+  {
+    id: 'ship',
+    name: 'Ship a feature',
+    steps: [
+      { id: 'plan', app: 'claude', name: 'Plan it', detail: 'Claude Code drafts the plan. I edit it before any code.' },
+      { id: 'build', app: 'cursor', name: 'Build in parallel', detail: 'Agents in separate worktrees, steered in Cursor' },
+      { id: 'check', app: 'check', name: 'Check it runs', detail: 'Lint, build, and a real browser at three sizes' },
+      { id: 'review', app: 'codex', name: 'Get a second opinion', detail: 'Codex reviews every pull request before merge' },
+      { id: 'ship', app: 'netlify', name: 'Ship it', detail: 'Main deploys on Netlify. PostHog watches.' },
+    ],
+  },
+  {
+    id: 'train',
+    name: 'Train a model',
+    steps: [
+      { id: 'data', app: 'kaggle', name: 'Get the data', detail: 'Datasets from Kaggle, pulled straight into Colab' },
+      { id: 'gpu', app: 'colab', name: 'Pick the GPU', detail: 'T4 for light work, L4 for fine-tunes, A100 for heavy runs' },
+      { id: 'train', app: 'pytorch', name: 'Train', detail: 'My thesis: nnU-Net v2 on 290 3D CT scans, on an A100' },
+      { id: 'curves', app: 'chart', name: 'Read the curves', detail: 'Loss and Dice every epoch, before any number counts' },
+      { id: 'share', app: 'hf', name: 'Put it online', detail: 'Models from the Hub, demos as Gradio Spaces' },
+    ],
+  },
+]
+
 export const featured = {
   slug: 'centient',
   name: 'Centient',
