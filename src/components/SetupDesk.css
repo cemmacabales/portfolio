@@ -1,0 +1,871 @@
+/* ── The whole desk: a drawing, and the list it repeats ───────── */
+.desk {
+  --mat: oklch(0.925 0.004 175);
+  --deep-blue: oklch(0.38 0.055 262);
+  --deep-blue-hi: oklch(0.44 0.06 262);
+  /* A size container: whether the list sits beside or below the drawing
+     depends on the panel's shape, not only its width. */
+  container-type: size;
+  height: 100%;
+}
+
+:root[data-theme='dark'] .desk {
+  --mat: oklch(0.255 0.006 175);
+}
+
+.desk-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(250px, 280px);
+  grid-template-rows: minmax(0, 1fr);
+  align-items: center;
+  gap: 20px 24px;
+  height: 100%;
+}
+
+/* The drawing fills whatever its cell leaves it and keeps its proportions. */
+.desk-stage {
+  position: relative;
+  align-self: stretch;
+  min-height: 0;
+}
+
+.desk-stage-move {
+  position: absolute;
+  inset: 0;
+  transform-origin: 0 0;
+}
+
+.desk-scene {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  font-family: var(--font-sans);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── Focus: one object lit, the rest step back ───────────────── */
+.desk-scene .dev {
+  transition: opacity 0.45s var(--ease-out);
+}
+
+.desk-scene[data-active] .dev:not([data-lit]) {
+  opacity: 0.3;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .desk-scene .dev[data-dev]:not([data-dev='mat'], [data-dev='link']) {
+    cursor: pointer;
+  }
+}
+
+.dev-shadow {
+  fill: var(--rig-shadow);
+}
+
+.mat {
+  fill: var(--mat);
+  stroke: var(--mat);
+  stroke-width: 14;
+  stroke-linejoin: round;
+}
+
+.stand {
+  fill: var(--alu-lo);
+}
+
+/* ── Monitor ─────────────────────────────────────────────────── */
+.mon-body {
+  fill: #0e0f10;
+  stroke: oklch(0 0 0 / 0.25);
+  stroke-width: 0.8;
+}
+
+:root[data-theme='dark'] .mon-body {
+  stroke: oklch(1 0 0 / 0.12);
+}
+
+.mon-neck,
+.mon-base {
+  fill: oklch(0.32 0.004 175);
+}
+
+.mon-led {
+  fill: #fff;
+  opacity: 0.55;
+}
+
+.scr-menu rect {
+  fill: oklch(1 0 0 / 0.5);
+}
+
+.win-agent {
+  fill: #202423;
+}
+
+.agent-me {
+  fill: oklch(1 0 0 / 0.2);
+}
+
+.agent-them {
+  fill: oklch(1 0 0 / 0.09);
+}
+
+.agent-field {
+  fill: none;
+  stroke: oklch(1 0 0 / 0.22);
+  stroke-width: 0.6;
+}
+
+.win-safari {
+  fill: #f3f5f4;
+}
+
+.win-bar-light {
+  fill: #e4e8e6;
+}
+
+.url {
+  fill: oklch(0 0 0 / 0.08);
+}
+
+.site rect {
+  fill: #fff;
+  stroke: oklch(0 0 0 / 0.07);
+  stroke-width: 0.5;
+}
+
+.site .site-photo {
+  fill: #2e323d;
+  stroke: none;
+}
+
+.site .site-mint {
+  fill: #64ffda;
+  stroke: none;
+}
+
+.site .site-ink {
+  fill: oklch(0.2 0.008 175);
+  stroke: none;
+}
+
+.pointer {
+  transform: translate(318px, 150px);
+}
+
+.pointer-arrow {
+  fill: #fff;
+  stroke: #000;
+  stroke-width: 0.9;
+  stroke-linejoin: round;
+}
+
+.pointer-ring {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 1.2;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* Switching inputs: the Mac goes dark, a beat of black, then the PS5. */
+.scr-mac {
+  transition: opacity 0.45s var(--ease-out) 0.32s;
+}
+
+.scr-ps {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.mon-screen.is-ps5 .scr-mac {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.mon-screen.is-ps5 .scr-ps {
+  opacity: 1;
+  transition: opacity 0.5s var(--ease-out) 0.36s;
+}
+
+/* ── PS5 home screen ─────────────────────────────────────────── */
+.ps-art {
+  opacity: 0;
+  transform: scale(1.08);
+  transform-origin: 214px 120px;
+  transition:
+    opacity 0.6s var(--ease-out),
+    transform 3.2s linear;
+}
+
+.ps-art.is-on {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.ps-tab {
+  fill: #fff;
+  opacity: 0.6;
+  font-size: 7.5px;
+  font-weight: 600;
+}
+
+.ps-tab-on {
+  opacity: 1;
+}
+
+.ps-time {
+  fill: #fff;
+  opacity: 0.85;
+  font-size: 7px;
+  font-weight: 500;
+}
+
+.ps-icon {
+  transform: translate(var(--x), 28px) scale(0.84);
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 0.45s var(--ease-out);
+}
+
+.ps-icon.is-on {
+  transform: translate(var(--x), 26px) scale(1.14);
+}
+
+.ps-icon-ring {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 1.6;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.ps-icon.is-on .ps-icon-ring {
+  opacity: 1;
+}
+
+.ps-library > rect {
+  fill: oklch(1 0 0 / 0.16);
+}
+
+.ps-library-grid rect {
+  fill: #fff;
+  opacity: 0.85;
+}
+
+.ps-title {
+  fill: #fff;
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.ps-title.is-on {
+  opacity: 1;
+  transition: opacity 0.5s var(--ease-out) 0.1s;
+}
+
+.ps-play {
+  fill: #fff;
+}
+
+.ps-play-label {
+  fill: #000;
+  font-size: 8px;
+  font-weight: 600;
+}
+
+.ps-more {
+  fill: oklch(1 0 0 / 0.22);
+}
+
+.ps-more-dots circle {
+  fill: #fff;
+}
+
+/* The monitor's own on-screen display. */
+.osd rect {
+  fill: oklch(0.14 0 0 / 0.74);
+  stroke: oklch(1 0 0 / 0.18);
+  stroke-width: 0.6;
+}
+
+.osd text {
+  fill: #fff;
+  font-size: 8.5px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.osd {
+  animation: osd-in 0.35s var(--ease-out);
+}
+
+@keyframes osd-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+/* ── iPhone 17 Pro Max, Deep Blue ───────────────────────────── */
+.phone-rim {
+  fill: var(--deep-blue);
+}
+
+.phone-glass {
+  fill: #040507;
+}
+
+.phone-date {
+  fill: #fff;
+  opacity: 0.85;
+  font-size: 4.4px;
+  font-weight: 500;
+}
+
+.phone-clock {
+  fill: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.phone-btn {
+  fill: oklch(1 0 0 / 0.16);
+}
+
+.phone-window {
+  fill: var(--deep-blue-hi);
+  opacity: 0.7;
+}
+
+.phone-plateau {
+  fill: var(--deep-blue-hi);
+  stroke: oklch(1 0 0 / 0.16);
+  stroke-width: 0.5;
+}
+
+.lens-ring {
+  fill: #1a2030;
+  stroke: oklch(1 0 0 / 0.2);
+  stroke-width: 0.5;
+}
+
+.lens-glass {
+  fill: #05070c;
+}
+
+.lens-flash {
+  fill: #ece6d2;
+}
+
+.phone-spin {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.phone-back {
+  opacity: 0;
+}
+
+/* Turning around: squash to an edge, swap faces, open back out. */
+.phone.is-turned .phone-spin {
+  animation: phone-turn-a 0.62s var(--ease-soft);
+}
+
+.phone.is-unturned .phone-spin {
+  animation: phone-turn-b 0.62s var(--ease-soft);
+}
+
+.phone.is-turned .phone-front,
+.phone.is-unturned .phone-back {
+  opacity: 0;
+  transition: opacity 0s linear 0.26s;
+}
+
+.phone.is-turned .phone-back,
+.phone.is-unturned .phone-front {
+  opacity: 1;
+  transition: opacity 0s linear 0.26s;
+}
+
+.phone.is-unturned .phone-back {
+  opacity: 0;
+}
+
+@keyframes phone-turn-a {
+  0% {
+    transform: scaleX(1);
+  }
+  42% {
+    transform: scaleX(0.02) translateY(-3px);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes phone-turn-b {
+  0% {
+    transform: scaleX(1);
+  }
+  42% {
+    transform: scaleX(0.02) translateY(-3px);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+/* ── PlayStation 5, the launch model ─────────────────────────── */
+.ps5-core {
+  fill: #111215;
+}
+
+.ps5-foot {
+  fill: #1b1c1f;
+}
+
+.ps5-wing {
+  stroke: oklch(0 0 0 / 0.16);
+  stroke-width: 0.7;
+}
+
+:root[data-theme='dark'] .ps5-wing {
+  stroke: oklch(1 0 0 / 0.2);
+}
+
+.ps5-slot {
+  fill: none;
+  stroke: oklch(0 0 0 / 0.22);
+  stroke-width: 1;
+  stroke-linecap: round;
+}
+
+.ps5-bar {
+  stroke: oklch(0.96 0.01 250 / 0.5);
+  stroke-width: 1.3;
+  stroke-linecap: round;
+  transition: stroke 0.6s ease;
+}
+
+.ps5.is-on .ps5-bar {
+  stroke: oklch(0.99 0.005 250);
+  animation: ps5-boot 1.4s var(--ease-out);
+}
+
+@keyframes ps5-boot {
+  0% {
+    stroke: oklch(0.62 0.19 258 / 0.3);
+  }
+  35% {
+    stroke: oklch(0.66 0.19 258);
+  }
+}
+
+.ps5-port {
+  fill: #2b2d32;
+}
+
+/* ── MCHOSE G75, black ───────────────────────────────────────── */
+.kb-case {
+  fill: #1a1b1e;
+  stroke: #1a1b1e;
+  stroke-width: 6;
+  stroke-linejoin: round;
+}
+
+.kb-front {
+  fill: #0d0e10;
+  stroke: #0d0e10;
+  stroke-width: 4;
+  stroke-linejoin: round;
+}
+
+:root[data-theme='dark'] .kb-case {
+  stroke: #2a2b30;
+}
+
+.kb-skirt {
+  fill: #0b0c0e;
+}
+
+.kb-cap {
+  fill: #2d2e33;
+}
+
+.desk-scene[data-active='keyboard'] .kb-cap {
+  animation: key-press 2.4s var(--ease-out) infinite;
+  animation-delay: calc(var(--c) * 32ms + var(--r) * 24ms);
+}
+
+@keyframes key-press {
+  0%,
+  16%,
+  100% {
+    transform: none;
+    fill: #2d2e33;
+  }
+  6% {
+    transform: translateY(1.4px);
+    fill: #45474e;
+  }
+}
+
+/* ── UGREEN vertical mouse ───────────────────────────────────── */
+.mouse-body {
+  fill: #1c1d20;
+}
+
+:root[data-theme='dark'] .mouse-body {
+  stroke: oklch(1 0 0 / 0.14);
+  stroke-width: 0.6;
+}
+
+.mouse-palm {
+  fill: oklch(1 0 0 / 0.08);
+}
+
+.mouse-seam {
+  fill: none;
+  stroke: oklch(1 0 0 / 0.24);
+  stroke-width: 0.8;
+  stroke-linecap: round;
+}
+
+.mouse-wheel {
+  fill: #3c3e44;
+}
+
+.mouse-side {
+  fill: #35373c;
+}
+
+/* Pointing at the mouse sends the pointer on a short errand. */
+.desk-scene[data-active='mouse'] .pointer {
+  animation: pointer-tour 3s var(--ease-soft) infinite;
+}
+
+.desk-scene[data-active='mouse'] .pointer-ring {
+  animation: pointer-click 3s ease-out infinite;
+}
+
+.desk-scene[data-active='mouse'] .mouse-click {
+  animation: mouse-click 3s ease-out infinite;
+}
+
+@keyframes pointer-tour {
+  0%,
+  100% {
+    transform: translate(318px, 150px);
+  }
+  28%,
+  40% {
+    transform: translate(300px, 104px);
+  }
+  66%,
+  78% {
+    transform: translate(112px, 62px);
+  }
+}
+
+@keyframes pointer-click {
+  0%,
+  29%,
+  41%,
+  67%,
+  79%,
+  100% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  32%,
+  70% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  38%,
+  76% {
+    opacity: 0;
+    transform: scale(1.6);
+  }
+}
+
+@keyframes mouse-click {
+  0%,
+  28%,
+  34%,
+  66%,
+  72%,
+  100% {
+    transform: none;
+  }
+  30%,
+  68% {
+    transform: translate(0.5px, 0.8px);
+  }
+}
+
+/* ── The list ────────────────────────────────────────────────── */
+.gear {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px;
+  border-radius: var(--r-inner);
+  background: var(--tile-sunk);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+@supports (corner-shape: squircle) {
+  .gear {
+    corner-shape: squircle;
+    border-radius: calc(var(--r-inner) * 1.75);
+  }
+}
+
+/* One lens that glides to whichever row is lit. */
+.gear-lens {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--w, 0);
+  height: var(--h, 0);
+  border-radius: 14px;
+  background: var(--glass-lens);
+  box-shadow:
+    var(--glass-lens-shadow),
+    0 0 0 0.5px var(--glass-border);
+  opacity: 0;
+  transform: translate(var(--x, 0), var(--y, 0));
+  transition:
+    transform 0.45s var(--ease-out),
+    width 0.45s var(--ease-out),
+    height 0.45s var(--ease-out),
+    opacity 0.25s ease;
+  pointer-events: none;
+}
+
+.gear-lens.is-on {
+  opacity: 1;
+}
+
+.gear-item {
+  position: relative;
+  z-index: 1;
+}
+
+.gear-row {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1px;
+  width: 100%;
+  min-height: 50px;
+  padding: 8px 12px;
+  border-radius: 14px;
+  text-align: left;
+  color: var(--ink);
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.25s ease;
+}
+
+.gear-row:focus-visible {
+  outline-offset: -2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .gear-row:not(.is-on):hover {
+    background: color-mix(in oklch, var(--ink) 5%, transparent);
+  }
+}
+
+.gear-name {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.gear-detail {
+  font-size: var(--text-xs);
+  line-height: 1.35;
+  color: var(--ink-2);
+  animation: gear-detail-in 0.4s var(--ease-out);
+}
+
+@keyframes gear-detail-in {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+}
+
+/* Accessories sit at the row's trailing edge, over its padding. */
+.gear-mac .gear-row {
+  padding-right: 84px;
+}
+
+.gear-phone .gear-row {
+  padding-right: 40px;
+}
+
+.gear-ps5 .gear-row {
+  padding-right: 110px;
+}
+
+.gear-apps,
+.gear-swatch,
+.gear-games {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+}
+
+.gear-apps {
+  display: flex;
+  gap: 5px;
+  pointer-events: none;
+}
+
+.gear-apps .app-icon {
+  --r-icon: 5.5px;
+  width: 20px;
+  height: 20px;
+  box-shadow:
+    inset 0 0 0 0.5px oklch(1 0 0 / 0.12),
+    0 1px 2px oklch(0 0 0 / 0.25);
+}
+
+/* Apple's color swatch: the finish, ringed in the tile's own line. */
+.gear-swatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, var(--deep-blue-hi), var(--deep-blue) 70%);
+  box-shadow:
+    0 0 0 2px var(--tile-sunk),
+    0 0 0 3px var(--line-strong);
+  pointer-events: none;
+}
+
+.gear-games {
+  display: flex;
+  gap: 6px;
+  z-index: 2;
+}
+
+.gear-game {
+  --r-cover: 6px;
+  display: block;
+  width: 26px;
+  height: 32px;
+  border-radius: var(--r-cover);
+  overflow: hidden;
+  box-shadow:
+    0 0 0 0.5px oklch(0 0 0 / 0.2),
+    0 2px 5px -2px oklch(0 0 0 / 0.4);
+  transition:
+    transform 0.4s var(--ease-out),
+    box-shadow 0.3s ease;
+}
+
+.gear-game img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gear-game.is-on {
+  transform: translateY(-2px) scale(1.1);
+  box-shadow:
+    0 0 0 2px var(--tile-sunk),
+    0 0 0 3.5px var(--ink),
+    0 6px 12px -4px oklch(0 0 0 / 0.45);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .gear-game:not(.is-on):hover {
+    transform: translateY(-1px) scale(1.05);
+  }
+}
+
+.gear-game:focus-visible {
+  outline-offset: 3px;
+}
+
+/* Fingers need bigger covers than a pointer does. */
+@media (pointer: coarse) {
+  .gear-ps5 .gear-row {
+    min-height: 60px;
+    padding-right: 140px;
+  }
+
+  .gear-games {
+    gap: 8px;
+  }
+
+  .gear-game {
+    width: 36px;
+    height: 44px;
+  }
+}
+
+/* ── Tall panels: the drawing on top, the list in two columns ── */
+@container (aspect-ratio < 1.5) {
+  .desk-grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+    align-items: stretch;
+  }
+
+  .gear {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 2px;
+  }
+
+  .gear-ps5 {
+    grid-column: 1 / -1;
+  }
+}
+
+@container (max-width: 520px) {
+  .desk .gear {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .desk-scene .dev,
+  .gear-lens,
+  .gear-game,
+  .ps-art,
+  .ps-icon,
+  .scr-mac,
+  .scr-ps {
+    transition: none;
+  }
+
+  .ps-art {
+    transform: none;
+  }
+
+  .desk-scene[data-active] .kb-cap,
+  .desk-scene[data-active] .pointer,
+  .desk-scene[data-active] .pointer-ring,
+  .desk-scene[data-active] .mouse-click,
+  .phone .phone-spin,
+  .ps5.is-on .ps5-bar,
+  .osd,
+  .gear-detail {
+    animation: none;
+  }
+}

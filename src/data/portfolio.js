@@ -19,6 +19,9 @@ import BarongPhoto from '../assets/me-barong.jpg'
 import IpsaPhoto from '../assets/me-ipsa.jpg'
 import IcipcnCert from '../assets/cert-icipcn.webp'
 import CspaCert from '../assets/cert-cspa.webp'
+import SpiderMan2Cover from '../assets/games/spiderman-2.webp'
+import Gt7Cover from '../assets/games/gt7.webp'
+import RagnarokCover from '../assets/games/ragnarok.webp'
 
 import pythonIcon from 'devicon/icons/python/python-plain.svg'
 import pytorchIcon from 'devicon/icons/pytorch/pytorch-original.svg'
@@ -115,6 +118,23 @@ export const setup = {
     { id: 'claude', name: 'Claude Code', role: 'Agent' },
     { id: 'codex', name: 'Codex', role: 'Agent' },
     { id: 'cursor', name: 'Cursor', role: 'Editor' },
+  ],
+  // The whole desk, shown when the tile expands, in the order the list reads.
+  gear: [
+    { id: 'mac', name: 'MacBook Air', detail: 'Apple M2 · 8 GB memory' },
+    { id: 'monitor', name: 'LG 27″ monitor', detail: '1440p · 120 Hz' },
+    { id: 'keyboard', name: 'MCHOSE G75', detail: 'Black · Cabbage Tofu switches' },
+    { id: 'mouse', name: 'UGREEN vertical mouse', detail: 'Ergonomic grip' },
+    { id: 'pi', name: 'Raspberry Pi', detail: 'Storage server' },
+    { id: 'phone', name: 'iPhone 17 Pro Max', detail: 'Deep Blue' },
+    { id: 'ps5', name: 'PlayStation 5', detail: 'On rotation' },
+  ],
+  // Carl's favorites, shown on the PS5 home screen. Covers via Wikipedia;
+  // `size` is each cover's pixels and `focus` how far down its best band sits.
+  games: [
+    { id: 'spiderman-2', title: 'Marvel’s Spider-Man 2', cover: SpiderMan2Cover, size: [288, 346], focus: 0.6 },
+    { id: 'gt7', title: 'Gran Turismo 7', cover: Gt7Cover, size: [273, 365], focus: 0.5 },
+    { id: 'ragnarok', title: 'God of War Ragnarök', cover: RagnarokCover, size: [287, 352], focus: 0.56 },
   ],
 }
 

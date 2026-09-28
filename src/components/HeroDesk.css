@@ -1,0 +1,324 @@
+/*
+ * The hero's last row, and My setup taking it over. HeroDesk writes one
+ * number, --p, to the row (0 = at rest, 1 = the whole desk out), and
+ * everything below reads it: the Stage Manager thumbnails, the growing
+ * frame, the reveal, the camera pull-back. Nothing here animates on its own.
+ */
+@property --tilt {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@property --pop {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 1;
+}
+
+.hero-desk {
+  --p: 0;
+  --head-h: 57px;
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gap);
+  min-width: 0;
+}
+
+/* Each slot is a plain box around its tile, so the tile's own entrance stays its own. */
+.desk-slot,
+.desk-setup {
+  display: grid;
+  min-width: 0;
+}
+
+.hero-stack .desk-setup {
+  flex: 1 0 auto;
+}
+
+/* ── Stage Manager: the other two shrink into the strip ──────── */
+.hero-desk[data-stage] .desk-slot {
+  --tilt: 22deg;
+  --pop: 1;
+  position: relative;
+  z-index: 4;
+  transform-origin: 0 50%;
+  transform: translate(calc(var(--p) * var(--dx, 0) * 1px), calc(var(--p) * var(--dy, 0) * 1px))
+    perspective(420px) rotateY(calc(var(--p) * var(--tilt)))
+    scale(calc((1 + var(--p) * (var(--s, 1) - 1)) * var(--pop)));
+  transition:
+    --tilt 0.55s var(--ease-out),
+    --pop 0.55s var(--ease-out);
+  will-change: transform;
+}
+
+/* Pointing at a thumbnail turns it to face you, the way Stage Manager does. */
+.hero-desk[data-stage] .desk-slot.is-peek {
+  --tilt: 0deg;
+  --pop: 1.05;
+}
+
+/* A float shadow that only exists off the page. */
+.hero-desk[data-stage] .desk-slot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: var(--r-tile);
+  box-shadow:
+    0 60px 90px -30px oklch(0.2 0.02 175 / 0.5),
+    0 10px 24px -10px oklch(0.2 0.02 175 / 0.3);
+  opacity: var(--p);
+  pointer-events: none;
+}
+
+:root[data-theme='dark'] .hero-desk[data-stage] .desk-slot::after {
+  box-shadow:
+    0 60px 90px -30px oklch(0 0 0 / 0.8),
+    0 10px 24px -10px oklch(0 0 0 / 0.6);
+}
+
+/* The small tile hands over: its surface goes, its contents fade fast. */
+.hero-desk[data-stage] .desk-setup {
+  position: relative;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.hero-desk[data-stage] .tile-setup {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.hero-desk[data-stage] .tile-setup > * {
+  opacity: clamp(0, 1 - var(--p) * 14, 1);
+}
+
+/* ── The panel: a frame that grows, and the desk it uncovers ─── */
+.setup-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  visibility: hidden;
+}
+
+.setup-panel[data-ready] {
+  visibility: visible;
+}
+
+.setup-panel-frame {
+  position: absolute;
+  left: calc(var(--fx, 0) * (1 - var(--p)) * 1px);
+  top: calc(var(--fy, 0) * (1 - var(--p)) * 1px);
+  width: calc((var(--fw, 0) + (var(--pw, 0) - var(--fw, 0)) * var(--p)) * 1px);
+  height: calc((var(--fh, 0) + (var(--ph, 0) - var(--fh, 0)) * var(--p)) * 1px);
+  background: var(--tile);
+  border: 1px solid var(--line);
+  border-radius: var(--r-tile);
+  /* It lifts off the page while it grows, and settles back when it lands. */
+  box-shadow:
+    var(--shadow-tile),
+    0 36px 80px -36px oklch(0.2 0.02 175 / calc(var(--p) * (1 - var(--p)) * 1.4));
+  overflow: hidden;
+}
+
+@supports (corner-shape: squircle) {
+  .setup-panel-frame {
+    corner-shape: squircle;
+    border-radius: calc(var(--r-tile) * 1.75);
+  }
+}
+
+/* The + turns into a close button as the frame opens. */
+.setup-panel .setup-close svg {
+  transform: rotate(calc(var(--p) * 45deg));
+}
+
+.setup-panel-body {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  padding: calc(var(--head-h) + 14px) var(--pad-tile) var(--pad-tile);
+  clip-path: inset(
+    calc(var(--fy, 0) * (1 - var(--p)) * 1px + var(--head-h))
+      calc(var(--fr, 0) * (1 - var(--p)) * 1px + 1px)
+      calc(var(--fb, 0) * (1 - var(--p)) * 1px + 1px)
+      calc(var(--fx, 0) * (1 - var(--p)) * 1px + 1px)
+      round 0 0 calc(var(--r-tile) - 1px) calc(var(--r-tile) - 1px)
+  );
+}
+
+/* The pull-back: the desk starts with its MacBook on the tile's MacBook. */
+.setup-panel .desk-stage-move {
+  transform: translate(calc(var(--tx, 0) * (1 - var(--p)) * 1px), calc(var(--ty, 0) * (1 - var(--p)) * 1px))
+    scale(calc(var(--m, 1) + (1 - var(--m, 1)) * var(--p)));
+}
+
+/* What the small tile never showed arrives as the camera pulls back. */
+.setup-panel .desk-more {
+  opacity: clamp(0, (var(--p) - 0.05) * 2.4, 1);
+}
+
+/*
+ * The list arrives in two beats: its solid panel first, quickly, so the
+ * drawing still zooming beneath it is covered, then the rows on top of that.
+ * Rows fading straight over the drawing read as a double exposure.
+ */
+.setup-panel .gear {
+  opacity: clamp(0, (var(--p) - 0.5) * 10, 1);
+  transform: translateY(calc((1 - var(--p)) * 24px));
+}
+
+.setup-panel .gear > .gear-item {
+  opacity: clamp(0, (var(--p) - 0.6) * 4, 1);
+}
+
+/* ── Thumbnails: each one is also a way back ─────────────────── */
+.desk-restore {
+  position: absolute;
+  z-index: 5;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  border-radius: 16px;
+  opacity: clamp(0, (var(--p) - 0.8) * 5, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.desk-restore:focus-visible {
+  outline-offset: 4px;
+}
+
+.desk-restore-label {
+  font-size: var(--text-xs);
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--ink-2);
+  transition: color 0.25s ease;
+}
+
+.desk-restore:hover .desk-restore-label,
+.desk-restore:focus-visible .desk-restore-label {
+  color: var(--ink);
+}
+
+/* ── Stacked layouts: an iOS sheet ───────────────────────────── */
+.setup-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.setup-sheet-backdrop {
+  position: absolute;
+  inset: 0;
+  background: oklch(0.2 0.02 175 / 0.34);
+}
+
+:root[data-theme='dark'] .setup-sheet-backdrop {
+  background: oklch(0 0 0 / 0.55);
+}
+
+.setup-sheet-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 760px);
+  max-height: calc(100dvh - 20px);
+  background: var(--tile);
+  border: 1px solid var(--line);
+  border-bottom: 0;
+  border-radius: var(--r-tile) var(--r-tile) 0 0;
+  box-shadow: var(--shadow-float);
+  overflow: hidden;
+}
+
+.setup-sheet-grab {
+  flex-shrink: 0;
+  touch-action: none;
+  cursor: grab;
+}
+
+.setup-sheet-grab:active {
+  cursor: grabbing;
+}
+
+.setup-sheet-handle {
+  display: block;
+  width: 36px;
+  height: 5px;
+  margin: 8px auto 0;
+  border-radius: 3px;
+  background: var(--line-strong);
+}
+
+.setup-sheet .setup-head {
+  padding-top: 10px;
+}
+
+.setup-sheet .setup-close svg {
+  transform: rotate(45deg);
+}
+
+.setup-sheet-body {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--pad-tile) var(--pad-tile) calc(var(--pad-tile) + env(safe-area-inset-bottom));
+}
+
+.desk-sheet {
+  container-type: inline-size;
+  height: auto;
+}
+
+.desk-sheet .desk-grid {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  align-items: stretch;
+  height: auto;
+}
+
+.desk-sheet .gear {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 2px;
+}
+
+.desk-sheet .gear-ps5 {
+  grid-column: 1 / -1;
+}
+
+.desk-sheet .desk-stage {
+  aspect-ratio: 1000 / 490;
+}
+
+/* ── Stacked rows ────────────────────────────────────────────── */
+@media (max-width: 960px) {
+  .hero-desk {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-desk[data-stage] .desk-slot {
+    transition: none;
+  }
+
+  .setup-panel[data-ready] {
+    animation: setup-fade 0.25s ease;
+  }
+}
+
+@keyframes setup-fade {
+  from {
+    opacity: 0;
+  }
+}

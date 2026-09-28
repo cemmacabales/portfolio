@@ -8,7 +8,7 @@
   grid-template-areas:
     'main main main main main main main main side side side side'
     'feat feat feat feat feat feat feat feat feat feat feat feat'
-    'about about about about about about stack stack stack stack stack stack';
+    'desk desk desk desk desk desk desk desk desk desk desk desk';
   gap: var(--gap);
 }
 
@@ -24,12 +24,8 @@
   grid-area: feat;
 }
 
-.tile-about {
-  grid-area: about;
-}
-
-.hero-stack {
-  grid-area: stack;
+.hero-desk {
+  grid-area: desk;
 }
 
 /* ── Main tile: copy + inset portrait ────────────────────────── */
@@ -859,10 +855,6 @@
   min-width: 0;
 }
 
-.hero-stack .tile-setup {
-  flex: 1 0 auto;
-}
-
 /* ── Responsive ──────────────────────────────────────────────── */
 @media (max-width: 1279px) {
   .hero-grid {
@@ -871,7 +863,7 @@
       'main main'
       'side side'
       'feat feat'
-      'about stack';
+      'desk desk';
   }
 
   .hero-side {
@@ -886,8 +878,7 @@
       'main main'
       'side side'
       'feat feat'
-      'about about'
-      'stack stack';
+      'desk desk';
   }
 
   .tile-featured {
@@ -913,8 +904,7 @@
       'main'
       'side'
       'feat'
-      'about'
-      'stack';
+      'desk';
   }
 
   .tile-main {

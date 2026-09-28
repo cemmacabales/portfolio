@@ -2,9 +2,7 @@ import { Fragment, useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence, useInView, useReducedMotion } from 'framer-motion' // eslint-disable-line no-unused-vars
 import { ArrowUpRight, ArrowDown, MessageCircle, Github, Trophy, Pause, Play } from 'lucide-react'
 import ShapeWaves from './ShapeWaves'
-import AboutTile from './AboutTile'
-import SocialTile from './SocialTile'
-import SetupTile from './SetupTile'
+import HeroDesk from './HeroDesk'
 import GradPhoto from '../assets/me.jpeg'
 import BarongPhoto from '../assets/me-barong.jpg'
 import ResumePage from '../assets/resume-page.jpg'
@@ -502,13 +500,8 @@ export default function HeroBento({ theme, showField, onOpenProject, onAskAssist
           <CentientReel screens={featured.screens} />
         </motion.article>
 
-        <AboutTile variants={rise} />
-
-        {/* ── Beside it: where to find me, and what I work on ────── */}
-        <div className="hero-stack">
-          <SocialTile variants={rise} />
-          <SetupTile variants={rise} />
-        </div>
+        {/* ── Hobbies, beside where to find me and what I work on ── */}
+        <HeroDesk variants={rise} />
       </motion.div>
     </section>
   )
