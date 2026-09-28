@@ -126,7 +126,7 @@ export const setup = {
     { id: 'keyboard', name: 'MCHOSE G75', detail: 'Black · Cabbage Tofu switches' },
     { id: 'mouse', name: 'UGREEN vertical mouse', detail: 'Ergonomic grip' },
     { id: 'pi', name: 'Raspberry Pi', detail: 'Storage server' },
-    { id: 'phone', name: 'iPhone 17 Pro Max', detail: 'Deep Blue' },
+    { id: 'phone', name: 'iPhone 17 Pro Max', detail: '12 GB · 256 GB' },
     { id: 'ps5', name: 'PlayStation 5', detail: 'On rotation' },
   ],
   // Carl's favorites, shown on the PS5 home screen. Covers via Wikipedia;
