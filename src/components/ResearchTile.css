@@ -208,6 +208,7 @@
   display: block;
   overflow: hidden;
   isolation: isolate;
+  border-radius: 14px;
   background: oklch(1 0 0);
   box-shadow:
     0 0 0 1px var(--rs-card-ring),
@@ -230,6 +231,11 @@
   border-radius: inherit;
   background: var(--rs-dim);
   pointer-events: none;
+}
+
+/* Out in Quick Look: the wallet keeps its place but shows nothing there. */
+.rs-card.is-lifted .rs-lift {
+  visibility: hidden;
 }
 
 /* One pass of light across a certificate as it's dealt to the front. */

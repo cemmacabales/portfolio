@@ -1,9 +1,11 @@
-import { useCallback, useEffect, useId, useRef, useState } from 'react'
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import {
   motion, // eslint-disable-line no-unused-vars
   AnimatePresence,
+  animate,
   useInView,
+  usePresence,
   useReducedMotion,
 } from 'framer-motion'
 import { ArrowUpRight, Maximize2, X } from 'lucide-react'
@@ -39,14 +41,75 @@ function CalendarIcon({ date }) {
   )
 }
 
+// Useless on the server, where there's nothing to measure before paint.
+const useIsoLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect
+
+// Where the sheet is laid out, ignoring any zoom transform it has mid-flight.
+function layoutBox(el) {
+  const transform = el.style.transform
+  el.style.transform = 'none'
+  const box = el.getBoundingClientRect()
+  el.style.transform = transform
+  return box
+}
+
+/*
+ * The transform that puts the Quick Look sheet (laid out at `to`) exactly
+ * over the certificate in the wallet (`from`), corners included.
+ */
+function overCard(from, to) {
+  const scale = from.width / to.width
+  return { x: from.left - to.left, y: from.top - to.top, scale, borderRadius: 14 / scale }
+}
+
 /*
  * Quick Look: the certificate lifts out of the wallet and grows to fill the
  * screen, with the paper's full title under it. Esc, the backdrop, or the
  * close button put it back.
+ *
+ * The zoom is measured by hand rather than with a shared layoutId. A layoutId
+ * in the wallet gets remeasured on every render, and under the stack's own
+ * transforms Framer reads the tucked certificate's position wrong and
+ * "corrects" it with a jump, so it flickered on every hover.
  */
-function QuickLook({ item, uid, onClose }) {
+function QuickLook({ item, uid, onClose, getOrigin }) {
   const closeRef = useRef(null)
   const linkRef = useRef(null)
+  const sheetRef = useRef(null)
+  const reduce = useReducedMotion()
+  const [isPresent, safeToRemove] = usePresence()
+
+  // Grow out of the certificate in the wallet.
+  useIsoLayoutEffect(() => {
+    const sheet = sheetRef.current
+    const from = getOrigin()
+    if (!sheet || !from || reduce) return
+    const start = overCard(from, layoutBox(sheet))
+    sheet.style.transform = `translate(${start.x}px, ${start.y}px) scale(${start.scale})`
+    sheet.style.borderRadius = `${start.borderRadius}px`
+    const controls = animate(
+      sheet,
+      { x: [start.x, 0], y: [start.y, 0], scale: [start.scale, 1], borderRadius: [start.borderRadius, 16] },
+      SHEET_SPRING
+    )
+    return () => controls.stop()
+    // Measured once, on open.
+  }, [])
+
+  // And shrink back into it, wherever it sits now, before leaving.
+  useEffect(() => {
+    if (isPresent) return undefined
+    const sheet = sheetRef.current
+    const from = getOrigin()
+    if (!sheet || !from || reduce) {
+      safeToRemove()
+      return undefined
+    }
+    const end = overCard(from, layoutBox(sheet))
+    const controls = animate(sheet, end, SHEET_SPRING)
+    controls.then(safeToRemove)
+    return () => controls.stop()
+  }, [isPresent, safeToRemove, getOrigin, reduce])
 
   useEffect(() => {
     closeRef.current?.focus()
@@ -85,10 +148,12 @@ function QuickLook({ item, uid, onClose }) {
       />
       <div className="rs-ql-body">
         <motion.div
-          layoutId={`${uid}-sheet-${item.id}`}
+          ref={sheetRef}
           className="rs-sheet rs-ql-sheet"
-          style={{ borderRadius: 16 }}
-          transition={SHEET_SPRING}
+          style={{ borderRadius: 16, transformOrigin: '0 0' }}
+          initial={reduce ? { opacity: 0 } : false}
+          animate={reduce ? { opacity: 1 } : undefined}
+          exit={reduce ? { opacity: 0 } : undefined}
         >
           <img src={item.cert} alt={item.certAlt} draggable="false" />
         </motion.div>
@@ -146,6 +211,8 @@ export default function ResearchTile({ variants }) {
   const inView = useInView(ref, { amount: 0.4 })
   const [held, setHeld] = useState(false)
   const [open, setOpen] = useState(null)
+  // The certificate out in Quick Look, hidden in the wallet until it's back.
+  const [lifted, setLifted] = useState(null)
   const [mounted, setMounted] = useState(false)
 
   const [front, setFront] = useState(0)
@@ -178,6 +245,11 @@ export default function ResearchTile({ variants }) {
     event.preventDefault()
     select(next, { focus: true })
   }
+
+  const getOrigin = useCallback(() => {
+    const index = research.findIndex((item) => item.id === lifted)
+    return cards.current[index]?.querySelector('.rs-sheet')?.getBoundingClientRect()
+  }, [lifted])
 
   const close = useCallback(() => {
     const index = research.findIndex((item) => item.id === open)
@@ -299,7 +371,9 @@ export default function ResearchTile({ variants }) {
                   cards.current[i] = el
                 }}
                 type="button"
-                className={`rs-card${isFront ? ' is-front' : ''}${leaving ? ' is-leaving' : ''}`}
+                className={`rs-card${isFront ? ' is-front' : ''}${leaving ? ' is-leaving' : ''}${
+                  lifted === item.id ? ' is-lifted' : ''
+                }`}
                 style={{ zIndex: leaving ? COUNT + 1 : COUNT - depth }}
                 initial={false}
                 animate={animate}
@@ -310,34 +384,27 @@ export default function ResearchTile({ variants }) {
                 tabIndex={isFront ? 0 : -1}
                 aria-hidden={isFront ? undefined : true}
                 aria-label={isFront ? `Open the ${item.title} certificate` : undefined}
-                onClick={() => (isFront ? setOpen(item.id) : select(i))}
+                onClick={() => {
+                  if (!isFront) return select(i)
+                  setLifted(item.id)
+                  setOpen(item.id)
+                }}
               >
                 <span className="rs-lift">
-                  {open !== item.id && (
+                  <span className="rs-sheet">
+                    <img src={item.cert} alt="" loading="lazy" decoding="async" draggable="false" />
                     <motion.span
-                      layoutId={`${uid}-sheet-${item.id}`}
-                      className="rs-sheet"
-                      style={{ borderRadius: 14 }}
-                      transition={SHEET_SPRING}
-                    >
-                      <img src={item.cert} alt="" loading="lazy" decoding="async" draggable="false" />
-                      <motion.span
-                        className="rs-dim"
-                        initial={false}
-                        animate={{ opacity: isFront ? 0 : 1 }}
-                        transition={{ duration: reduce ? 0 : 0.3, ease: EASE }}
-                      />
-                      {isFront && !reduce && shuffle.n > 0 && (
-                        <span key={shuffle.n} className="rs-sheen" />
-                      )}
-                    </motion.span>
-                  )}
-                  {open !== item.id && (
-                    <span className="rs-peek-hint" aria-hidden="true">
-                      <Maximize2 size={13} strokeWidth={2.2} />
-                      <span className="rs-peek-label">Quick Look</span>
-                    </span>
-                  )}
+                      className="rs-dim"
+                      initial={false}
+                      animate={{ opacity: isFront ? 0 : 1 }}
+                      transition={{ duration: reduce ? 0 : 0.3, ease: EASE }}
+                    />
+                    {isFront && !reduce && shuffle.n > 0 && <span key={shuffle.n} className="rs-sheen" />}
+                  </span>
+                  <span className="rs-peek-hint" aria-hidden="true">
+                    <Maximize2 size={13} strokeWidth={2.2} />
+                    <span className="rs-peek-label">Quick Look</span>
+                  </span>
                 </span>
               </motion.button>
             )
@@ -373,13 +440,14 @@ export default function ResearchTile({ variants }) {
 
       {mounted &&
         createPortal(
-          <AnimatePresence>
+          <AnimatePresence onExitComplete={() => setLifted(null)}>
             {open != null && (
               <QuickLook
                 key={open}
                 item={research.find((item) => item.id === open)}
                 uid={uid}
                 onClose={close}
+                getOrigin={getOrigin}
               />
             )}
           </AnimatePresence>,
