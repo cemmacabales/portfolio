@@ -8,7 +8,7 @@ import {
 } from 'framer-motion'
 import { ArrowUpRight, Maximize2, X } from 'lucide-react'
 import { research } from '../data/portfolio'
-import { useCycle, usePageVisible } from '../hooks/useCycle'
+import { usePageVisible } from '../hooks/useCycle'
 import './ResearchTile.css'
 
 const EASE = [0.16, 1, 0.3, 1]
@@ -26,7 +26,7 @@ const PEEK = 14
  * only a strip shows above, the way Wallet stacks passes.
  */
 function pose(depth) {
-  return { y: -PEEK * depth, scale: 1 - 0.06 * depth, zIndex: COUNT - depth }
+  return { y: -PEEK * depth, scale: 1 - 0.06 * depth }
 }
 
 // The day each paper was presented, drawn as the Calendar app icon.
@@ -132,8 +132,8 @@ function QuickLook({ item, uid, onClose }) {
 /* ── Research ────────────────────────────────────────────────── */
 /*
  * The papers as an inset list over a Wallet of their certificates. Picking a
- * paper (or letting the tile cycle) deals its certificate to the front; the
- * one it replaces tucks under and comes back up behind. Clicking the front
+ * paper (or letting the tile cycle) brings its certificate forward while the
+ * one it replaces drops away and reappears at the back. Clicking the front
  * certificate opens it in Quick Look.
  */
 export default function ResearchTile({ variants }) {
@@ -148,21 +148,17 @@ export default function ResearchTile({ variants }) {
   const [open, setOpen] = useState(null)
   const [mounted, setMounted] = useState(false)
 
-  const running = inView && !held && open == null
-  const [front, setFront] = useCycle(COUNT, INTERVAL, running)
-  const cycling = running && pageVisible && !reduce
+  const [front, setFront] = useState(0)
+  /*
+   * The active page dot's fill is the timer: the next paper comes up when its
+   * animation ends. Pausing the animation pauses the cycle, so a hover holds
+   * the fill where it is and leaving picks up from there instead of resetting.
+   */
+  const playing = inView && !held && open == null && pageVisible
 
-  // Which certificate just left the front, so only it plays the tuck-under.
+  // Which certificate just left the front, so only it plays the drop-away.
   const [shuffle, setShuffle] = useState({ front, from: null, n: 0 })
   if (shuffle.front !== front) setShuffle({ front, from: shuffle.front, n: shuffle.n + 1 })
-
-  // Restart the pager's fill each time cycling resumes, so it matches the timer.
-  const [run, setRun] = useState(0)
-  const [wasCycling, setWasCycling] = useState(cycling)
-  if (wasCycling !== cycling) {
-    setWasCycling(cycling)
-    if (cycling) setRun(run + 1)
-  }
 
   // The Quick Look portal only exists in the browser, after hydration.
   useEffect(() => setMounted(true), [])
@@ -215,7 +211,7 @@ export default function ResearchTile({ variants }) {
       className="tile tile-research"
       onPointerEnter={(event) => event.pointerType === 'mouse' && setHeld(true)}
       onPointerLeave={(event) => event.pointerType === 'mouse' && setHeld(false)}
-      onFocus={() => setHeld(true)}
+      onFocus={(event) => event.target.matches(':focus-visible') && setHeld(true)}
       onBlur={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget)) setHeld(false)
       }}
@@ -282,16 +278,19 @@ export default function ResearchTile({ variants }) {
             const depth = (i - front + COUNT) % COUNT
             const isFront = depth === 0
             const target = pose(depth)
-            const tucking = !reduce && shuffle.from === i && !isFront
-            // The card leaving the front dips under the new one, then rises behind it.
-            const animate = tucking
-              ? { ...target, y: [0, 34, target.y], scale: [1, 0.97, target.scale] }
-              : target
+            const leaving = !reduce && shuffle.from === i && !isFront
+            /*
+             * The card leaving the front stays on top while it drops a little
+             * and fades out over the one coming forward. Once it's gone it goes
+             * to the back and rises from behind the new front card into its
+             * strip.
+             */
+            const animate = leaving ? { y: 18, scale: 0.98, opacity: 0 } : { ...target, opacity: 1 }
             const transition = reduce
               ? { duration: 0 }
-              : tucking
-                ? { duration: 0.85, ease: EASE, times: [0, 0.42, 1], zIndex: { duration: 0 } }
-                : { ...CARD_SPRING, zIndex: { duration: 0 } }
+              : leaving
+                ? { duration: 0.3, ease: 'easeOut' }
+                : CARD_SPRING
 
             return (
               <motion.button
@@ -300,10 +299,14 @@ export default function ResearchTile({ variants }) {
                   cards.current[i] = el
                 }}
                 type="button"
-                className={`rs-card${isFront ? ' is-front' : ''}`}
+                className={`rs-card${isFront ? ' is-front' : ''}${leaving ? ' is-leaving' : ''}`}
+                style={{ zIndex: leaving ? COUNT + 1 : COUNT - depth }}
                 initial={false}
                 animate={animate}
                 transition={transition}
+                onAnimationComplete={() => {
+                  if (leaving) setShuffle((prev) => ({ ...prev, from: null }))
+                }}
                 tabIndex={isFront ? 0 : -1}
                 aria-hidden={isFront ? undefined : true}
                 aria-label={isFront ? `Open the ${item.title} certificate` : undefined}
@@ -322,14 +325,14 @@ export default function ResearchTile({ variants }) {
                         className="rs-dim"
                         initial={false}
                         animate={{ opacity: isFront ? 0 : 1 }}
-                        transition={{ duration: reduce ? 0 : 0.5, ease: EASE }}
+                        transition={{ duration: reduce ? 0 : 0.3, ease: EASE }}
                       />
                       {isFront && !reduce && shuffle.n > 0 && (
                         <span key={shuffle.n} className="rs-sheen" />
                       )}
                     </motion.span>
                   )}
-                  {isFront && open !== item.id && (
+                  {open !== item.id && (
                     <span className="rs-peek-hint" aria-hidden="true">
                       <Maximize2 size={13} strokeWidth={2.2} />
                       <span className="rs-peek-label">Quick Look</span>
@@ -356,9 +359,10 @@ export default function ResearchTile({ variants }) {
               >
                 {front === i && (
                   <span
-                    key={`${front}-${run}`}
-                    className={`rs-dot-fill${cycling ? ' is-running' : ''}`}
-                    style={{ '--dur': `${INTERVAL}ms` }}
+                    key={front}
+                    className="rs-dot-fill"
+                    style={{ '--dur': `${INTERVAL}ms`, animationPlayState: playing ? 'running' : 'paused' }}
+                    onAnimationEnd={() => setFront((front + 1) % COUNT)}
                   />
                 )}
               </button>

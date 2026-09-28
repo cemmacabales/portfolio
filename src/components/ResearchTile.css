@@ -207,6 +207,7 @@
   inset: 0;
   display: block;
   overflow: hidden;
+  isolation: isolate;
   background: oklch(1 0 0);
   box-shadow:
     0 0 0 1px var(--rs-card-ring),
@@ -215,6 +216,7 @@
 
 .rs-sheet img {
   display: block;
+  border-radius: inherit;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -225,6 +227,7 @@
 .rs-dim {
   position: absolute;
   inset: 0;
+  border-radius: inherit;
   background: var(--rs-dim);
   pointer-events: none;
 }
@@ -282,6 +285,15 @@
   display: none;
 }
 
+/*
+ * Every card carries the chip and only the front one shows it. Were it
+ * created on the card as it came forward, it would skip its fade and pop in
+ * under a pointer that's already there.
+ */
+.rs-card:not(.is-front) .rs-peek-hint {
+  opacity: 0;
+}
+
 @media (hover: hover) and (pointer: fine) {
   .rs-peek-hint {
     opacity: 0;
@@ -299,10 +311,17 @@
     transform: translateY(-4px);
   }
 
+  /* A card behind the front one rises out of the stack to say it can be picked. */
+  .rs-card:not(.is-front):not(.is-leaving):hover .rs-lift {
+    transform: translateY(-6px);
+  }
+
+  /* The chip waits a beat, so it never flashes on a card that's still moving. */
   .rs-card.is-front:hover .rs-peek-hint,
   .rs-card.is-front:focus-visible .rs-peek-hint {
     opacity: 1;
     transform: none;
+    transition-delay: 0.18s;
   }
 
   .rs-row:not(.is-on):hover .rs-text,
@@ -357,16 +376,16 @@
   width: 26px;
 }
 
-/* Full at rest; while cycling it fills over the time until the next paper. */
+/*
+ * Fills over the time until the next paper; its animationend is the timer.
+ * Under reduced motion it's simply full and the tile holds still.
+ */
 .rs-dot-fill {
   position: absolute;
   inset: 0;
   border-radius: inherit;
   background: var(--ink);
   transform-origin: 0 50%;
-}
-
-.rs-dot-fill.is-running {
   animation: rs-fill var(--dur) linear both;
 }
 
@@ -508,7 +527,7 @@
   }
 
   .rs-sheen,
-  .rs-dot-fill.is-running {
+  .rs-dot-fill {
     animation: none;
   }
 }
