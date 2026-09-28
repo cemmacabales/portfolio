@@ -51,6 +51,13 @@
     }
   }
 
+  /* Off screen, a tile's looping animations hold still (useOffscreenPause). */
+  .tile[data-offscreen] *,
+  .tile[data-offscreen] *::before,
+  .tile[data-offscreen] *::after {
+    animation-play-state: paused !important;
+  }
+
   .tile-head {
     display: flex;
     align-items: center;

@@ -9,8 +9,8 @@ import GradualBlur from './components/GradualBlur'
 import ModelSelectionModal from './components/ModelSelectionModal'
 import AiChatbot from './components/AiChatbot'
 import { useTheme } from './hooks/useTheme'
-import { useScrollState } from './hooks/useScrollState'
 import { useGlassSheen } from './hooks/useGlassSheen'
+import { useOffscreenPause } from './hooks/useOffscreenPause'
 import { useMobileDetection } from './mobile-detection'
 import { openAssistant } from './utils/assistant'
 import { markReady } from './boot'
@@ -18,17 +18,15 @@ import posthog from './posthog'
 import { portfolioLogger } from './posthog-logger'
 import './App.css'
 
-const SECTIONS = ['home', 'work', 'about', 'contact']
-
 function App() {
   const { theme, toggleTheme } = useTheme()
-  const { active, scrolled } = useScrollState(SECTIONS)
   const isMobile = useMobileDetection()
   const [openSlug, setOpenSlug] = useState(null)
   const [modelProject, setModelProject] = useState(null)
   const [isModelModalOpen, setIsModelModalOpen] = useState(false)
 
   useGlassSheen()
+  useOffscreenPause()
 
   // First commit is in; the boot loader can count the app as rendered.
   useEffect(() => {
@@ -71,7 +69,7 @@ function App() {
         zIndex={30}
       />
 
-      <SiteNav active={active} scrolled={scrolled} theme={theme} onToggleTheme={toggleTheme} />
+      <SiteNav theme={theme} onToggleTheme={toggleTheme} />
 
       <main id="main">
         <HeroBento

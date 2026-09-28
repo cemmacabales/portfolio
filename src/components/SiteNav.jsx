@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion' // eslint-disable-line no-unused-vars
 import { Sun, Moon, House, Layers, UserRound, Mail } from 'lucide-react'
+import { useScrollState } from '../hooks/useScrollState'
 import './SiteNav.css'
 
 const LINKS = [
@@ -74,7 +75,12 @@ function ThemeToggle({ theme, onToggle }) {
   )
 }
 
-export default function SiteNav({ active, scrolled, theme, onToggleTheme }) {
+const SECTIONS = ['home', 'work', 'about', 'contact']
+
+export default function SiteNav({ theme, onToggleTheme }) {
+  // Tracked here, not in App: crossing into a section re-renders the nav
+  // alone instead of the whole page.
+  const { active, scrolled } = useScrollState(SECTIONS)
   const linkRefs = useRef({})
   const tabRefs = useRef({})
   const linkLens = useLens(active, linkRefs)

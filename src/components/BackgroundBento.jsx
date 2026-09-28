@@ -58,27 +58,33 @@ const BUILDINGS = [
   [374, 26, 34],
 ]
 
+// The lit windows are HTML laid over the drawing, not SVG: their flicker is
+// then an opacity animation the compositor runs by itself, where on SVG it
+// restyled and repainted the skyline every frame.
 function Skyline() {
   return (
-    <svg className="skyline" viewBox="0 0 400 60" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
-      {BUILDINGS.map(([x, w, h]) => (
-        <rect key={x} x={x} y={60 - h} width={w + 0.5} height={h} className="bldg" />
-      ))}
-      {BUILDINGS.filter(([, , h]) => h >= 34).flatMap(([x, w, h], b) =>
-        Array.from({ length: Math.floor((h - 8) / 9) }, (_, row) => (
-          <rect
-            key={`${x}-${row}`}
-            x={x + w / 2 - 1.5}
-            y={60 - h + 6 + row * 9}
-            width="3"
-            height="4"
-            rx="0.6"
-            className="win"
-            style={{ '--d': `${((b * 3 + row * 7) % 11) * 0.45}s` }}
-          />
-        ))
-      )}
-    </svg>
+    <div className="skyline" aria-hidden="true">
+      <div className="skyline-box">
+        <svg viewBox="0 0 400 60">
+          {BUILDINGS.map(([x, w, h]) => (
+            <rect key={x} x={x} y={60 - h} width={w + 0.5} height={h} className="bldg" />
+          ))}
+        </svg>
+        {BUILDINGS.filter(([, , h]) => h >= 34).flatMap(([x, w, h], b) =>
+          Array.from({ length: Math.floor((h - 8) / 9) }, (_, row) => (
+            <i
+              key={`${x}-${row}`}
+              className="win"
+              style={{
+                left: `${((x + w / 2 - 1.5) / 400) * 100}%`,
+                top: `${((60 - h + 6 + row * 9) / 60) * 100}%`,
+                '--d': `${((b * 3 + row * 7) % 11) * 0.45}s`,
+              }}
+            />
+          ))
+        )}
+      </div>
+    </div>
   )
 }
 
