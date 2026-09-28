@@ -10,6 +10,8 @@ const MAX_MASK_SIZE = 1024;
 const NOISE_CELLS = 32;
 const TIME_RATE = 0.1;
 const SIMULATION_STEP = 1 / 60;
+// Closer frames are skipped: 120 Hz draws at 60, 90 Hz still draws every frame.
+const MIN_FRAME_GAP = 11;
 const WAVE_SPEED = 0.42;
 const WAVE_FRICTION = 0.94;
 const WAVE_DECAY = 0.972;
@@ -552,6 +554,7 @@ export default function ShapeWaves({
 
         const glowEnabled = () => settingsRef.current.glow > 0;
         let lastIntro = false;
+        let lastPalette = '';
 
         const configureGrid = () => {
           const settings = settingsRef.current;
@@ -628,6 +631,12 @@ export default function ShapeWaves({
         const render = now => {
           frameId = 0;
           if (disposed || failed) return;
+          // The ripples step at 60 Hz and the field drifts slowly, so on a
+          // 120 Hz screen every other frame would draw the same thing again.
+          if (lastFrameTime && now - lastFrameTime < MIN_FRAME_GAP) {
+            frameId = requestAnimationFrame(render);
+            return;
+          }
           const settings = settingsRef.current;
           const deltaSeconds = lastFrameTime ? Math.min(0.1, (now - lastFrameTime) / 1000) : 0;
           lastFrameTime = now;
@@ -749,7 +758,20 @@ export default function ShapeWaves({
             chargesActive = false;
             chargeBuffer.write(charges);
           }
-          wakeRenderer();
+          const palette = [settings.color, settings.hoverColor, settings.backgroundColor, settings.glow].join('|');
+          const recolored = presented && palette !== lastPalette;
+          lastPalette = palette;
+          // A theme switch snapshots the page for its reveal right after this
+          // runs, and Safari holds the canvas still in that snapshot for the
+          // whole reveal. Draw the new palette now, not on the next frame, or
+          // the reveal shows the old field on the new theme.
+          if (recolored) {
+            if (frameId) cancelAnimationFrame(frameId);
+            lastFrameTime = 0;
+            render(performance.now());
+          } else {
+            wakeRenderer();
+          }
         };
 
         const applyMask = () => {
