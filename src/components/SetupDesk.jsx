@@ -649,7 +649,7 @@ function GearList({ active, game, onPoint, onLeave, onGame, onGameLeave }) {
 }
 
 /* ── Both together ────────────────────────────────────────────── */
-export default function SetupDesk({ className = '', sceneRef, paused = false }) {
+export default function SetupDesk({ className = '', sceneRef, paused = false, scene = true }) {
   const ref = useRef(null)
   const inView = useInView(ref, { amount: 0.2 })
   const pageVisible = usePageVisible()
@@ -695,21 +695,23 @@ export default function SetupDesk({ className = '', sceneRef, paused = false }) 
       className={`desk rig-host${inView && pageVisible && !paused ? ' is-live' : ''} ${className}`}
     >
       <div className="desk-grid">
-        <div className="desk-stage">
-          <div ref={sceneRef} className="desk-stage-move">
-            <DeskScene
-              active={active}
-              game={game}
-              osd={monitorOsd}
-              lit={lit}
-              onPoint={point}
-              onLeave={() => {
-                setActive(null)
-                setHeld(false)
-              }}
-            />
+        {scene && (
+          <div className="desk-stage">
+            <div ref={sceneRef} className="desk-stage-move">
+              <DeskScene
+                active={active}
+                game={game}
+                osd={monitorOsd}
+                lit={lit}
+                onPoint={point}
+                onLeave={() => {
+                  setActive(null)
+                  setHeld(false)
+                }}
+              />
+            </div>
           </div>
-        </div>
+        )}
         <GearList
           active={active}
           game={game}

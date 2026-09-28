@@ -12,6 +12,8 @@ import './HeroDesk.css'
 
 // Beside each other the tiles can hand over the row; stacked, a sheet opens.
 const WIDE = '(min-width: 961px)'
+// On a phone the drawing is too small to read, so the sheet is just the list.
+const PHONE = '(max-width: 600px), (max-height: 500px)'
 const SPRING = { type: 'spring', bounce: 0, duration: 0.85 }
 const SHEET = { type: 'spring', bounce: 0, duration: 0.55 }
 const whenIdle = (fn) =>
@@ -463,6 +465,14 @@ function SetupSheet({ onClose }) {
   const drag = useDragControls()
   const closeRef = useRef(null)
   const reduce = useReducedMotion()
+  const [phone, setPhone] = useState(() => window.matchMedia(PHONE).matches)
+
+  useEffect(() => {
+    const query = window.matchMedia(PHONE)
+    const onChange = () => setPhone(query.matches)
+    query.addEventListener('change', onChange)
+    return () => query.removeEventListener('change', onChange)
+  }, [])
 
   useEffect(() => {
     closeRef.current?.focus({ preventScroll: true })
@@ -522,7 +532,7 @@ function SetupSheet({ onClose }) {
           </div>
         </div>
         <div className="setup-sheet-body">
-          <SetupDesk className="desk-sheet" />
+          <SetupDesk className="desk-sheet" scene={!phone} />
         </div>
       </motion.div>
     </div>
