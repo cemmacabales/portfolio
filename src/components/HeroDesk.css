@@ -1,9 +1,18 @@
 /*
  * The hero's last row, and My setup taking it over. HeroDesk writes one
- * number, --p, to the row (0 = at rest, 1 = the whole desk out), and
- * everything below reads it: the Stage Manager thumbnails, the growing
- * frame, the reveal, the camera pull-back. Nothing here animates on its own.
+ * number, --dp (0 = at rest, 1 = the whole desk out), and everything below
+ * reads it: the Stage Manager thumbnails, the growing frame, the reveal, the
+ * camera pull-back. Nothing here animates on its own.
+ *
+ * --dp doesn't inherit. HeroDesk writes it to each element that reads it, so
+ * a frame restyles those few instead of every node in the row and the desk.
  */
+@property --dp {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
+
 @property --tilt {
   syntax: '<angle>';
   inherits: false;
@@ -17,7 +26,6 @@
 }
 
 .hero-desk {
-  --p: 0;
   --head-h: 57px;
   position: relative;
   isolation: isolate;
@@ -45,9 +53,9 @@
   position: relative;
   z-index: 4;
   transform-origin: 0 50%;
-  transform: translate(calc(var(--p) * var(--dx, 0) * 1px), calc(var(--p) * var(--dy, 0) * 1px))
-    perspective(420px) rotateY(calc(var(--p) * var(--tilt)))
-    scale(calc((1 + var(--p) * (var(--s, 1) - 1)) * var(--pop)));
+  transform: translate(calc(var(--dp) * var(--dx, 0) * 1px), calc(var(--dp) * var(--dy, 0) * 1px))
+    perspective(420px) rotateY(calc(var(--dp) * var(--tilt)))
+    scale(calc((1 + var(--dp) * (var(--s, 1) - 1)) * var(--pop)));
   transition:
     --tilt 0.55s var(--ease-out),
     --pop 0.55s var(--ease-out);
@@ -70,7 +78,8 @@
   box-shadow:
     0 60px 90px -30px oklch(0.2 0.02 175 / 0.5),
     0 10px 24px -10px oklch(0.2 0.02 175 / 0.3);
-  opacity: var(--p);
+  --dp: inherit;
+  opacity: var(--dp);
   pointer-events: none;
 }
 
@@ -94,7 +103,7 @@
 }
 
 .hero-desk[data-stage] .tile-setup > * {
-  opacity: clamp(0, 1 - var(--p) * 14, 1);
+  opacity: clamp(0, 1 - var(--dp) * 14, 1);
 }
 
 /* ── The panel: a frame that grows, and the desk it uncovers ─── */
@@ -113,17 +122,17 @@
 
 .setup-panel-frame {
   position: absolute;
-  left: calc(var(--fx, 0) * (1 - var(--p)) * 1px);
-  top: calc(var(--fy, 0) * (1 - var(--p)) * 1px);
-  width: calc((var(--fw, 0) + (var(--pw, 0) - var(--fw, 0)) * var(--p)) * 1px);
-  height: calc((var(--fh, 0) + (var(--ph, 0) - var(--fh, 0)) * var(--p)) * 1px);
+  left: calc(var(--fx, 0) * (1 - var(--dp)) * 1px);
+  top: calc(var(--fy, 0) * (1 - var(--dp)) * 1px);
+  width: calc((var(--fw, 0) + (var(--pw, 0) - var(--fw, 0)) * var(--dp)) * 1px);
+  height: calc((var(--fh, 0) + (var(--ph, 0) - var(--fh, 0)) * var(--dp)) * 1px);
   background: var(--tile);
   border: 1px solid var(--line);
   border-radius: var(--r-tile);
   /* It lifts off the page while it grows, and settles back when it lands. */
   box-shadow:
     var(--shadow-tile),
-    0 36px 80px -36px oklch(0.2 0.02 175 / calc(var(--p) * (1 - var(--p)) * 1.4));
+    0 36px 80px -36px oklch(0.2 0.02 175 / calc(var(--dp) * (1 - var(--dp)) * 1.4));
   overflow: hidden;
 }
 
@@ -136,7 +145,7 @@
 
 /* The + turns into a close button as the frame opens. */
 .setup-panel .setup-close svg {
-  transform: rotate(calc(var(--p) * 45deg));
+  transform: rotate(calc(var(--dp) * 45deg));
 }
 
 .setup-panel-body {
@@ -145,23 +154,23 @@
   z-index: 1;
   padding: calc(var(--head-h) + 14px) var(--pad-tile) var(--pad-tile);
   clip-path: inset(
-    calc(var(--fy, 0) * (1 - var(--p)) * 1px + var(--head-h))
-      calc(var(--fr, 0) * (1 - var(--p)) * 1px + 1px)
-      calc(var(--fb, 0) * (1 - var(--p)) * 1px + 1px)
-      calc(var(--fx, 0) * (1 - var(--p)) * 1px + 1px)
+    calc(var(--fy, 0) * (1 - var(--dp)) * 1px + var(--head-h))
+      calc(var(--fr, 0) * (1 - var(--dp)) * 1px + 1px)
+      calc(var(--fb, 0) * (1 - var(--dp)) * 1px + 1px)
+      calc(var(--fx, 0) * (1 - var(--dp)) * 1px + 1px)
       round 0 0 calc(var(--r-tile) - 1px) calc(var(--r-tile) - 1px)
   );
 }
 
 /* The pull-back: the desk starts with its MacBook on the tile's MacBook. */
 .setup-panel .desk-stage-move {
-  transform: translate(calc(var(--tx, 0) * (1 - var(--p)) * 1px), calc(var(--ty, 0) * (1 - var(--p)) * 1px))
-    scale(calc(var(--m, 1) + (1 - var(--m, 1)) * var(--p)));
+  transform: translate(calc(var(--tx, 0) * (1 - var(--dp)) * 1px), calc(var(--ty, 0) * (1 - var(--dp)) * 1px))
+    scale(calc(var(--m, 1) + (1 - var(--m, 1)) * var(--dp)));
 }
 
 /* What the small tile never showed arrives as the camera pulls back. */
 .setup-panel .desk-more {
-  opacity: clamp(0, (var(--p) - 0.05) * 2.4, 1);
+  opacity: clamp(0, (var(--dp) - 0.05) * 2.4, 1);
 }
 
 /*
@@ -170,12 +179,12 @@
  * Rows fading straight over the drawing read as a double exposure.
  */
 .setup-panel .gear {
-  opacity: clamp(0, (var(--p) - 0.5) * 10, 1);
-  transform: translateY(calc((1 - var(--p)) * 24px));
+  opacity: clamp(0, (var(--dp) - 0.5) * 10, 1);
+  transform: translateY(calc((1 - var(--dp)) * 24px));
 }
 
 .setup-panel .gear > .gear-item {
-  opacity: clamp(0, (var(--p) - 0.6) * 4, 1);
+  opacity: clamp(0, (var(--dp) - 0.6) * 4, 1);
 }
 
 /* ── Thumbnails: each one is also a way back ─────────────────── */
@@ -186,7 +195,7 @@
   align-items: flex-end;
   justify-content: center;
   border-radius: 16px;
-  opacity: clamp(0, (var(--p) - 0.8) * 5, 1);
+  opacity: clamp(0, (var(--dp) - 0.8) * 5, 1);
   -webkit-tap-highlight-color: transparent;
 }
 

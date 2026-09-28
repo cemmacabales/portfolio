@@ -6,6 +6,7 @@ import AboutTile from './AboutTile'
 import SocialTile from './SocialTile'
 import SetupTile from './SetupTile'
 import SetupDesk from './SetupDesk'
+import { useBooted } from '../hooks/useBooted'
 import posthog from '../posthog'
 import './HeroDesk.css'
 
@@ -13,8 +14,40 @@ import './HeroDesk.css'
 const WIDE = '(min-width: 961px)'
 const SPRING = { type: 'spring', bounce: 0, duration: 0.85 }
 const SHEET = { type: 'spring', bounce: 0, duration: 0.55 }
+const whenIdle = (fn) =>
+  window.requestIdleCallback ? window.requestIdleCallback(fn, { timeout: 4000 }) : setTimeout(fn, 300)
+const cancelIdle = (id) => (window.cancelIdleCallback ? window.cancelIdleCallback(id) : clearTimeout(id))
 const THUMB_GAP = 22
 const LABEL_H = 26
+
+// Everything that reads --dp. It doesn't inherit (see HeroDesk.css), so each
+// of these gets the value itself, and the rest of the row isn't restyled.
+const DRIVEN = [
+  '.desk-slot',
+  '.tile-setup > *',
+  '.setup-panel-frame',
+  '.setup-panel-body',
+  '.setup-close svg',
+  '.desk-stage-move',
+  '.desk-more',
+  '.gear',
+  '.gear-item',
+  '.desk-restore',
+].join(', ')
+
+// The panel's box: the row, less the thumbnail strip on its left.
+function sizePanel(desk) {
+  const W = desk.clientWidth
+  const gap = parseFloat(getComputedStyle(desk).columnGap) || 20
+  const strip = Math.round(Math.min(196, Math.max(132, W * 0.145)))
+  const x = strip + gap
+  const panel = desk.querySelector('.setup-panel')
+  if (panel) {
+    panel.style.left = `${x}px`
+    panel.style.width = `${W - x}px`
+  }
+  return { W, strip, x }
+}
 
 const THUMBS = [
   { id: 'about', label: 'What I do for fun' },
@@ -25,8 +58,9 @@ const THUMBS = [
  * The hero's last row: What I do for fun beside Socials over My setup.
  * Opening My setup hands it the whole row, Stage Manager style: the other two
  * shrink into a strip on the left while the tile grows and the camera pulls
- * back from its MacBook to the whole desk. One spring, written to --p on the
- * row, drives every part of that through CSS, so it can reverse mid-flight.
+ * back from its MacBook to the whole desk. One spring, written as --dp to the
+ * elements it moves, drives every part of that through CSS, so it can
+ * reverse mid-flight.
  */
 export default function HeroDesk({ variants }) {
   const deskRef = useRef(null)
@@ -35,8 +69,10 @@ export default function HeroDesk({ variants }) {
   const sceneRef = useRef(null)
   const aboutRef = useRef(null)
   const socialRef = useRef(null)
+  const driven = useRef([])
   const progress = useMotionValue(0)
   const reduce = useReducedMotion()
+  const booted = useBooted()
 
   const [mode, setMode] = useState(null) // 'stage' | 'sheet' while open
   const [open, setOpen] = useState(false)
@@ -44,18 +80,50 @@ export default function HeroDesk({ variants }) {
   const [layout, setLayout] = useState(null)
   const [peek, setPeek] = useState(null)
   const [mounted, setMounted] = useState(false)
+  const [warm, setWarm] = useState(false)
   const refocus = useRef(false)
 
   useEffect(() => setMounted(true), [])
 
-  // The spring writes straight to the row: no React render per frame.
-  useEffect(
-    () =>
-      progress.on('change', (value) => {
-        deskRef.current?.style.setProperty('--p', value.toFixed(4))
-      }),
-    [progress],
-  )
+  // Build and lay out the desk ahead of time, hidden and paused, while the
+  // page is idle, so the + only has to reveal it. Built on the click, it froze
+  // the first frame, and its first paint and garbage landed in the spring.
+  useEffect(() => {
+    if (!booted || warm || mode) return undefined
+    const query = window.matchMedia(WIDE)
+    let id = null
+    const schedule = () => {
+      if (!query.matches || id !== null) return
+      id = whenIdle(() => setWarm(true))
+    }
+    schedule()
+    query.addEventListener('change', schedule)
+    return () => {
+      query.removeEventListener('change', schedule)
+      if (id !== null) cancelIdle(id)
+    }
+  }, [booted, warm, mode])
+
+  // The spring writes straight to the elements it moves: no React render per frame.
+  const drive = useCallback((value) => {
+    const p = value.toFixed(4)
+    for (const el of driven.current) el.style.setProperty('--dp', p)
+  }, [])
+
+  useEffect(() => progress.on('change', drive), [progress, drive])
+
+  const release = useCallback(() => {
+    for (const el of driven.current) el.style.removeProperty('--dp')
+    driven.current = []
+  }, [])
+
+  // Collect them once the panel and thumbnails exist, and give the new ones
+  // the current value before they paint.
+  useLayoutEffect(() => {
+    if (!shown || !layout) return
+    driven.current = [...deskRef.current.querySelectorAll(DRIVEN)]
+    drive(progress.get())
+  }, [shown, layout, drive, progress])
 
   const measure = useCallback(() => {
     const desk = deskRef.current
@@ -67,18 +135,9 @@ export default function HeroDesk({ variants }) {
     const smallMac = setupTile?.querySelector('.rig-mac')
     if (!desk || !setupTile || !about || !social || !move || !bigMac || !smallMac) return null
 
-    const W = desk.clientWidth
-    const H = desk.clientHeight
-    const gap = parseFloat(getComputedStyle(desk).columnGap) || 20
-    const strip = Math.round(Math.min(196, Math.max(132, W * 0.145)))
-    const panelX = strip + gap
-
     // Size the panel first: the drawing inside lays out to it.
-    const panel = desk.querySelector('.setup-panel')
-    if (panel) {
-      panel.style.left = `${panelX}px`
-      panel.style.width = `${W - panelX}px`
-    }
+    const { W, strip, x: panelX } = sizePanel(desk)
+    const H = desk.clientHeight
 
     // Offsets ignore transforms, so these are the tiles' resting boxes.
     const box = (el) => ({ x: el.offsetLeft, y: el.offsetTop, w: el.offsetWidth, h: el.offsetHeight })
@@ -152,6 +211,18 @@ export default function HeroDesk({ variants }) {
     return () => cancelAnimationFrame(frame)
   }, [open, mode])
 
+  // Waiting: keep the hidden panel at the size it will open to, so opening
+  // doesn't lay the whole drawing out again.
+  const waiting = warm && !mode
+  useLayoutEffect(() => {
+    const desk = deskRef.current
+    if (!waiting || !desk) return undefined
+    sizePanel(desk)
+    const observer = new ResizeObserver(() => sizePanel(desk))
+    observer.observe(desk)
+    return () => observer.disconnect()
+  }, [waiting])
+
   // Stage: once the panel is in the DOM, measure before the first paint.
   useLayoutEffect(() => {
     if (!shown || layout) return
@@ -167,10 +238,11 @@ export default function HeroDesk({ variants }) {
       controls = animate(progress, open ? 1 : 0, reduce ? { duration: 0 } : SPRING)
       if (!open) {
         controls.then(() => {
+          release()
           setShown(false)
           setLayout(null)
           setMode(null)
-          deskRef.current?.style.removeProperty('--p')
+          setWarm(false)
         })
       }
     }
@@ -187,7 +259,7 @@ export default function HeroDesk({ variants }) {
       cancelAnimationFrame(frame)
       controls?.stop()
     }
-  }, [open, layout, mode, progress, reduce])
+  }, [open, layout, mode, progress, reduce, release])
 
   // Opening: bring the whole row into view and hand focus to the close button.
   useEffect(() => {
@@ -218,11 +290,12 @@ export default function HeroDesk({ variants }) {
     const query = window.matchMedia(WIDE)
     const onQuery = () => {
       progress.jump(0)
+      release()
       setOpen(false)
       setShown(false)
       setLayout(null)
       setMode(null)
-      deskRef.current?.style.removeProperty('--p')
+      setWarm(false)
     }
     let frame = 0
     const observer = new ResizeObserver(() => {
@@ -240,7 +313,7 @@ export default function HeroDesk({ variants }) {
       document.removeEventListener('keydown', onKey)
       query.removeEventListener('change', onQuery)
     }
-  }, [open, mode, close, measure, progress])
+  }, [open, mode, close, measure, progress, release])
 
   const stage = mode === 'stage' && shown
   const slotStyle = (id) => {
@@ -291,7 +364,7 @@ export default function HeroDesk({ variants }) {
         </div>
       </div>
 
-      {stage && (
+      {(stage || waiting) && (
         <>
           <section
             className="setup-panel"
@@ -316,7 +389,7 @@ export default function HeroDesk({ variants }) {
               </div>
             </div>
             <div className="setup-panel-body">
-              <SetupDesk sceneRef={sceneRef} />
+              <SetupDesk sceneRef={sceneRef} paused={!stage} />
             </div>
           </section>
 
