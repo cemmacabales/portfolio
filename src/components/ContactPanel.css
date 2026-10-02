@@ -1,19 +1,29 @@
+/*
+ * Contact: a dark "desktop" tile with a macOS Mail compose window on it.
+ * The tile's own copy reads in inverse ink; the window keeps the page's
+ * appearance (a white window in light mode, a dark one in dark mode).
+ */
 .contact-tile {
-  --tile: var(--inverse);
-  --ink: var(--inverse-ink);
-  --ink-2: var(--inverse-ink-2);
-  --line: var(--inverse-line);
-  --focus: var(--mint);
   background: var(--inverse);
   border-color: var(--inverse-line);
   color: var(--inverse-ink);
 }
 
+.contact-intro,
+.contact-foot,
+.mail-sent {
+  --ink: var(--inverse-ink);
+  --ink-2: var(--inverse-ink-2);
+  --line: var(--inverse-line);
+  --focus: var(--mint);
+}
+
 .contact-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
-  gap: clamp(32px, 5vw, 80px);
-  padding: clamp(28px, 5vw, 72px) clamp(22px, 5vw, 72px) clamp(32px, 4.5vw, 64px);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
+  align-items: center;
+  gap: clamp(32px, 4.4vw, 72px);
+  padding: clamp(28px, 5vw, 72px) clamp(22px, 5vw, 72px) clamp(36px, 5vw, 72px);
 }
 
 .contact-intro {
@@ -22,52 +32,150 @@
   align-items: flex-start;
 }
 
-.contact-kicker {
-  font-size: var(--text-xs);
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ink-2);
-}
-
 .contact-title {
-  margin-top: 20px;
-  max-width: 14ch;
-  font-size: clamp(2.375rem, 1.5rem + 3vw, 4rem);
+  max-width: 11em;
+  font-size: clamp(2.25rem, 1.4rem + 2.4vw, 3.5rem);
   font-weight: 650;
   letter-spacing: -0.038em;
-  line-height: 1;
+  line-height: 1.02;
   color: var(--ink);
+  text-wrap: balance;
+}
+
+.contact-line {
+  display: block;
+}
+
+.contact-dim {
+  color: var(--ink-2);
 }
 
 .contact-lede {
-  margin-top: 22px;
-  max-width: 44ch;
+  margin-top: 24px;
+  max-width: 40ch;
   font-size: var(--text-base);
   line-height: 1.6;
   color: var(--ink-2);
+  text-wrap: pretty;
 }
 
 .contact-links {
+  align-self: stretch;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 10px;
-  margin-top: auto;
-  padding-top: 40px;
+  margin-top: 40px;
 }
 
-.contact-email {
-  --btn-h: 54px;
+/* ── Copy-email capsule ──────────────────────────────────────── */
+.contact-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 100%;
+  height: 54px;
+  padding: 0 8px 0 20px;
+  border-radius: 999px;
   background: oklch(1 0 0);
   color: oklch(0.2 0.008 175);
+  font-size: var(--text-sm);
   font-weight: 500;
-  padding-inline: 20px 24px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 0.3s ease,
+    transform 0.35s var(--ease-out);
 }
 
-.contact-email:hover {
+.contact-copy:hover {
   background: var(--mint);
-  color: var(--mint-ink);
+}
+
+.contact-copy:active {
+  transform: scale(0.97);
+  transition-duration: 0.1s;
+}
+
+.contact-copy-icon {
+  display: grid;
+  flex-shrink: 0;
+}
+
+.contact-copy-icon svg {
+  grid-area: 1 / 1;
+  transition:
+    opacity 0.3s ease,
+    transform 0.45s var(--ease-out);
+}
+
+.contact-copy-icon .copy-ic-copy,
+.contact-copy-icon .copy-ic-done,
+.contact-copy[data-copied] .contact-copy-icon svg:not(.copy-ic-done) {
+  opacity: 0;
+  transform: scale(0.5) rotate(-30deg);
+}
+
+.contact-copy[data-copied] .contact-copy-icon .copy-ic-done {
+  opacity: 1;
+  transform: none;
+}
+
+.contact-copy-address {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* "Copy" rolls up into "Copied", like iOS swapping a label in place. */
+.contact-copy-tag {
+  flex-shrink: 0;
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: oklch(0.2 0.008 175 / 0.07);
+  color: oklch(0.36 0.01 175);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  line-height: 38px;
+  overflow: hidden;
+  transition: background-color 0.3s ease;
+}
+
+.contact-copy:hover .contact-copy-tag {
+  background: oklch(0.2 0.008 175 / 0.1);
+}
+
+.contact-copy-roll {
+  display: grid;
+  transition: transform 0.5s var(--ease-out);
+}
+
+.contact-copy-roll > span {
+  grid-area: 1 / 1;
+  transition: opacity 0.3s ease;
+}
+
+.contact-copy-roll > span + span {
+  transform: translateY(100%);
+  opacity: 0;
+}
+
+.contact-copy[data-copied] .contact-copy-roll {
+  transform: translateY(-100%);
+}
+
+.contact-copy[data-copied] .contact-copy-roll > span:first-child {
+  opacity: 0;
+}
+
+.contact-copy[data-copied] .contact-copy-roll > span + span {
+  opacity: 1;
+}
+
+.contact-socials {
+  display: flex;
+  gap: 10px;
 }
 
 .contact-circle {
@@ -78,6 +186,7 @@
   border-radius: 50%;
   border: 1px solid oklch(1 0 0 / 0.22);
   color: var(--ink);
+  -webkit-tap-highlight-color: transparent;
   transition:
     background-color 0.3s ease,
     color 0.3s ease,
@@ -89,101 +198,505 @@
   background: oklch(1 0 0);
   border-color: oklch(1 0 0);
   color: oklch(0.2 0.008 175);
+  transform: translateY(-2px);
 }
 
 .contact-circle:active {
   transform: scale(0.94);
+  transition-duration: 0.1s;
 }
 
-/* ── Form ────────────────────────────────────────────────────── */
-.contact-form {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.field-row {
+/* ── The compose window ──────────────────────────────────────── */
+.mail-stage {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
+  align-items: center;
+  min-width: 0;
 }
 
-.field {
+.mail-shell {
+  min-width: 0;
+}
+
+.mail,
+.mail-banner {
+  --m-bg: oklch(0.995 0.001 175);
+  --m-bar: oklch(0.968 0.003 175);
+  --m-line: oklch(0.2 0.008 175 / 0.1);
+  --m-ink: oklch(0.2 0.008 175);
+  --m-ink-2: oklch(0.43 0.01 175);
+  --m-hint: oklch(0.5 0.01 175);
+  --m-accent: oklch(0.41 0.085 178);
+  --m-fill: oklch(0.2 0.008 175 / 0.07);
+  --m-token: color-mix(in oklab, var(--mint) 34%, white);
+  --m-token-ink: oklch(0.3 0.06 175);
+  --m-danger: oklch(0.47 0.17 27);
+  --m-light: oklch(0.2 0.008 175 / 0.16);
+  --m-edge: oklch(0 0 0 / 0.35);
+}
+
+:root[data-theme='dark'] .mail,
+:root[data-theme='dark'] .mail-banner {
+  --m-bg: oklch(0.262 0.006 175);
+  --m-bar: oklch(0.29 0.006 175);
+  --m-line: oklch(1 0 0 / 0.09);
+  --m-ink: oklch(0.965 0.003 175);
+  --m-ink-2: oklch(0.79 0.008 175);
+  --m-hint: oklch(0.68 0.008 175);
+  --m-accent: var(--mint);
+  --m-fill: oklch(1 0 0 / 0.08);
+  --m-token: color-mix(in oklab, var(--mint) 24%, oklch(0.262 0.006 175));
+  --m-token-ink: oklch(0.96 0.02 175);
+  --m-danger: #ffb4ab;
+  --m-light: oklch(1 0 0 / 0.18);
+  --m-edge: oklch(1 0 0 / 0.12);
+}
+
+.mail {
+  position: relative;
   display: flex;
   flex-direction: column;
+  border-radius: 18px;
+  background: var(--m-bg);
+  color: var(--m-ink);
+  box-shadow:
+    0 0 0 1px var(--m-edge),
+    0 36px 80px -32px oklch(0 0 0 / 0.7),
+    0 12px 28px -14px oklch(0 0 0 / 0.45);
+  overflow: hidden;
+  transition: box-shadow 0.5s var(--ease-out);
+}
+
+/* The window you're typing in is the key window: its shadow deepens and
+   its traffic lights take on color, as on macOS. */
+.mail:focus-within {
+  box-shadow:
+    0 0 0 1px var(--m-edge),
+    0 48px 110px -36px oklch(0 0 0 / 0.85),
+    0 16px 36px -16px oklch(0 0 0 / 0.55);
+}
+
+.mail-bar {
+  display: grid;
+  grid-template-columns: 1fr minmax(0, auto) 1fr;
+  align-items: center;
+  gap: 12px;
+  height: 54px;
+  padding: 0 12px 0 18px;
+  background: var(--m-bar);
+  border-bottom: 1px solid var(--m-line);
+}
+
+.mail-lights {
+  display: flex;
   gap: 8px;
 }
 
-.field-label {
-  font-size: var(--text-xs);
-  font-weight: 500;
-  color: var(--ink-2);
+.mail-lights i {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--m-light);
+  transition: background-color 0.35s ease;
 }
 
-.field-control {
-  width: 100%;
-  min-height: 52px;
-  padding: 14px 16px;
-  border: 1px solid oklch(1 0 0 / 0.14);
-  border-radius: var(--r-control);
-  background: var(--inverse-field);
-  color: var(--ink);
-  font-size: var(--text-base);
-  line-height: 1.45;
+.mail:focus-within .mail-lights i:nth-child(1) {
+  background: #ff5f57;
+}
+
+.mail:focus-within .mail-lights i:nth-child(2) {
+  background: #febc2e;
+  transition-delay: 0.05s;
+}
+
+.mail:focus-within .mail-lights i:nth-child(3) {
+  background: #28c840;
+  transition-delay: 0.1s;
+}
+
+.mail-title {
+  min-width: 0;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--m-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mail-send {
+  display: inline-flex;
+  align-items: center;
+  justify-self: end;
+  gap: 7px;
+  height: 34px;
+  padding: 0 15px 0 12px;
+  border-radius: 999px;
+  background: var(--m-fill);
+  color: var(--m-ink);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
   transition:
-    border-color 0.25s ease,
-    background-color 0.25s ease,
-    box-shadow 0.25s ease;
+    background-color 0.35s ease,
+    color 0.35s ease,
+    transform 0.35s var(--ease-out);
 }
 
-textarea.field-control {
-  min-height: 140px;
-  resize: vertical;
+.mail-send:hover {
+  background: color-mix(in oklab, var(--m-fill), var(--m-ink) 8%);
 }
 
-.field-control:hover {
-  border-color: oklch(1 0 0 / 0.26);
+/* Every field filled: Send lights up mint. */
+.mail-send[data-ready] {
+  background: var(--mint);
+  color: var(--mint-ink);
 }
 
-.field-control:focus {
+.mail-send[data-ready]:hover {
+  background: color-mix(in oklab, var(--mint) 86%, white);
+}
+
+.mail-send:active {
+  transform: scale(0.95);
+  transition-duration: 0.1s;
+}
+
+.mail-send:disabled {
+  cursor: progress;
+}
+
+.mail-plane {
+  display: grid;
+  width: 16px;
+  height: 16px;
+  place-items: center;
+  overflow: hidden;
+}
+
+.mail-send[data-ready] .mail-plane svg {
+  animation: mail-plane-ready 0.6s var(--ease-out);
+}
+
+.mail-send[data-sending] .mail-plane svg {
+  animation: mail-plane-fly 0.85s ease-in-out infinite;
+}
+
+@keyframes mail-plane-ready {
+  40% {
+    transform: translate(2px, -2px) rotate(-12deg);
+  }
+}
+
+@keyframes mail-plane-fly {
+  0% {
+    transform: none;
+    opacity: 1;
+  }
+  45% {
+    transform: translate(14px, -14px);
+    opacity: 0;
+  }
+  55% {
+    transform: translate(-14px, 14px);
+    opacity: 0;
+  }
+  100% {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* ── Header fields ───────────────────────────────────────────── */
+.mail-head {
+  padding: 0 18px;
+}
+
+.mail-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 4.6rem minmax(0, 1fr);
+  align-items: center;
+  min-height: 48px;
+  border-bottom: 1px solid var(--m-line);
+}
+
+/* Focus draws an accent rule under the row, from the label outward. */
+.mail-row::after,
+.mail-body::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--m-accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.5s var(--ease-out);
+}
+
+.mail-row:focus-within::after,
+.mail-body:focus-within::after {
+  transform: scaleX(1);
+}
+
+.mail-label {
+  font-size: var(--text-sm);
+  color: var(--m-ink-2);
+  transition: color 0.3s ease;
+}
+
+.mail-row:focus-within .mail-label {
+  color: var(--m-ink);
+}
+
+.mail-value {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  min-height: 46px;
+}
+
+.mail-input {
+  width: 100%;
+  min-width: 0;
+  height: 46px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--m-ink);
+  font-size: var(--text-base);
   outline: none;
-  border-color: var(--mint);
-  background: oklch(1 0 0 / 0.08);
-  box-shadow: 0 0 0 3px color-mix(in oklch, var(--mint) 28%, transparent);
 }
 
-.field.has-error .field-control {
-  border-color: var(--danger-on-inverse);
+.mail-input::placeholder,
+.mail-text::placeholder {
+  color: var(--m-hint);
+  opacity: 1;
 }
 
-.field-error {
+/* A valid address settles into a recipient bubble once you leave the field;
+   the input still holds the value underneath it. */
+.mail-input.is-chip {
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.mail-token,
+.mail-chip {
+  display: inline-block;
+  max-width: 100%;
+  padding: 4px 11px;
+  margin-left: -4px;
+  border-radius: 999px;
+  background: var(--m-token);
+  color: var(--m-token-ink);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mail-chip {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  translate: 0 -50%;
+  margin-left: -4px;
+  max-width: calc(100% + 4px);
+  pointer-events: none;
+  animation: mail-chip-in 0.4s var(--ease-out);
+}
+
+@keyframes mail-chip-in {
+  from {
+    opacity: 0;
+    scale: 0.85;
+  }
+}
+
+.mail-row.has-error .mail-label {
+  color: var(--m-danger);
+}
+
+.mail-error {
+  grid-column: 2;
+  padding-bottom: 10px;
+  margin-top: -4px;
   font-size: var(--text-xs);
   line-height: 1.4;
-  color: var(--danger-on-inverse);
+  color: var(--m-danger);
 }
 
-.form-foot {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12px 20px;
+/* ── Body ────────────────────────────────────────────────────── */
+.mail-body {
+  position: relative;
+  padding: 16px 18px 8px;
+}
+
+.mail-body .mail-error {
   margin-top: 6px;
+  padding-bottom: 4px;
 }
 
-.form-status {
-  flex: 1 1 220px;
-  min-height: 1.4em;
-  font-size: var(--text-sm);
+.mail-text {
+  display: block;
+  width: 100%;
+  min-height: 210px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--m-ink);
+  font-size: var(--text-base);
+  line-height: 1.6;
+  resize: none;
+  outline: none;
+}
+
+.mail-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  min-height: 46px;
+  padding: 6px 18px 14px;
+  font-size: var(--text-xs);
+  color: var(--m-ink-2);
+}
+
+.mail-status {
+  flex: 1 1 auto;
   line-height: 1.45;
-  color: var(--ink-2);
 }
 
-.form-status.is-sent {
-  color: var(--mint);
+.mail-status.is-error {
+  color: var(--m-danger);
 }
 
-.form-status.is-error {
-  color: var(--danger-on-inverse);
+.mail-status a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.mail-hint {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.mail-hint kbd {
+  min-width: 22px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: var(--m-fill);
+  font: inherit;
+  font-weight: 600;
+  text-align: center;
+}
+
+.mail-hint kbd:last-of-type {
+  margin-right: 3px;
+}
+
+.mail-count {
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.mail-count[data-full] {
+  color: var(--m-danger);
+}
+
+/* ── After sending ───────────────────────────────────────────── */
+.mail-sent {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 28px;
+  height: 100%;
+}
+
+/* A macOS notification banner. */
+.mail-banner {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px;
+  width: min(100%, 400px);
+  padding: 14px 18px 15px 14px;
+  border-radius: 24px;
+  background: var(--m-bg);
+  color: var(--m-ink);
+  box-shadow:
+    0 0 0 1px var(--m-edge),
+    0 28px 60px -28px oklch(0 0 0 / 0.75);
+}
+
+.mail-banner-icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  background: var(--mint);
+  color: var(--mint-ink);
+}
+
+.mail-banner-text {
+  min-width: 0;
+}
+
+.mail-banner-app {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--m-ink-2);
+}
+
+.mail-banner-title {
+  margin-top: 2px;
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.mail-banner-body {
+  font-size: var(--text-sm);
+  line-height: 1.4;
+  color: var(--m-ink-2);
+  overflow-wrap: anywhere;
+}
+
+.mail-compose {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  height: 48px;
+  padding: 0 22px;
+  border-radius: 999px;
+  border: 1px solid oklch(1 0 0 / 0.22);
+  color: var(--ink);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.mail-compose:hover {
+  background: oklch(1 0 0);
+  border-color: oklch(1 0 0);
+  color: oklch(0.2 0.008 175);
 }
 
 /* ── Footer strip ────────────────────────────────────────────── */
@@ -223,21 +736,17 @@ textarea.field-control {
   transform: translateY(-2px);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 960px) {
   .contact-grid {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .contact-links {
-    padding-top: 32px;
+  .contact-title {
+    max-width: 12em;
   }
 }
 
 @media (max-width: 760px) {
-  .field-row {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
   .contact-foot {
     grid-template-columns: minmax(0, 1fr);
     text-align: left;
@@ -253,20 +762,89 @@ textarea.field-control {
     justify-self: start;
   }
 
-  .contact-email {
+  .contact-copy {
     width: 100%;
-    justify-content: flex-start;
+  }
+
+  .contact-copy-address {
+    flex: 1;
+    text-align: left;
+  }
+}
+
+@media (max-width: 520px) {
+  /* Too narrow for the address and the "Copy" tag together: the leading
+     glyph says "copy" instead, so the address never truncates. */
+  .contact-copy {
+    padding-right: 20px;
+  }
+
+  .contact-copy-tag {
+    display: none;
+  }
+
+  .contact-copy:not([data-copied]) .contact-copy-icon .copy-ic-mail {
+    opacity: 0;
+  }
+
+  .contact-copy:not([data-copied]) .contact-copy-icon .copy-ic-copy {
+    opacity: 1;
+    transform: none;
+  }
+
+  .mail-bar {
+    padding-left: 14px;
+  }
+
+  .mail-head {
+    padding: 0 14px;
+  }
+
+  .mail-body {
+    padding: 14px 14px 6px;
+  }
+
+  .mail-foot {
+    padding: 6px 14px 12px;
+  }
+
+  .mail-row {
+    grid-template-columns: 4.1rem minmax(0, 1fr);
+  }
+
+  .mail-text {
+    min-height: 170px;
+  }
+}
+
+/* The keyboard shortcut only means something with a keyboard. */
+@media (hover: none) {
+  .mail-hint {
+    display: none;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .contact-circle,
-  .back-top svg {
+  .contact-copy,
+  .back-top svg,
+  .mail-row::after,
+  .mail-body::after,
+  .contact-copy-roll,
+  .contact-copy-icon svg {
     transition: none;
   }
 
+  .contact-circle:hover,
   .contact-circle:active,
+  .contact-copy:active,
   .back-top:hover svg {
     transform: none;
+  }
+
+  .mail-send[data-ready] .mail-plane svg,
+  .mail-send[data-sending] .mail-plane svg,
+  .mail-chip {
+    animation: none;
   }
 }
