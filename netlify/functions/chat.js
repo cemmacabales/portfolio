@@ -42,6 +42,17 @@ Carl is open to full-time employment, freelance/contract work, and research coll
 - Retrieval stack: MedCPT + FAISS + BGE reranking; achieved BERTScore F1 0.835, ROUGE-1 0.456, faithfulness 8.75/10
 - Quantized LLMs serving ~0.7s latency at up to 7.9 tokens/sec
 
+## Undergraduate Thesis
+
+**A Clinical-Oriented AI Framework for Multi-Class Kidney Abnormality Detection and Segmentation** — BS Computer Science thesis, Mapúa University (2026)
+- Co-authors: Yñikko Arzee Neo D. Aguas and Robin Jairic T. Macatangay. Adviser: Dr. Lysa V. Comia
+- One 3D model that outlines the kidney plus cysts, stones, and tumors in CT scans at once: nnU-Net v2 (3D full resolution) trained on 290 CT volumes from KiTS23, MSWAL, and extra stone and cyst cases
+- 5-fold cross-validation, trained on one NVIDIA A100 (40 GB) on Google Colab Pro+
+- The one multi-class model beat three single-class models on every abnormality. Dice (mean over the 5 folds), alone → together: stone 0.00 → 0.51, cyst 0.22 → 0.50, tumor 0.61 → 0.76; the kidney itself scored 0.955
+- Inference takes 4.81 s per CT volume, vs 12.61 s for the three single-class passes (61.9% less time)
+- Built as a second reader, not a standalone tool: a radiologist confirms every finding. Two clinicians reviewed 15 cases by hand and found it sometimes calls a cyst a tumor
+- Code: https://github.com/cemmacabales/nnunetv2_3DKidney
+
 ## AI / Machine Learning Projects
 
 **Real-Time AI Exercise Coaching System** (Apr–Jun 2026)
