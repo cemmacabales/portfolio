@@ -13,15 +13,7 @@ npm run lint      # ESLint
 
 ## Environment Variables
 
-Copy `.env.example` to `.env` and fill in the three EmailJS keys:
-
-```
-VITE_EMAILJS_SERVICE_ID=
-VITE_EMAILJS_TEMPLATE_ID=
-VITE_EMAILJS_PUBLIC_KEY=
-```
-
-Without these, the contact form will error on submit. All env vars must be prefixed `VITE_` to be accessible in the browser.
+The contact form uses **Netlify Forms**, so it needs no keys. `public/__forms.html` declares the `contact` form for Netlify's deploy-time scan; `ContactPanel` posts to it with fetch. Field names must match between the two. Submissions only work on a Netlify deploy (not `npm run dev`); email notifications and form detection are set in the Netlify dashboard. The `subject` field becomes the notification's subject line and `email` its Reply-To.
 
 PostHog analytics needs `VITE_POSTHOG_KEY` and `VITE_POSTHOG_HOST` (dev throws if they're missing; production silently skips analytics). On Netlify they must be scoped to Functions too, since `netlify/functions/chat.js` reads them for AI generation events. `src/posthog.js` is the only import point: it loads `posthog-js` after the boot loader releases and queues calls made before then. Chat events never carry the visitor's messages or the replies.
 

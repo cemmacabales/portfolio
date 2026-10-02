@@ -110,7 +110,6 @@ export default defineConfig(({ isSsrBuild }) => ({
           animations: ['framer-motion', 'gsap'],
           gpu: ['vgpu'],
           icons: ['lucide-react'],
-          email: ['@emailjs/browser'],
           analytics: ['posthog-js'], // loaded after boot, see src/posthog.js
           utils: ['./src/utils/validation'],
           // Split large components
@@ -148,7 +147,7 @@ export default defineConfig(({ isSsrBuild }) => ({
   // Production security configuration
   define: {
     __PRODUCTION_SECURITY__: JSON.stringify({
-      csp: "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.emailjs.com https://*.posthog.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://api.emailjs.com https://*.posthog.com; worker-src 'self' blob: data:; font-src 'self' data:;", 
+      csp: "default-src 'self'; script-src 'self' 'unsafe-inline' https://*.posthog.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://*.posthog.com; worker-src 'self' blob: data:; font-src 'self' data:;", 
       headers: {
         'X-Content-Type-Options': 'nosniff',
         'X-Frame-Options': 'DENY',
@@ -189,7 +188,6 @@ export default defineConfig(({ isSsrBuild }) => ({
       'react-dom',
       'framer-motion',
       'lucide-react',
-      '@emailjs/browser',
       'gsap'
     ],
     exclude: ['@vite/client', '@vite/env']

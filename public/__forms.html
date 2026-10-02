@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex" />
+    <title>Forms</title>
+  </head>
+  <body>
+    <!--
+      Netlify registers forms by scanning the deployed HTML. The real contact
+      form is rendered by React (src/components/ContactPanel.jsx) and posts
+      with fetch, so this copy exists only to declare the "contact" form and
+      its fields. Keep the field names in sync with ContactPanel.
+    -->
+    <form name="contact" data-netlify="true" netlify-honeypot="bot-field" hidden>
+      <input name="bot-field" />
+      <input name="name" />
+      <input type="email" name="email" />
+      <input name="subject" />
+      <textarea name="message"></textarea>
+    </form>
+  </body>
+</html>

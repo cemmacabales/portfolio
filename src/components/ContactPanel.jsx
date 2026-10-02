@@ -1,6 +1,5 @@
 import { useRef, useState } from 'react'
 import { motion } from 'framer-motion' // eslint-disable-line no-unused-vars
-import emailjs from '@emailjs/browser'
 import { Mail, Github, Linkedin, Phone, ArrowUp, Send } from 'lucide-react'
 import { validateFormData, sanitizeFormData, checkRateLimit } from '../utils/validation'
 import { profile } from '../data/portfolio'
@@ -70,38 +69,24 @@ export default function ContactPanel() {
       return
     }
 
-    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID
-    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
-    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
-
-    if (!serviceId || !templateId || !publicKey) {
-      posthog.capture('contact_message_failed', { reason: 'configuration_missing' })
-      console.error('EmailJS configuration missing')
-      setStatus({
-        state: 'error',
-        message: `The form can’t send right now. Email me at ${profile.email} instead.`,
-      })
-      return
-    }
-
     posthog.capture('contact_form_submitted')
     setStatus({ state: 'sending', message: 'Sending…' })
     try {
-      await emailjs.send(
-        serviceId,
-        templateId,
-        {
+      // Netlify Forms takes the submission (the form is declared in
+      // public/__forms.html) and emails it on. Its notification uses a
+      // "subject" field as the email's subject line and "email" as Reply-To.
+      const response = await fetch('/__forms.html', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          'form-name': 'contact',
           name: clean.name,
           email: clean.email,
-          reply_to: clean.email,
-          subject: clean.subject,
+          subject: `Portfolio: ${clean.subject}`,
           message: clean.message,
-          projectType: '',
-          timeline: '',
-          budget: '',
-        },
-        publicKey
-      )
+        }).toString(),
+      })
+      if (!response.ok) throw new Error(`Form submission failed with ${response.status}`)
       posthog.capture('contact_message_sent')
       setForm(EMPTY)
       setErrors({})
