@@ -233,7 +233,9 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.th-hud-raw {
+/* Doubled up: ThesisTile.css loads after this file, and its .th-hud sets a
+   white color that would win at equal specificity. */
+.th-hud.th-hud-raw {
   top: 12px;
   right: 12px;
   padding: 6px 9px;
