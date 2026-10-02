@@ -4,7 +4,7 @@
   grid-template-areas:
     'xp xp xp xp xp xp xp xp edu edu edu edu'
     'stack stack stack stack stack stack stack stack res res res res'
-    'certs certs certs certs gh gh gh gh clock clock clock clock';
+    'gh gh gh gh thesis thesis thesis thesis thesis thesis thesis thesis';
   gap: var(--gap);
 }
 
@@ -20,27 +20,15 @@
   grid-area: res;
 }
 
-.tile-clock {
-  grid-area: clock;
-}
-
 .tile-stack {
   grid-area: stack;
-}
-
-.tile-certs {
-  grid-area: certs;
 }
 
 .tile-github {
   grid-area: gh;
 }
 
-/* ── Row lists (certificates) ──────────────────────── */
-.row-list > li + li {
-  border-top: 1px solid var(--line);
-}
-
+/* ── Link rows (GitHub profile, Experience links) ──────────── */
 .row-link {
   display: flex;
   align-items: center;
@@ -106,234 +94,6 @@
   }
 }
 
-/* ── Clock: the sky over Quezon City at this hour ─────────────── */
-/*
- * Each phase sets its own sky, text colors, and skyline. Text colors were
- * picked for 7:1 against the part of the sky they sit on.
- */
-.tile-clock {
-  --sky: linear-gradient(180deg, #86c8ff 0%, #b8e1ff 55%, #dff3ff 100%);
-  --sky-ink: #0b2236;
-  --sky-ink-2: #173049;
-  --sky-line: oklch(0.25 0.05 245 / 0.16);
-  --city: #1d3550;
-  --city-ink: oklch(0.97 0.01 245);
-  --window: oklch(1 0 0 / 0.22);
-  --arc: oklch(0.25 0.05 245 / 0.28);
-
-  display: flex;
-  flex-direction: column;
-  isolation: isolate;
-  border-color: transparent;
-  color: var(--sky-ink);
-}
-
-.sky-dawn {
-  --sky: linear-gradient(180deg, #b7c3ef 0%, #e8c9d8 55%, #ffc39b 100%);
-  --sky-ink: #1d1b3a;
-  --sky-ink-2: #2e2b4a;
-  --sky-line: oklch(0.25 0.05 290 / 0.16);
-  --city: #2c2850;
-  --arc: oklch(0.25 0.05 290 / 0.3);
-}
-
-.sky-dusk {
-  --sky: linear-gradient(180deg, #262a66 0%, #4c3a80 42%, #b75d80 74%, #f39a62 100%);
-  --sky-ink: #ffffff;
-  --sky-ink-2: #e9e4f7;
-  --sky-line: oklch(1 0 0 / 0.16);
-  --city: #1e1636;
-  --window: oklch(0.88 0.12 85 / 0.8);
-  --arc: oklch(1 0 0 / 0.35);
-}
-
-.sky-night {
-  --sky: linear-gradient(180deg, #0b1030 0%, #151c4a 58%, #252e68 100%);
-  --sky-ink: #f4f6ff;
-  --sky-ink-2: #c9cff0;
-  --sky-line: oklch(1 0 0 / 0.12);
-  --city: #070a1c;
-  --window: oklch(0.88 0.12 85 / 0.85);
-  --arc: oklch(1 0 0 / 0.26);
-}
-
-.sky {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: var(--sky);
-}
-
-.tile-clock .tile-head {
-  border-bottom-color: var(--sky-line);
-  color: var(--sky-ink-2);
-}
-
-.stars i {
-  position: absolute;
-  width: 2px;
-  height: 2px;
-  border-radius: 50%;
-  background: oklch(1 0 0);
-  box-shadow: 0 0 6px oklch(1 0 0 / 0.8);
-  animation: twinkle 3.2s ease-in-out infinite;
-  animation-delay: var(--d);
-}
-
-@keyframes twinkle {
-  0%,
-  100% {
-    opacity: 0.9;
-  }
-  50% {
-    opacity: 0.25;
-  }
-}
-
-.clock-body {
-  position: relative;
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  padding-bottom: 0;
-}
-
-.clock-time {
-  font-size: clamp(2.5rem, 1.9rem + 1.6vw, 3.375rem);
-  font-weight: 600;
-  letter-spacing: -0.035em;
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
-  color: var(--sky-ink);
-}
-
-.clock-place {
-  margin-top: 10px;
-  font-size: var(--text-sm);
-  line-height: 1.4;
-  color: var(--sky-ink);
-}
-
-/* The sun's (or moon's) path, horizon to horizon, resting on the rooftops. */
-.sky-arc {
-  position: relative;
-  flex: 1;
-  min-height: 64px;
-  margin: 26px 4px -6px;
-}
-
-.sky-arc svg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-
-.sky-arc path {
-  fill: none;
-  stroke: var(--arc);
-  stroke-width: 1.5;
-  stroke-dasharray: 3 5;
-}
-
-.orb {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  margin: -10px 0 0 -10px;
-  border-radius: 50%;
-}
-
-.orb-sun {
-  background: radial-gradient(circle at 40% 35%, #fff4c4, #ffd25e 55%, #ffb838);
-  box-shadow:
-    0 0 0 5px oklch(0.9 0.14 85 / 0.28),
-    0 0 26px 8px oklch(0.88 0.16 75 / 0.55);
-  animation: sun-glow 4s ease-in-out infinite;
-}
-
-@keyframes sun-glow {
-  50% {
-    box-shadow:
-      0 0 0 8px oklch(0.9 0.14 85 / 0.18),
-      0 0 34px 12px oklch(0.88 0.16 75 / 0.45);
-  }
-}
-
-.orb-moon {
-  width: 16px;
-  height: 16px;
-  margin: -8px 0 0 -8px;
-  background: #eef0ff;
-  box-shadow:
-    inset -4px -2px 0 oklch(0.82 0.03 270),
-    0 0 18px 4px oklch(0.95 0.03 270 / 0.4);
-}
-
-.skyline {
-  position: relative;
-  display: block;
-  width: 100%;
-  height: 58px;
-  margin-top: auto;
-  overflow: hidden;
-}
-
-/* The drawing's 400 × 60 box, fit like SVG's xMidYMax slice: full width,
-   bottom-aligned, and never shorter than the strip (then centered by `left`,
-   not a transform, which would resample the drawing). */
-.skyline-box {
-  position: absolute;
-  bottom: 0;
-  left: min(0px, (100% - 58px * 400 / 60) / 2);
-  width: max(100%, 58px * 400 / 60);
-  aspect-ratio: 400 / 60;
-}
-
-.skyline-box svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-.skyline .bldg {
-  fill: var(--city);
-}
-
-/* A 3 × 4 window with 0.6 corners, in the box's units. */
-.skyline .win {
-  position: absolute;
-  width: calc(3 / 400 * 100%);
-  height: calc(4 / 60 * 100%);
-  border-radius: 20% / 15%;
-  background: var(--window);
-}
-
-.sky-night .skyline .win,
-.sky-dusk .skyline .win {
-  animation: window-flicker 5s ease-in-out infinite;
-  animation-delay: var(--d);
-}
-
-@keyframes window-flicker {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  45% {
-    opacity: 0.35;
-  }
-}
-
-.clock-off {
-  padding: 2px var(--pad-tile) 18px;
-  background: var(--city);
-  font-size: var(--text-xs);
-  line-height: 1.45;
-  color: var(--city-ink);
-}
-
 /* ── Responsive ──────────────────────────────────────────────── */
 @media (max-width: 1100px) {
   .background-grid {
@@ -342,8 +102,8 @@
       'xp xp'
       'edu res'
       'stack stack'
-      'certs certs'
-      'gh clock';
+      'gh gh'
+      'thesis thesis';
   }
 }
 
@@ -355,21 +115,14 @@
       'edu'
       'res'
       'stack'
-      'certs'
       'gh'
-      'clock';
+      'thesis';
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .row-icon {
     transition: none;
-  }
-
-  .stars i,
-  .orb-sun,
-  .skyline .win {
-    animation: none;
   }
 
   a.row-link:hover .row-icon {

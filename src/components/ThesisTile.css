@@ -1,0 +1,620 @@
+/* ── Thesis: kidney CT segmentation ───────────────────────────── */
+
+/*
+ * Class colors. Charts use slots from the validated categorical palette, run
+ * in the order stone, cyst, tumor so every pair that touches clears the CVD
+ * and normal-vision checks in both themes (stone's gold sits under 3:1 on the
+ * light tile, so every stone mark carries a printed value). On the scan, which
+ * is dark in both themes, the kidney glows mint and the tumor coral.
+ */
+.th-scope {
+  --cls-kidney: #0b8f75;
+  --cls-stone: #eda100;
+  --cls-cyst: #2a78d6;
+  --cls-tumor: #e34948;
+  --cls-multi: color-mix(in oklch, var(--ink) 30%, var(--tile));
+  --cls-alone: color-mix(in oklch, var(--ink) 24%, var(--tile));
+  --scan-kidney: #64ffda;
+  --scan-tumor: #ff6f61;
+}
+
+:root[data-theme='dark'] .th-scope {
+  --cls-kidney: #199e70;
+  --cls-stone: #c98500;
+  --cls-cyst: #3987e5;
+  --cls-tumor: #e66767;
+  --cls-multi: color-mix(in oklch, var(--ink) 42%, var(--tile));
+  --cls-alone: color-mix(in oklch, var(--ink) 34%, var(--tile));
+}
+
+.th-scope [data-cls='kidney'] {
+  --c: var(--cls-kidney);
+  --sc: var(--scan-kidney);
+}
+
+.th-scope [data-cls='stone'] {
+  --c: var(--cls-stone);
+}
+
+.th-scope [data-cls='cyst'] {
+  --c: var(--cls-cyst);
+}
+
+.th-scope [data-cls='tumor'] {
+  --c: var(--cls-tumor);
+  --sc: var(--scan-tumor);
+}
+
+.th-scope [data-cls='multi'] {
+  --c: var(--cls-multi);
+}
+
+.th-dot {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c);
+}
+
+/* ── The tile ─────────────────────────────────────────────────── */
+.tile-thesis {
+  grid-area: thesis;
+  display: flex;
+  flex-direction: column;
+  container: thesis / inline-size;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.th-head h3 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+/*
+ * The + wears a label like My setup's (the App Store's Get button). Opening
+ * folds the label away and turns the + a quarter of the way, into the ×
+ * that closes the story.
+ */
+.th-expand {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  min-width: 30px;
+  height: 30px;
+  margin-block: -6px;
+  margin-right: -6px;
+  padding-left: 12px;
+  border-radius: 999px;
+  background: color-mix(in oklch, var(--ink) 8%, transparent);
+  /* A touch of ink keeps the label at 7:1 on the hover gray. */
+  color: color-mix(in oklch, var(--accent) 80%, var(--ink));
+  font-size: var(--text-xs);
+  font-weight: 600;
+  line-height: 1;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 0.25s ease,
+    color 0.3s ease,
+    padding 0.4s var(--ease-out),
+    transform 0.45s var(--ease-out);
+}
+
+.th-expand:focus-visible {
+  outline-offset: 2px;
+}
+
+.th-expand svg {
+  flex-shrink: 0;
+  margin-inline: 7px;
+  transition: transform 0.55s var(--ease-out);
+}
+
+.th-expand-label {
+  display: grid;
+  grid-template-columns: 1fr;
+  transition:
+    grid-template-columns 0.4s var(--ease-out),
+    opacity 0.25s ease;
+}
+
+.th-expand-label > span {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.th-expand.is-open {
+  padding-left: 0;
+  color: var(--ink);
+}
+
+.th-expand.is-open .th-expand-label {
+  grid-template-columns: 0fr;
+  opacity: 0;
+}
+
+.th-expand.is-open svg {
+  transform: rotate(45deg);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tile-thesis:hover .th-expand {
+    background: color-mix(in oklch, var(--ink) 11%, transparent);
+    transform: scale(1.04);
+  }
+
+  .tile-thesis:hover .th-scan-tile {
+    transform: scale(1.012);
+  }
+}
+
+.tile-thesis:active .th-expand {
+  transform: scale(0.94);
+  transition-duration: 0.12s;
+}
+
+.th-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(220px, 46cqi, 430px);
+  align-items: center;
+  gap: clamp(20px, 3.4cqi, 36px);
+}
+
+.th-copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.th-meta {
+  font-size: var(--text-xs);
+  line-height: 1.4;
+  color: var(--ink-2);
+  text-wrap: balance;
+}
+
+.th-title {
+  margin-top: 8px;
+  font-size: var(--text-lg);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+.th-summary {
+  margin-top: 10px;
+  max-width: 52ch;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+.th-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  font-size: var(--text-xs);
+  line-height: 1.4;
+  color: var(--ink-2);
+}
+
+/* ── Dice bars ────────────────────────────────────────────────── */
+.th-dice {
+  margin-top: 22px;
+}
+
+.th-dice-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 14px;
+  font-size: var(--text-xs);
+  line-height: 1.3;
+  color: var(--ink-2);
+}
+
+.th-dice-title {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.th-keys {
+  display: flex;
+  gap: 12px;
+}
+
+.th-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.th-key i {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+
+.th-key-alone {
+  background: var(--cls-alone);
+}
+
+/* Together is drawn in each class's own color; the key shows all three. */
+.th-key-together {
+  background: linear-gradient(
+    90deg,
+    var(--cls-stone) 0 33.4%,
+    var(--cls-cyst) 33.4% 66.7%,
+    var(--cls-tumor) 66.7%
+  );
+}
+
+.th-dice-rows {
+  display: grid;
+  gap: 2px;
+  margin-top: 8px;
+}
+
+.th-dice-row {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  margin-inline: -8px;
+  padding: 5px 8px;
+  border-radius: 10px;
+  transition: background-color 0.25s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .th-dice-row:hover {
+    background: var(--tile-sunk);
+  }
+}
+
+.th-dice-name {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--ink);
+}
+
+.th-dice-track {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.th-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 13px;
+}
+
+/* Square at the baseline, rounded at the value. 1.0 would fill 80%,
+   leaving room for the label. */
+.th-bar-fill {
+  flex: none;
+  width: calc(var(--v) * 80%);
+  min-width: 3px;
+  height: 6px;
+  border-radius: 1px 3px 3px 1px;
+  background: var(--fill);
+  transform-origin: left center;
+}
+
+.th-bar-alone {
+  --fill: var(--cls-alone);
+}
+
+.th-bar-together {
+  --fill: var(--c);
+}
+
+.th-bar-val {
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-2);
+}
+
+.th-bar-together .th-bar-val {
+  color: var(--ink);
+}
+
+.th-dice[data-state='armed'] .th-bar-fill {
+  transform: scaleX(0);
+}
+
+.th-dice[data-state='armed'] .th-bar-val {
+  opacity: 0;
+}
+
+.th-dice[data-state='run'] .th-bar-fill {
+  animation: th-grow 0.9s var(--ease-out) both;
+  animation-delay: calc(var(--i) * 90ms + var(--d0));
+}
+
+.th-dice[data-state='run'] .th-bar-val {
+  animation: th-value 0.45s ease both;
+  animation-delay: calc(var(--i) * 90ms + var(--d0) + 520ms);
+}
+
+.th-dice .th-bar-alone {
+  --d0: 250ms;
+}
+
+.th-dice .th-bar-together {
+  --d0: 700ms;
+}
+
+@keyframes th-grow {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes th-value {
+  from {
+    opacity: 0;
+    transform: translateX(-4px);
+  }
+}
+
+/* ── The scan ─────────────────────────────────────────────────── */
+.th-figure {
+  min-width: 0;
+}
+
+.th-scan {
+  --sweep-dur: 1.9s;
+  --sweep-ease: cubic-bezier(0.55, 0.05, 0.25, 1);
+
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: var(--r-inner);
+  background: #000;
+  isolation: isolate;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.th-scan-tile {
+  box-shadow: 0 0 0 1px color-mix(in oklch, var(--ink) 8%, transparent);
+  transition: transform 0.6s var(--ease-out);
+}
+
+.th-scan-tile.is-lifted {
+  visibility: hidden;
+}
+
+.th-ct {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transition: filter 0.35s ease;
+}
+
+.th-ov {
+  position: absolute;
+  inset: 0;
+  opacity: var(--ov);
+  transition: opacity 0.35s ease;
+}
+
+.th-ov-fill,
+.th-ov-edge {
+  position: absolute;
+  inset: 0;
+  background: var(--sc);
+  -webkit-mask: var(--m) center / 100% 100% no-repeat;
+  mask: var(--m) center / 100% 100% no-repeat;
+}
+
+.th-ov-fill {
+  --m: var(--mask);
+  opacity: 0.5;
+}
+
+.th-ov-edge {
+  --m: var(--edge);
+}
+
+/* Isolating a class dims the rest; a class this slice doesn't have dims all. */
+.th-scan[data-focus] .th-ov {
+  opacity: calc(var(--ov) * 0.16);
+}
+
+.th-scan[data-focus='kidney'] .th-ov[data-cls='kidney'],
+.th-scan[data-focus='tumor'] .th-ov[data-cls='tumor'] {
+  opacity: var(--ov);
+}
+
+.th-scan[data-focus] .th-ct {
+  filter: brightness(0.72);
+}
+
+.th-scan[data-raw] .th-ov,
+.th-ov[data-off] {
+  opacity: 0;
+}
+
+/*
+ * The first look: a scan line passes down the slice and paints in what the
+ * model found behind it. The overlay's clip and the line share one timing, so
+ * the paint always sits right under the line.
+ */
+.th-sweep {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  transform: translateY(-100%);
+  background: linear-gradient(180deg, transparent 62%, color-mix(in oklab, var(--scan-kidney) 14%, transparent));
+}
+
+.th-sweep::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  background: var(--scan-kidney);
+  box-shadow: 0 0 14px 2px color-mix(in oklab, var(--scan-kidney) 65%, transparent);
+}
+
+.th-scan[data-state='armed'] .th-ov {
+  clip-path: inset(0 0 100% 0);
+}
+
+.th-scan[data-state='run'] .th-ov {
+  animation: th-reveal var(--sweep-dur) var(--sweep-ease) both;
+}
+
+.th-scan[data-state='run'] .th-sweep {
+  animation: th-sweep var(--sweep-dur) var(--sweep-ease) both;
+}
+
+@keyframes th-reveal {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes th-sweep {
+  0% {
+    transform: translateY(-100%);
+    opacity: 1;
+  }
+  86% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+}
+
+/* Labels over the scan: dark glass, since the scan is dark in both themes. */
+.th-hud {
+  position: absolute;
+  z-index: 2;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  color: oklch(0.97 0 0);
+  pointer-events: none;
+}
+
+.th-hud-slice {
+  top: 12px;
+  left: 12px;
+  padding: 6px 9px;
+  border-radius: 999px;
+  background: oklch(0.12 0.004 175 / 0.62);
+  font-variant-numeric: tabular-nums;
+  -webkit-backdrop-filter: blur(12px) saturate(1.4);
+  backdrop-filter: blur(12px) saturate(1.4);
+}
+
+.th-hud-legend {
+  bottom: 12px;
+  left: 12px;
+  display: flex;
+  gap: 6px;
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 0.4s ease,
+    transform 0.6s var(--ease-out);
+}
+
+.th-hud-legend.is-shown {
+  opacity: 1;
+  transform: none;
+}
+
+.th-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px 6px 8px;
+  border-radius: 999px;
+  background: oklch(0.12 0.004 175 / 0.62);
+  -webkit-backdrop-filter: blur(12px) saturate(1.4);
+  backdrop-filter: blur(12px) saturate(1.4);
+}
+
+.th-scan .th-dot,
+.th-hud .th-dot {
+  background: var(--sc);
+}
+
+.th-hud-none {
+  top: 50%;
+  left: 50%;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: oklch(0.12 0.004 175 / 0.72);
+  white-space: nowrap;
+  opacity: 0;
+  transform: translate(-50%, -40%);
+  transition:
+    opacity 0.25s ease,
+    transform 0.45s var(--ease-out);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.th-hud-none.is-shown {
+  opacity: 1;
+  transform: translate(-50%, -50%);
+}
+
+/* Narrow tiles stack: the scan first, as wide as the tile. */
+@container thesis (max-width: 600px) {
+  .th-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .th-figure {
+    order: -1;
+  }
+
+  .th-dice {
+    margin-top: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .th-expand,
+  .th-expand svg,
+  .th-expand-label,
+  .th-scan-tile,
+  .th-hud-legend,
+  .th-hud-none,
+  .th-ov,
+  .th-ct {
+    transition: none;
+  }
+
+  .tile-thesis:hover .th-scan-tile {
+    transform: none;
+  }
+}
