@@ -27,7 +27,8 @@ export default function ThesisTile({ variants }) {
   const [swept, setSwept] = useState(false)
   const [focus, setFocus] = useState(null)
   const [open, setOpen] = useState(false)
-  // The tile's scan hides while its stand-in is out flying.
+  // The tile leaves its slot empty while the story is out of it, the way an
+  // App Store card does; the story's card wears its face at either end.
   const [lifted, setLifted] = useState(false)
   const [mounted, setMounted] = useState(false)
 
@@ -40,7 +41,8 @@ export default function ThesisTile({ variants }) {
 
   const openStory = () => {
     if (open) return
-    setLifted(true)
+    // With reduced motion the story only fades in over the page.
+    if (!reduce) setLifted(true)
     setOpen(true)
     posthog.capture('thesis_story_opened')
   }
@@ -51,13 +53,7 @@ export default function ThesisTile({ variants }) {
   // no longer inert (focusing it any sooner silently fails).
   const returnFocus = useCallback(() => toggleRef.current?.focus({ preventScroll: true }), [])
 
-  const getOrigin = useCallback(
-    () => ({
-      card: ref.current?.getBoundingClientRect(),
-      scan: scanRef.current?.getBoundingClientRect(),
-    }),
-    []
-  )
+  const getOrigin = useCallback(() => ({ tile: ref.current, scan: scanRef.current }), [])
 
   const found = SLICE_CLASSES.map((id) => CLASS_NAMES[id])
   const missing = focus && !SLICE_CLASSES.includes(focus)
@@ -66,7 +62,7 @@ export default function ThesisTile({ variants }) {
     <motion.article
       ref={ref}
       variants={variants}
-      className={`tile tile-thesis th-scope${open ? ' is-open' : ''}`}
+      className={`tile tile-thesis th-scope${open ? ' is-open' : ''}${lifted ? ' is-lifted' : ''}`}
       aria-labelledby="thesis-title"
       onClick={openStory}
     >
@@ -106,7 +102,7 @@ export default function ThesisTile({ variants }) {
         <figure className="th-figure">
           <ThesisScan
             ref={scanRef}
-            className={`th-scan-tile${lifted ? ' is-lifted' : ''}`}
+            className="th-scan-tile"
             state={state}
             focus={focus}
             onSwept={() => setSwept(true)}

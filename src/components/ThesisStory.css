@@ -23,14 +23,33 @@
   border-radius: var(--r-tile);
 }
 
-/* The sheet's shadow. It grows out of the tile squashed to the tile's shape,
-   so it carries nothing that could look squashed; the scroller paints the
-   surface, clipped to the same box as it grows. */
+/* The sheet. It grows out of the tile squashed to the tile's shape, and clips
+   everything inside to its own corners on the way. */
 .th-card {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--tile);
+  border-radius: inherit;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
+/* Its shadow, apart from it so it can fade in as the card leaves the tile
+   and out as it lands, where the tile sits nearly flat. */
+.th-lift {
   position: absolute;
   inset: 0;
   border-radius: inherit;
   box-shadow: var(--shadow-float);
+  transform-origin: 0 0;
+  will-change: transform, opacity;
+}
+
+/* Scaled back against the card, so the words keep their size in flight. */
+.th-sheet {
+  position: absolute;
+  inset: 0;
   transform-origin: 0 0;
   will-change: transform;
 }
@@ -38,12 +57,36 @@
 .th-scroll {
   position: absolute;
   inset: 0;
+  /* Keeps the scan's labels and the Hold button under the tile's face. */
+  isolation: isolate;
   background: var(--tile);
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
-  border-radius: inherit;
   container: story / inline-size;
+}
+
+/* The tile's face, laid over the story's at either end of a flight. */
+.th-ghost {
+  position: absolute;
+  inset: 0;
+  background: var(--tile);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.th-ghost > .tile {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* A still copy: nothing in it plays again. */
+.th-ghost *,
+.th-ghost *::before,
+.th-ghost *::after {
+  animation: none !important;
+  transition: none !important;
 }
 
 @supports (corner-shape: squircle) {
@@ -51,8 +94,8 @@
     border-radius: calc(var(--r-tile) * 1.75);
   }
 
-  .th-card,
-  .th-scroll {
+  .th-lift,
+  .th-card {
     corner-shape: squircle;
   }
 }
@@ -101,6 +144,18 @@
   width: 100%;
   height: 100%;
   border-radius: 0;
+}
+
+/* Its labels are scaled back against the flight from the scan's corners,
+   12px out from their own (where .th-hud-slice and .th-hud-legend sit). */
+.th-fly .th-hud-slice {
+  transform-origin: -12px -12px;
+}
+
+/* Set every frame, along with the tile's face. */
+.th-fly .th-hud-legend {
+  transform-origin: -12px calc(100% + 12px);
+  transition: none;
 }
 
 @keyframes th-arrive {
@@ -840,8 +895,8 @@
   }
 
   .th-panel,
-  .th-card,
-  .th-scroll {
+  .th-lift,
+  .th-card {
     border-radius: 0;
   }
 
@@ -856,11 +911,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .th-card {
-    animation: th-card-in 0.2s ease both;
-  }
-
-  .th-scroll {
+  .th-panel {
     animation: th-card-in 0.2s ease both;
   }
 

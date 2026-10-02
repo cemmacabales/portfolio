@@ -21,6 +21,8 @@ const LAYERS = {
  * prerender and reduced motion get), 'armed' hides it until the sweep, 'run'
  * plays the sweep once. `focus` isolates one class; a class that isn't on this
  * slice dims them all. `show` and `opacity` mirror the Gradio app's controls.
+ * `decoding` is 'sync' for copies that appear mid-animation, so the slice is
+ * never missing from their first frame.
  */
 export default function ThesisScan({
   ref,
@@ -29,6 +31,7 @@ export default function ThesisScan({
   show,
   opacity = 1,
   raw = false,
+  decoding = 'async',
   className = '',
   onSwept,
   children,
@@ -42,7 +45,7 @@ export default function ThesisScan({
       data-raw={raw || undefined}
       style={{ '--ov': opacity }}
     >
-      <img className="th-ct" src={ctSlice} alt="" draggable="false" decoding="async" />
+      <img className="th-ct" src={ctSlice} alt="" draggable="false" decoding={decoding} />
       {SLICE_CLASSES.map((id) => (
         <span
           key={id}
