@@ -93,7 +93,7 @@ Carl is open to full-time employment, freelance/contract work, and research coll
 - No accounts and no server: everything is saved on the phone. It helps people keep track and gives no medical advice
 - Has a 60-second promo film, playable from its row in Selected work
 - Tech: React Native, Expo, TypeScript, SQLite on the device
-- Code: https://github.com/cemmacabales/meditrack
+- The code is private, so there's no public repo to link
 
 **Apartment Dashboard Management App**
 - Full property management dashboard with real-time data visualization and tenant tracking
