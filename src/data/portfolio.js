@@ -250,7 +250,7 @@ export const projects = [
     imageAlt:
       'Deni on three iPhones: today’s doses on a pearl foil pack under a morning sky, the mood journal, and a week of doses in Insights',
     summary:
-      'A medication tracker for iPhone. My dad started maintenance meds early in life, and it’s my mom who keeps him on track. Not everyone has someone like that. Deni is meant to be that reminder for anyone who doesn’t, or for anyone who simply wants something dependable to lean on. Your meds are organized just like a medicine cabinet, so everything you take is in one place. A journal tracks how you’re feeling alongside your doses, and Insights sums up your week in a one-page report you can share with your doctor.',
+      'A medication tracker for iPhone. My dad started maintenance meds early in life, and it’s my mom who keeps him on track. Not everyone has someone like that. Deni is meant to be that reminder for anyone who doesn’t, or for anyone who simply wants something dependable to lean on. Deni organizes your meds like they’re all in one cabinet, so you always know what to take and when. A journal tracks how you’re feeling alongside your doses, and Insights sums up your week in a one-page report you can share with your doctor.',
     metrics: [],
     tech: ['React Native', 'Expo', 'TypeScript', 'SQLite'],
     links: { code: 'https://github.com/cemmacabales/meditrack' },
