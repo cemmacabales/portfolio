@@ -82,11 +82,16 @@ Carl is open to full-time employment, freelance/contract work, and research coll
 - Tech: Next.js, React, TypeScript, PostgreSQL, Prisma, Stellar SDK, Freighter/Albedo wallets, Redis, Sentry, Railway
 - Beta: https://beta.centient.work · Code: https://github.com/cemmacabales/centient
 
-**iPrayUST — Digital Prayer Companion** (Jun–Dec 2025)
-- Cross-platform mobile app for the UST community with 10,000+ users and daily content
-- Firebase backend (Firestore, Auth, Storage) managing 500+ prayer resources; admin CMS cut content update time by ~80%
-- Offline-first caching reduced network requests by ~40%; maintained 60fps UI performance
-- Tech: React Native, Expo, TypeScript, Firebase
+**Deni — Medication tracker for iPhone** (Oct 2026, in progress)
+- Not released yet: say "coming soon to iPhone", never that it's on the App Store
+- The day's doses sit on one pearl foil blister pack under a sky that changes with the time of day; tap a dose to take it
+- One reminder per time of day; a long press on the reminder takes the dose or snoozes it 10 minutes without opening the app
+- Add a med by picking its shape and colors so it looks like the real pill; a mood and symptom journal lists the doses taken before each entry
+- Insights lines up a week of doses, mood, and symptoms; the week becomes a one-page PDF report to share with a doctor
+- No accounts and no server: everything is saved on the phone. It helps people keep track and gives no medical advice
+- Has a 60-second promo film, playable from its row in Selected work
+- Tech: React Native, Expo, TypeScript, SQLite on the device
+- Code: https://github.com/cemmacabales/meditrack
 
 **Apartment Dashboard Management App**
 - Full property management dashboard with real-time data visualization and tenant tracking

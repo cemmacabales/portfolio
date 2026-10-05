@@ -11,6 +11,9 @@ import AxialModelTestingImage from '../assets/axial model testing.webp'
 import ReadMyFaceImage from '../assets/readmyface.webp'
 import MyAptImage from '../assets/myapt.webp'
 import PetchinguImage from '../assets/petchingu.webp'
+import DeniCover from '../assets/deni/cover.webp'
+import DeniPromo from '../assets/deni/promo.mp4'
+import DeniPromoPoster from '../assets/deni/promo-poster.webp'
 import MapuaImage from '../assets/Mapua.webp'
 import StPaulImage from '../assets/stpaul.webp'
 import IpsaImage from '../assets/ipsa.webp'
@@ -25,6 +28,7 @@ import AxialModelTestingThumb from '../assets/thumbs/axial model testing.webp'
 import ReadMyFaceThumb from '../assets/thumbs/readmyface.webp'
 import MyAptThumb from '../assets/thumbs/myapt.webp'
 import PetchinguThumb from '../assets/thumbs/petchingu.webp'
+import DeniThumb from '../assets/thumbs/deni.webp'
 import IcipcnCert from '../assets/cert-icipcn.webp'
 import CspaCert from '../assets/cert-cspa.webp'
 import SpiderMan2Cover from '../assets/games/spiderman-2.webp'
@@ -233,6 +237,30 @@ export const projects = [
       code: 'https://github.com/cemmacabales/centient',
     },
     demoLabel: 'Try the beta',
+  },
+  {
+    // The cover frames real iOS screens in Apple's iPhone 18 Pro bezel. The
+    // film is the 60-second promo, played from the row (see FilmPlayer).
+    slug: 'deni',
+    name: 'Deni',
+    category: 'iPhone app · Medication tracker',
+    year: '2026',
+    image: DeniCover,
+    thumb: DeniThumb,
+    imageAlt:
+      'Deni on three iPhones: today’s doses on a pearl foil pack under a morning sky, the mood journal, and a week of doses in Insights',
+    summary:
+      'A medication tracker for iPhone. The day’s doses sit on one pearl foil pack under a sky that follows the time of day. Reminders can be taken or snoozed from the lock screen, each med is drawn to match the real pill, and a mood journal sits beside the doses. The week becomes a one-page PDF for a doctor, and everything stays on the phone.',
+    metrics: [],
+    tech: ['React Native', 'Expo', 'TypeScript', 'SQLite'],
+    links: { code: 'https://github.com/cemmacabales/meditrack' },
+    film: {
+      src: DeniPromo,
+      poster: DeniPromoPoster,
+      title: 'Deni promo film',
+      length: '1:00',
+    },
+    note: 'Coming soon to iPhone.',
   },
   {
     slug: 'edge-coach',

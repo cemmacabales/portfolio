@@ -1,0 +1,170 @@
+/*
+ * A dark screening room in both themes, like Quick Look on a video: the page
+ * dims and blurs behind a 16:9 frame with a title bar above it. The dialog
+ * fills the viewport, so a click anywhere off the film lands on it and
+ * closes. Colors are fixed because the room never changes with the theme.
+ */
+.film {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: clamp(16px, 4vw, 48px);
+  border: 0;
+  background: transparent;
+  color: oklch(0.98 0 0);
+  overscroll-behavior: contain;
+}
+
+.film[open] {
+  display: grid;
+  place-items: center;
+  animation: film-fade-in 0.3s ease;
+}
+
+.film::backdrop {
+  background: oklch(0.13 0.01 270 / 0.76);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  backdrop-filter: blur(20px) saturate(140%);
+  animation: film-fade-in 0.3s ease;
+}
+
+/* The page stays put behind the film. The gutter keeps a classic scrollbar's
+   width, so nothing shifts sideways. */
+:root:has(.film[open]) {
+  overflow: hidden;
+  scrollbar-gutter: stable;
+}
+
+.film-stage {
+  /* As wide as the window allows, but short enough that the bar and the
+     whole frame fit its height. */
+  width: min(100%, 1180px, calc((100dvh - 150px) * 16 / 9));
+  min-width: min(100%, 280px);
+}
+
+.film[open] .film-stage {
+  animation: film-rise 0.45s var(--ease-out);
+}
+
+.film-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.film-title {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.film-length {
+  margin-left: 8px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: oklch(1 0 0 / 0.62);
+}
+
+.film-close {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid oklch(1 0 0 / 0.14);
+  background: oklch(1 0 0 / 0.12);
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 0.2s ease,
+    transform 0.3s var(--ease-out);
+}
+
+.film-close:hover {
+  background: oklch(1 0 0 / 0.22);
+}
+
+.film-close:active {
+  transform: scale(0.92);
+  transition-duration: 0.1s;
+}
+
+.film-close:focus-visible {
+  outline: 2px solid oklch(1 0 0 / 0.9);
+  outline-offset: 2px;
+}
+
+.film-frame {
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: clamp(12px, 1.8vw, 22px);
+  background: oklch(0.1 0.01 270);
+  box-shadow:
+    0 40px 90px -30px oklch(0 0 0 / 0.75),
+    0 0 0 0.5px oklch(1 0 0 / 0.12);
+}
+
+.film-frame video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.film.is-closing {
+  animation: film-fade-out 0.22s ease forwards;
+}
+
+.film.is-closing::backdrop {
+  animation: film-fade-out 0.22s ease forwards;
+}
+
+.film.is-closing .film-stage {
+  animation: film-sink 0.22s ease forwards;
+}
+
+@keyframes film-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes film-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes film-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+  }
+}
+
+@keyframes film-sink {
+  to {
+    transform: translateY(8px) scale(0.98);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .film[open],
+  .film::backdrop,
+  .film[open] .film-stage,
+  .film.is-closing,
+  .film.is-closing::backdrop,
+  .film.is-closing .film-stage {
+    animation: none;
+  }
+
+  .film-close {
+    transition: none;
+  }
+}

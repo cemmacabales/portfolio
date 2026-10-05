@@ -1,7 +1,9 @@
+import { useCallback, useState } from 'react'
 import { motion } from 'framer-motion' // eslint-disable-line no-unused-vars
-import { ArrowUpRight, Plus } from 'lucide-react'
+import { ArrowUpRight, Play, Plus } from 'lucide-react'
 import { projects } from '../data/portfolio'
 import posthog from '../posthog'
+import FilmPlayer from './FilmPlayer'
 import './WorkList.css'
 
 const EASE = [0.16, 1, 0.3, 1]
@@ -19,6 +21,14 @@ function ExternalButton({ href, variant, children }) {
 function WorkRow({ project, index, open, onToggle, onShowModels }) {
   const panelId = `work-panel-${project.slug}`
   const { demo, paper, code } = project.links
+  const { film } = project
+  const [filmOpen, setFilmOpen] = useState(false)
+  const closeFilm = useCallback(() => setFilmOpen(false), [])
+
+  const playFilm = () => {
+    posthog.capture('project_film_played', { project_slug: project.slug })
+    setFilmOpen(true)
+  }
 
   return (
     <motion.li
@@ -73,6 +83,23 @@ function WorkRow({ project, index, open, onToggle, onShowModels }) {
         <div className="work-panel-inner">
           <figure className="work-figure">
             <img src={project.image} alt={project.imageAlt} loading="lazy" decoding="async" />
+            {/* A pointer shortcut to the film. Keyboard and screen reader
+                users get the same thing from the button in the actions. */}
+            {film && (
+              <button
+                type="button"
+                className="work-film"
+                tabIndex={-1}
+                aria-hidden="true"
+                onClick={playFilm}
+              >
+                <span className="work-film-cue">
+                  <Play size={14} strokeWidth={0} fill="currentColor" />
+                  Watch the film
+                  <span className="work-film-length">{film.length}</span>
+                </span>
+              </button>
+            )}
           </figure>
 
           <div className="work-detail">
@@ -96,6 +123,12 @@ function WorkRow({ project, index, open, onToggle, onShowModels }) {
             </ul>
 
             <div className="work-actions">
+              {film && (
+                <button type="button" className="btn btn-sm btn-mint" onClick={playFilm}>
+                  <Play size={14} strokeWidth={0} fill="currentColor" aria-hidden="true" />
+                  Watch the film
+                </button>
+              )}
               {project.models && (
                 <button
                   type="button"
@@ -126,6 +159,8 @@ function WorkRow({ project, index, open, onToggle, onShowModels }) {
           </div>
         </div>
       </motion.div>
+
+      {film && <FilmPlayer film={film} open={filmOpen} onClose={closeFilm} />}
     </motion.li>
   )
 }
