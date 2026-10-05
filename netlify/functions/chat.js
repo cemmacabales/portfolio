@@ -84,7 +84,7 @@ Carl is open to full-time employment, freelance/contract work, and research coll
 
 **Deni — Medication tracker for iPhone** (Oct 2026, in progress)
 - Not released yet: say "coming soon to iPhone", never that it's on the App Store
-- Inspired by Carl's dad, who started maintenance meds early in life and has Carl's mom to remind him. Deni is for people with no one to remind them, and for anyone who wants something to rely on so they don't forget their meds
+- Why it exists: Carl's dad started maintenance meds early in life, and Carl's mom keeps him on track. Not everyone has someone like that, so Deni is meant to be that reminder for people who don't, or for anyone who wants something dependable to lean on. Don't call it "inspired by" his dad
 - Highlights: a medication cabinet with every med drawn to look like the real pill, a mood and symptom journal, and Insights that turns the week into a report to share with a doctor
 - The day's doses sit on one pearl foil blister pack under a sky that changes with the time of day; tap a dose to take it
 - One reminder per time of day; a long press on the reminder takes the dose or snoozes it 10 minutes without opening the app
