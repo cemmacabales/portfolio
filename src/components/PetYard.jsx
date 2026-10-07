@@ -139,29 +139,31 @@ const TUFT = ['..g..', 'g.g.g', '.ggg.']
 const TREAT_W = BONE[0].length * PX
 const TREAT_H = BONE.length * PX
 
-// Merge each row's runs of one character into a single rect.
-function toRects(rows) {
-  const rects = []
+// One path per color: each row's run of one character is a 1-pixel-tall box
+// in that color's path. Drawing a sprite this way takes a handful of nodes
+// instead of one rect per run (three pets were 400 nodes of the page).
+function toPaths(rows) {
+  const paths = {}
   rows.forEach((row, y) => {
     let x = 0
     while (x < row.length) {
       const c = row[x]
       let end = x + 1
       while (row[end] === c) end += 1
-      if (FILL[c]) rects.push({ x, y, w: end - x, c: FILL[c] })
+      if (FILL[c]) paths[FILL[c]] = `${paths[FILL[c]] ?? ''}M${x} ${y}h${end - x}v1h${x - end}z`
       x = end
     }
   })
-  return rects
+  return Object.entries(paths).map(([c, d]) => ({ c, d }))
 }
 
 for (const [name, sprite] of Object.entries(SPRITES)) {
-  sprite.rects = {}
+  sprite.paths = {}
   for (const [frame, rows] of Object.entries(sprite.frames)) {
     if (import.meta.env.DEV && rows.some((row) => row.length !== sprite.w)) {
       console.warn(`PetYard: ${name}.${frame} has a row that isn't ${sprite.w} wide`)
     }
-    sprite.rects[frame] = toRects(rows)
+    sprite.paths[frame] = toPaths(rows)
   }
 }
 
@@ -207,7 +209,7 @@ const PETS = [
 const SLEEPY_LINE = 'Mrrp… five more minutes.'
 
 function Sprite({ species }) {
-  const { w, h, rects } = SPRITES[species]
+  const { w, h, paths } = SPRITES[species]
   return (
     <svg
       className="pet-sprite"
@@ -217,10 +219,10 @@ function Sprite({ species }) {
       shapeRendering="crispEdges"
       aria-hidden="true"
     >
-      {Object.entries(rects).map(([frame, list]) => (
+      {Object.entries(paths).map(([frame, list]) => (
         <g key={frame} className={`f f-${frame}`}>
-          {list.map((r) => (
-            <rect key={`${r.x}-${r.y}`} x={r.x} y={r.y} width={r.w} height="1" className={r.c} />
+          {list.map(({ c, d }) => (
+            <path key={c} d={d} className={c} />
           ))}
         </g>
       ))}
@@ -240,8 +242,8 @@ function PixelArt({ rows, scale = PX, className }) {
       shapeRendering="crispEdges"
       aria-hidden="true"
     >
-      {toRects(rows).map((r) => (
-        <rect key={`${r.x}-${r.y}`} x={r.x} y={r.y} width={r.w} height="1" className={r.c} />
+      {toPaths(rows).map(({ c, d }) => (
+        <path key={c} d={d} className={c} />
       ))}
     </svg>
   )

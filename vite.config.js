@@ -43,6 +43,25 @@ export default defineConfig(({ isSsrBuild }) => ({
       }
     },
     {
+      // The stylesheets stop blocking the first paint, so the boot loader
+      // (styled inline in index.html) shows as soon as the HTML arrives. Nothing
+      // else is visible until the app renders, and main.jsx holds that render
+      // until these are applied. <noscript> keeps them for visitors without JS.
+      name: 'async-css',
+      apply: 'build',
+      transformIndexHtml: {
+        order: 'post',
+        handler(html) {
+          const blocking = []
+          const out = html.replace(/<link rel="stylesheet" crossorigin href="([^"]+)">/g, (tag, href) => {
+            blocking.push(tag)
+            return `<link rel="preload" as="style" crossorigin href="${href}" data-app-css onload="this.onload=null;this.rel='stylesheet'">`
+          })
+          return out.replace('</head>', () => `<noscript>${blocking.join('')}</noscript>\n  </head>`)
+        }
+      }
+    },
+    {
       name: 'security-headers',
       configureServer(server) {
         // Rate limiting store for development

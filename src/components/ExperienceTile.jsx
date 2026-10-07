@@ -77,7 +77,7 @@ function Figures({ text }) {
 // The company's own mark, or an Apple Contacts-style monogram when it has none.
 function Mark({ entry, className }) {
   if (entry.logo) {
-    return <img src={entry.logo} alt="" className={`xp-mark ${className}`} draggable="false" />
+    return <img src={entry.logo} alt="" className={`xp-mark ${className}`} draggable="false" loading="lazy" />
   }
   return (
     <span className={`xp-mark xp-mono ${className}`} aria-hidden="true">

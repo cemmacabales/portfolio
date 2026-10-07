@@ -103,6 +103,7 @@ export default function ThesisTile({ variants }) {
           <ThesisScan
             ref={scanRef}
             className="th-scan-tile"
+            loading="lazy"
             state={state}
             focus={focus}
             onSwept={() => setSwept(true)}

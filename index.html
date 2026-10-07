@@ -31,6 +31,13 @@
         scrollbar-gutter: stable;
       }
 
+      /* The prerendered copy of the page (scripts/prerender.js) is for
+         crawlers and visitors without JS. Everyone else gets React's render
+         in a moment, so skip styling and laying out this one meanwhile. */
+      html.is-booting [data-ssr] {
+        display: none;
+      }
+
       #boot {
         --b-canvas: oklch(0.948 0.004 175);
         --b-tile: oklch(0.992 0.0015 175);

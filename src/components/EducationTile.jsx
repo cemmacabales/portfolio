@@ -275,9 +275,12 @@ export default function EducationTile({ variants }) {
                 >
                   <img
                     src={era.photo.src}
+                    srcSet={era.photo.srcSet}
+                    sizes="210px"
                     alt={era.photo.alt}
                     style={{ objectPosition: era.photo.position }}
                     draggable="false"
+                    loading="lazy"
                     decoding="async"
                   />
                   {depth === 0 && (

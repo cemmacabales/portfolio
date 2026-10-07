@@ -4,10 +4,9 @@ import { ArrowUpRight, ArrowDown, Github, Trophy, Pause, Play } from 'lucide-rea
 import ShapeWaves from './ShapeWaves'
 import HeroDesk from './HeroDesk'
 import AssistantTile from './AssistantTile'
-import GradPhoto from '../assets/me.webp'
-import BarongPhoto from '../assets/me-barong.webp'
-import ResumePage from '../assets/resume-page.jpg'
+import ResumePage from '../assets/resume-page.webp'
 import { profile, featured } from '../data/portfolio'
+import { barongPhoto, gradPhoto, PORTRAIT_SIZES, REEL_SIZES } from '../data/photos'
 import { usePageVisible } from '../hooks/useCycle'
 import { useBooted } from '../hooks/useBooted'
 import { markReady } from '../boot'
@@ -48,8 +47,8 @@ const word = {
 // blends into the studio background instead of showing a band. `theme` is the
 // site theme the outfit matches: flipping the theme brings that photo up.
 const PORTRAITS = [
-  { src: BarongPhoto, alt: 'Carl smiling in a white barong', width: 1080, height: 1098, backdrop: '#2e323d', theme: 'light' },
-  { src: GradPhoto, alt: 'Carl in graduation robes', width: 1080, height: 1117, backdrop: '#0b0b0b', theme: 'dark' },
+  { ...barongPhoto, alt: 'Carl smiling in a white barong', width: 1080, height: 1098, backdrop: '#2e323d', theme: 'light' },
+  { ...gradPhoto, alt: 'Carl in graduation robes', width: 1080, height: 1117, backdrop: '#0b0b0b', theme: 'dark' },
 ]
 
 const FADE = 0.9
@@ -107,9 +106,14 @@ function Portrait({ theme }) {
           >
             <img
               src={photo.src}
+              srcSet={photo.srcSet}
+              sizes={PORTRAIT_SIZES}
               alt={on ? photo.alt : ''}
               width={photo.width}
               height={photo.height}
+              // The photo on show is the page's largest paint; the other one
+              // waits its turn behind the scripts.
+              fetchPriority={on ? 'high' : 'low'}
               decoding="async"
             />
           </motion.div>
@@ -203,11 +207,14 @@ function CentientReel({ screens }) {
               <motion.img
                 key={screen.src}
                 src={screen.src}
+                srcSet={screen.srcSet}
+                sizes={REEL_SIZES}
                 alt={offset === 0 ? screen.alt : ''}
                 aria-hidden={offset !== 0}
                 className="reel-shot"
                 width="1600"
                 height="1073"
+                loading="lazy"
                 decoding="async"
                 initial={false}
                 animate={state}
@@ -383,7 +390,7 @@ export default function HeroBento({ theme, showField, onOpenProject, onAskAssist
             >
               <span className="resume-stack" aria-hidden="true">
                 <span className="resume-under" />
-                <img src={ResumePage} alt="" className="resume-sheet" width="360" height="466" />
+                <img src={ResumePage} alt="" className="resume-sheet" width="272" height="352" loading="lazy" />
               </span>
               <span className="resume-badge" aria-hidden="true">
                 <ArrowDown size={18} strokeWidth={1.8} />
@@ -426,7 +433,7 @@ export default function HeroBento({ theme, showField, onOpenProject, onAskAssist
           <div className="featured-copy">
             <div className="featured-top">
               <p className="featured-label">
-                <img src={featured.logo} alt="" className="featured-logo" width="40" height="40" />
+                <img src={featured.logo} alt="" className="featured-logo" width="40" height="40" loading="lazy" />
                 Featured project
               </p>
               <p className="award-pill">

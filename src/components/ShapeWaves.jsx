@@ -1,6 +1,5 @@
 // ShapeWaves from React Bits (reactbits.dev). Inspired by https://vercel.com/labs
 import { useEffect, useRef, useState } from 'react';
-import { effect, frame, init, sampler, storage, surface, target, uniforms } from 'vgpu';
 
 import './ShapeWaves.css';
 
@@ -483,6 +482,10 @@ export default function ShapeWaves({
 
     void (async () => {
       try {
+        // Fetched here, not imported up top: phones never mount the field, so
+        // they never download the WebGPU library.
+        const { effect, frame, init, sampler, storage, surface, target, uniforms } = await import('vgpu');
+        if (disposed) return;
         gpu = await init({ powerPreference: 'low-power' });
         if (disposed) return gpu.dispose();
         unsubscribeGpuError = gpu.onError(reportFailure);

@@ -1,8 +1,12 @@
-import CentientHome from '../assets/centient/home.jpg'
-import CentientRank from '../assets/centient/rank.jpg'
-import CentientPaid from '../assets/centient/paid.jpg'
-import CentientAccount from '../assets/centient/account.jpg'
-import CentientOwl from '../assets/centient-owl.png'
+import CentientHome from '../assets/centient/home.webp'
+import CentientRank from '../assets/centient/rank.webp'
+import CentientPaid from '../assets/centient/paid.webp'
+import CentientAccount from '../assets/centient/account.webp'
+import CentientHome800 from '../assets/centient/home-800.webp'
+import CentientRank800 from '../assets/centient/rank-800.webp'
+import CentientPaid800 from '../assets/centient/paid-800.webp'
+import CentientAccount800 from '../assets/centient/account-800.webp'
+import CentientOwl from '../assets/centient-owl.webp'
 import BlocklabsLogo from '../assets/blocklabs.png'
 import PinkRaftLogo from '../assets/pinkraft.svg'
 import PoseEstimationImage from '../assets/Pose Estimation.webp'
@@ -17,8 +21,6 @@ import DeniPromoPoster from '../assets/deni/promo-poster.webp'
 import MapuaImage from '../assets/Mapua.webp'
 import StPaulImage from '../assets/stpaul.webp'
 import IpsaImage from '../assets/ipsa.webp'
-import GradPhoto from '../assets/me.webp'
-import BarongPhoto from '../assets/me-barong.webp'
 import IpsaPhoto from '../assets/me-ipsa.jpg'
 // Row thumbnails: small copies, so the list never decodes full screenshots.
 import CentientThumb from '../assets/thumbs/home.webp'
@@ -34,6 +36,7 @@ import CspaCert from '../assets/cert-cspa.webp'
 import SpiderMan2Cover from '../assets/games/spiderman-2.webp'
 import Gt7Cover from '../assets/games/gt7.webp'
 import RagnarokCover from '../assets/games/ragnarok.webp'
+import { barongPhoto, gradPhoto } from './photos'
 
 import pythonIcon from 'devicon/icons/python/python-plain.svg'
 import pytorchIcon from 'devicon/icons/pytorch/pytorch-original.svg'
@@ -189,21 +192,25 @@ export const featured = {
   screens: [
     {
       src: CentientHome,
+      srcSet: `${CentientHome800} 800w, ${CentientHome} 1600w`,
       caption: 'Sign in with a Stellar wallet',
       alt: 'Centient home screen: “Train AI, cent by cent.” with a Connect Freighter button',
     },
     {
       src: CentientRank,
+      srcSet: `${CentientRank800} 800w, ${CentientRank} 1600w`,
       caption: 'Pick the better answer, say why',
       alt: 'A Centient task with response A selected and the reason typed in',
     },
     {
       src: CentientPaid,
+      srcSet: `${CentientPaid800} 800w, ${CentientPaid} 1600w`,
       caption: 'Paid per accepted answer, on-chain',
       alt: 'Centient confirming “+0.25 USDC on its way” after an answer is accepted',
     },
     {
       src: CentientAccount,
+      srcSet: `${CentientAccount800} 800w, ${CentientAccount} 1600w`,
       caption: 'Every payout tracked to confirmed',
       alt: 'Centient account sheet: 0.5 USDC earned, two submissions marked confirmed',
     },
@@ -384,7 +391,7 @@ export const education = [
     period: '2023–2026',
     place: 'Makati',
     logo: MapuaImage,
-    photo: { src: GradPhoto, alt: 'Carl in Mapúa graduation robes', position: '50% 35%' },
+    photo: { ...gradPhoto, alt: 'Carl in Mapúa graduation robes', position: '50% 35%' },
   },
   {
     school: 'St. Paul University',
@@ -392,7 +399,7 @@ export const education = [
     period: '2021–2023',
     place: 'Quezon City',
     logo: StPaulImage,
-    photo: { src: BarongPhoto, alt: 'Carl smiling in a white barong', position: '50% 35%' },
+    photo: { ...barongPhoto, alt: 'Carl smiling in a white barong', position: '50% 35%' },
   },
   {
     school: 'International Philippine School in Al Khobar',

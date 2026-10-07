@@ -50,7 +50,7 @@ Hooks in `src/hooks/`: `useTheme` (light/dark + circular View Transition reveal 
 ## Content facts and sources (don't invent beyond these)
 
 - **Centient** (from `~/centient`: README, CONTEXT.md, brag share copy). A human-feedback labeling platform where contributors rank AI answer pairs and are paid in USDC on Stellar per accepted answer. It has quality guards (gold tasks, rate limits, spam and bias detection, agreement checks) and co-signed payouts from a multisig account. The Withdraw button was removed because 8 of 10 balances were stuck under the old 1 USDC minimum. **$5,000 Instawards grant** (Carl's figure). Beta: https://beta.centient.work (returns 200). Repo: https://github.com/cemmacabales/centient (public). Stack: Next.js, TypeScript, PostgreSQL/Prisma, Stellar SDK, Redis, Railway. The site deliberately doesn't name the grant's parent program or claim Carl built it solo; confirm with him before adding either.
-- **Assets added:** `src/assets/centient-payout.jpg` (cropped from `~/centient/brag-output-2026-09-23-191123/brag.jpg`) and `src/assets/centient-owl.png` (from `~/centient/public/logo.png`).
+- **Assets added:** `src/assets/centient-payout.jpg` (cropped from `~/centient/brag-output-2026-09-23-191123/brag.jpg`) and `src/assets/centient-owl.webp` (from `~/centient/public/logo.png`).
 - **Pink Raft, iPrayUST, papers, metrics:** from `resume.md` and `netlify/functions/chat.js`.
 - **Graduation:** Carl graduated from Mapúa in 2026, so the copy says so plainly (a recent commit removed "class of 2026" phrasing from the chatbot).
 

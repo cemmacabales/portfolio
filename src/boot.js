@@ -1,7 +1,6 @@
-import GradPhoto from './assets/me.webp'
-import BarongPhoto from './assets/me-barong.webp'
-import ResumePage from './assets/resume-page.jpg'
+import ResumePage from './assets/resume-page.webp'
 import { featured } from './data/portfolio'
+import { barongPhoto, gradPhoto, PORTRAIT_SIZES, REEL_SIZES } from './data/photos'
 
 /*
  * The boot loader. index.html paints it before any JS arrives; this module
@@ -12,9 +11,11 @@ import { featured } from './data/portfolio'
  * can't use it up before there's anything to wait for.
  *
  * What it waits for is whatever would otherwise stutter the entrance: React's
- * first commit, the web font, the hero photos and Centient screens decoded
- * (so the slideshows never decode mid-swap), and the WebGPU field compiling
- * its shaders and drawing a first frame.
+ * first commit, the web font, the photo on show and the Centient screens
+ * decoded (so the slideshows never decode mid-swap), and the WebGPU field
+ * compiling its shaders and drawing a first frame. Only what starts on screen
+ * holds the page: on a phone the résumé and Centient tiles are far below, so
+ * they load on their own while the hero plays.
  */
 
 const CAP_MS = 4000 // once the app is running, never hold the page longer than this
@@ -49,9 +50,14 @@ let target = 0
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 const nextFrame = () => new Promise((resolve) => requestAnimationFrame(() => resolve()))
 
-function decode(src) {
+// Takes the same srcset and sizes as the page's <img>, so it warms the copy the page will draw.
+function decode({ src, srcSet, sizes }) {
   const img = new Image()
   img.decoding = 'async'
+  if (srcSet) {
+    img.sizes = sizes
+    img.srcset = srcSet
+  }
   img.src = src
   if (img.decode) return img.decode()
   return new Promise((resolve) => {
@@ -67,8 +73,24 @@ function settle(task, promise) {
     .then(() => markReady(task))
 }
 
-function settleImages(task, srcs) {
-  settle(task, Promise.allSettled(srcs.map(decode)))
+function settleImages(task, images) {
+  settle(task, Promise.allSettled(images.map(decode)))
+}
+
+// Waits on a tile's images only if the tile starts on screen. An observer
+// rather than a measurement, so it never forces a layout mid-boot.
+function settleIfShown(task, selector, images) {
+  const el = document.querySelector(selector)
+  if (!el || typeof IntersectionObserver === 'undefined') {
+    settleImages(task, images)
+    return
+  }
+  const observer = new IntersectionObserver(([entry]) => {
+    observer.disconnect()
+    if (entry.isIntersecting) settleImages(task, images)
+    else markReady(task)
+  })
+  observer.observe(el)
 }
 
 // The percentage eases toward its target, so a burst of finished tasks reads as a count, not a jump.
@@ -91,6 +113,16 @@ function paint() {
   }
 }
 
+// A link to a section (/#work, or /work redirected there) opens on it. The
+// browser's own jump came and went while the page was still the loader (the
+// prerendered copy is hidden), so make it here, under the loader. A reload or
+// back/forward keeps the position the browser restored instead.
+function jumpToHash() {
+  const id = decodeURIComponent(location.hash.slice(1))
+  if (!id || performance.getEntriesByType?.('navigation')[0]?.type !== 'navigate') return
+  document.getElementById(id)?.scrollIntoView({ block: 'start', behavior: 'instant' })
+}
+
 function release() {
   performance.mark?.('boot:release')
   booted = true
@@ -108,6 +140,7 @@ async function finish() {
   await nextFrame()
   await nextFrame()
 
+  jumpToHash()
   target = 100
   root.querySelectorAll('[data-cell]').forEach((cell) => cell.classList.add('is-on'))
   await sleep(HOLD_MS)
@@ -118,6 +151,10 @@ async function finish() {
   root.classList.add('is-leaving')
   root.querySelector('[role="status"]').textContent = 'Loaded'
   release()
+
+  // The second portrait comes up in a few seconds (or on a theme switch);
+  // decode it now so that crossfade never waits on it.
+  decode({ ...gradPhoto, sizes: PORTRAIT_SIZES }).catch(() => {})
 
   await sleep(LEAVE_MS)
   root.remove()
@@ -137,6 +174,11 @@ export function markReady(task) {
   // painted frame after React's first commit before asking whether it's in.
   if (task === 'app') {
     requestAnimationFrame(() => settle('fonts', document.fonts?.ready))
+    settleIfShown('resume', '.resume-sheet', [{ src: ResumePage }])
+    settleIfShown('centient', '.reel-screen', [
+      { src: featured.logo },
+      ...featured.screens.map((screen) => ({ ...screen, sizes: REEL_SIZES })),
+    ])
   }
 
   paint()
@@ -156,9 +198,8 @@ export function startBoot() {
   root.dataset.started = ''
   performance.mark?.('boot:start')
   pct = root.querySelector('[data-pct]')
-  settleImages('portraits', [GradPhoto, BarongPhoto])
-  settleImages('resume', [ResumePage])
-  settleImages('centient', [featured.logo, ...featured.screens.map((screen) => screen.src)])
+  // The hero always opens on the barong photo (HeroBento's PORTRAITS[0]).
+  settleImages('portraits', [{ ...barongPhoto, sizes: PORTRAIT_SIZES }])
   setTimeout(finish, CAP_MS)
   requestAnimationFrame(tick)
 }

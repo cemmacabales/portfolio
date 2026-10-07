@@ -69,6 +69,8 @@ function dress(ghost, tile, box, withScan) {
   face.classList.remove('is-open', 'is-lifted')
   face.querySelector('.th-expand')?.classList.remove('is-open')
   face.querySelectorAll('[id]').forEach((el) => el.removeAttribute('id'))
+  // The tile's scan is lazy; a lazy copy could wait a frame to show the slice.
+  face.querySelectorAll('img[loading]').forEach((img) => img.removeAttribute('loading'))
   const scan = face.querySelector('.th-scan-tile')
   if (scan && !withScan) scan.style.visibility = 'hidden'
   face.style.width = `${box.width}px`

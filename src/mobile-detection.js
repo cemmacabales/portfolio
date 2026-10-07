@@ -36,7 +36,10 @@ export const detectMobile = () => {
 
 // Hook for React components
 export const useMobileDetection = () => {
-  const [isMobile, setIsMobile] = useState(false);
+  // Known on the first render (the client never hydrates), so a phone never
+  // mounts the desktop-only WebGPU field just to tear it down a frame later.
+  // The prerender has no window and renders the desktop markup.
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && detectMobile());
   
   useEffect(() => {
     const checkMobile = () => {
