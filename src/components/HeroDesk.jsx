@@ -7,8 +7,9 @@ import SocialTile from './SocialTile'
 import SetupTile from './SetupTile'
 import SetupDesk from './SetupDesk'
 import Segmented from './Segmented'
-import { useBooted } from '../hooks/useBooted'
+import { useEntranceDone } from '../hooks/useSettled'
 import posthog from '../posthog'
+import { canPortal } from '../utils/canPortal'
 import './HeroDesk.css'
 
 // Beside each other the tiles can hand over the row; stacked, a sheet opens.
@@ -20,6 +21,8 @@ const SHEET = { type: 'spring', bounce: 0, duration: 0.55 }
 const whenIdle = (fn) =>
   window.requestIdleCallback ? window.requestIdleCallback(fn, { timeout: 4000 }) : setTimeout(fn, 300)
 const cancelIdle = (id) => (window.cancelIdleCallback ? window.cancelIdleCallback(id) : clearTimeout(id))
+// After the hero's entrance, before the desk is built ahead of time (see below).
+const WARM_AFTER_MS = 1500
 // Workflow ships in its own chunk, fetched once the desk is warming or open.
 // Once it's here it renders in the same frame as the switch, so its entrance
 // starts with the click; only a switch that beats the download waits on
@@ -126,14 +129,13 @@ export default function HeroDesk({ variants }) {
   const driven = useRef([])
   const progress = useMotionValue(0)
   const reduce = useReducedMotion()
-  const booted = useBooted()
+  const entranceDone = useEntranceDone()
 
   const [mode, setMode] = useState(null) // 'stage' | 'sheet' while open
   const [open, setOpen] = useState(false)
   const [shown, setShown] = useState(false)
   const [layout, setLayout] = useState(null)
   const [peek, setPeek] = useState(null)
-  const [mounted, setMounted] = useState(false)
   const [warm, setWarm] = useState(false)
   const [spinning, setSpinning] = useState(false)
   const [view, setView] = useState('gear')
@@ -141,26 +143,31 @@ export default function HeroDesk({ variants }) {
   const refocus = useRef(false)
   const [flowSeen, setFlowSeen] = usePrebuild(mode === 'stage' && open && layout !== null)
 
-  useEffect(() => setMounted(true), [])
-
   // Build and lay out the desk ahead of time, hidden and paused, while the
   // page is idle, so the + only has to reveal it. Built on the click, it froze
   // the first frame, and its first paint and garbage landed in the spring.
+  // It waits for the hero's entrance to play out and then a beat more: built
+  // in an idle moment mid-entrance it cost the entrance frames, and built as
+  // the sections below the hero arrive, its layout landed on top of theirs.
   useEffect(() => {
-    if (!booted || warm || mode) return undefined
+    if (!entranceDone || warm || mode) return undefined
     const query = window.matchMedia(WIDE)
+    let timer = 0
     let id = null
     const schedule = () => {
-      if (!query.matches || id !== null) return
-      id = whenIdle(() => setWarm(true))
+      if (!query.matches || timer) return
+      timer = setTimeout(() => {
+        id = whenIdle(() => setWarm(true))
+      }, WARM_AFTER_MS)
     }
     schedule()
     query.addEventListener('change', schedule)
     return () => {
       query.removeEventListener('change', schedule)
+      clearTimeout(timer)
       if (id !== null) cancelIdle(id)
     }
-  }, [booted, warm, mode])
+  }, [entranceDone, warm, mode])
 
   // The spring writes straight to the elements it moves: no React render per frame.
   const drive = useCallback((value) => {
@@ -533,7 +540,7 @@ export default function HeroDesk({ variants }) {
         </>
       )}
 
-      {mounted &&
+      {canPortal &&
         createPortal(
           <AnimatePresence onExitComplete={() => setMode((current) => (current === 'sheet' ? null : current))}>
             {open && mode === 'sheet' && <SetupSheet key="sheet" onClose={close} />}

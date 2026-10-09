@@ -2,7 +2,9 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import {
   motion, // eslint-disable-line no-unused-vars
   AnimatePresence,
+  animate,
   useInView,
+  useMotionValue,
   useReducedMotion,
 } from 'framer-motion'
 import { Check, ChevronsUpDown, RotateCcw } from 'lucide-react'
@@ -201,14 +203,24 @@ function Pipeline() {
 
   // The status pill fits its words and springs between sizes, like the Dynamic Island.
   const measureRef = useRef(null)
-  const [textWidth, setTextWidth] = useState(null)
+  const pillWidth = useMotionValue('auto')
   useLayoutEffect(() => {
     const el = measureRef.current
-    if (!el) return
-    const update = () => setTextWidth(el.offsetWidth)
-    update()
-    document.fonts?.ready.then(update)
-  }, [status])
+    if (!el) return undefined
+    // The observer reports the width whenever the words change it (or the web
+    // font swaps in), after layout and before the frame paints, so it never
+    // forces a layout of the page mid-mount. The first report sizes the pill
+    // outright; later ones spring to the new width.
+    let sized = false
+    const observer = new ResizeObserver(() => {
+      const width = el.offsetWidth + STATUS_CHROME
+      if (sized) animate(pillWidth, width, THUMB_SPRING)
+      else pillWidth.set(width)
+      sized = true
+    })
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [pillWidth])
 
   // The first run starts itself, once, when the pipeline is in view.
   useEffect(() => {
@@ -242,13 +254,7 @@ function Pipeline() {
     >
       <div className="pipeline-bar">
         <p className="pipeline-title">From model to product</p>
-        <motion.p
-          className="pipe-status"
-          aria-hidden="true"
-          initial={false}
-          animate={textWidth == null ? undefined : { width: textWidth + STATUS_CHROME }}
-          transition={THUMB_SPRING}
-        >
+        <motion.p className="pipe-status" aria-hidden="true" style={{ width: pillWidth }}>
           <span ref={measureRef} className="pipe-measure">
             {status}
           </span>

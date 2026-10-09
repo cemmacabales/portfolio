@@ -11,6 +11,8 @@ import {
 import { ArrowUpRight, Maximize2, X } from 'lucide-react'
 import { research } from '../data/portfolio'
 import { usePageVisible } from '../hooks/useCycle'
+import { canPortal } from '../utils/canPortal'
+import GlideLens from './GlideLens'
 import './ResearchTile.css'
 
 const EASE = [0.16, 1, 0.3, 1]
@@ -209,11 +211,12 @@ export default function ResearchTile({ variants }) {
   const tabs = useRef([])
   const cards = useRef([])
   const inView = useInView(ref, { amount: 0.4 })
+  // Once the tile has come near, the lens can glide (see GlideLens).
+  const seen = useInView(ref, { once: true, margin: '120px 0px' })
   const [held, setHeld] = useState(false)
   const [open, setOpen] = useState(null)
   // The certificate out in Quick Look, hidden in the wallet until it's back.
   const [lifted, setLifted] = useState(null)
-  const [mounted, setMounted] = useState(false)
 
   const [front, setFront] = useState(0)
   /*
@@ -226,9 +229,6 @@ export default function ResearchTile({ variants }) {
   // Which certificate just left the front, so only it plays the drop-away.
   const [shuffle, setShuffle] = useState({ front, from: null, n: 0 })
   if (shuffle.front !== front) setShuffle({ front, from: shuffle.front, n: shuffle.n + 1 })
-
-  // The Quick Look portal only exists in the browser, after hydration.
-  useEffect(() => setMounted(true), [])
 
   const select = (index, { focus = false } = {}) => {
     if (index !== front) setFront(index)
@@ -296,7 +296,8 @@ export default function ResearchTile({ variants }) {
           return (
             <motion.div key={item.id} className={`rs-row${on ? ' is-on' : ''}`} variants={rowVariants}>
               {on && (
-                <motion.span
+                <GlideLens
+                  live={seen}
                   layoutId={`${uid}-lens`}
                   className="rs-lens"
                   transition={reduce ? { duration: 0 } : LENS_SPRING}
@@ -438,7 +439,7 @@ export default function ResearchTile({ variants }) {
         </div>
       </motion.div>
 
-      {mounted &&
+      {canPortal &&
         createPortal(
           <AnimatePresence onExitComplete={() => setLifted(null)}>
             {open != null && (

@@ -22,6 +22,25 @@ function call(method, args) {
   if (configured && queue.length < QUEUE_LIMIT) queue.push([method, args])
 }
 
+// The replay recorder downloads its script and snapshots the whole page when
+// it starts, which is a long task on a phone. It starts once the visitor does
+// something, or a few seconds in, and in a quiet moment, so that never lands
+// on the page's first seconds or on a tap.
+const REPLAY_DELAY_MS = 4000
+const REPLAY_INTENT = ['pointerdown', 'keydown', 'scroll', 'touchstart']
+
+function startReplaySoon(posthog) {
+  const whenIdle = window.requestIdleCallback ?? ((fn) => setTimeout(fn, 1))
+  let timer = 0
+  const start = () => {
+    clearTimeout(timer)
+    for (const type of REPLAY_INTENT) window.removeEventListener(type, start)
+    whenIdle(() => posthog.startSessionRecording(), { timeout: 2000 })
+  }
+  for (const type of REPLAY_INTENT) window.addEventListener(type, start, { passive: true, once: true })
+  timer = setTimeout(start, REPLAY_DELAY_MS)
+}
+
 export function loadPostHog() {
   if (!posthogKey) {
     if (import.meta.env.DEV) {
@@ -52,9 +71,15 @@ export function loadPostHog() {
           serviceName: 'portfolio-web',
           environment: import.meta.env.MODE,
         },
+        // The project runs no surveys (its remote config has them off), so
+        // skip downloading the surveys script.
+        disable_surveys: true,
+        // Replay starts a moment later; see startReplaySoon.
+        disable_session_recording: true,
       })
       client = posthog
       queue.splice(0).forEach(([method, args]) => method(client, ...args))
+      startReplaySoon(posthog)
     })
     // A blocked or failed download just means no analytics for this visit.
     .catch(() => {

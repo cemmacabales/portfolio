@@ -5,7 +5,8 @@ import { useEffect } from 'react'
 // pings). A paused animation costs nothing; a running one restyles, and on SVG
 // repaints, every frame even where no one can see it. The margin wakes a tile
 // a little before it scrolls in, so it's already moving when it appears.
-export function useOffscreenPause() {
+// `belowMounted` re-scans once the sections below the hero arrive.
+export function useOffscreenPause(belowMounted) {
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -15,5 +16,5 @@ export function useOffscreenPause() {
     )
     for (const tile of document.querySelectorAll('.tile')) observer.observe(tile)
     return () => observer.disconnect()
-  }, [])
+  }, [belowMounted])
 }

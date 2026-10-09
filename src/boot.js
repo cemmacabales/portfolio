@@ -1,6 +1,6 @@
 import ResumePage from './assets/resume-page.webp'
 import { featured } from './data/portfolio'
-import { barongPhoto, gradPhoto, PORTRAIT_SIZES, REEL_SIZES } from './data/photos'
+import { barongPhoto, PORTRAIT_SIZES, REEL_SIZES } from './data/photos'
 
 /*
  * The boot loader. index.html paints it before any JS arrives; this module
@@ -23,8 +23,9 @@ const MIN_MS = 400 // from navigation: long enough to read as intentional, not a
 const HOLD_MS = 160 // a beat on the full grid before it lets go
 const LEAVE_MS = 550 // keep in step with #boot's transition in index.html
 
-// How much of the percentage each task carries.
-const TASKS = { app: 1, fonts: 1, portraits: 2, resume: 1, centient: 2, field: 2 }
+// How much of the percentage each task carries. `below` (the sections below
+// the hero) only holds the page when it opens somewhere other than the top.
+const TASKS = { app: 1, fonts: 1, portraits: 2, resume: 1, centient: 2, field: 2, below: 0 }
 const TOTAL = Object.values(TASKS).reduce((sum, w) => sum + w, 0)
 
 // Each cell of the miniature bento fills once every task behind its tile is done.
@@ -152,10 +153,6 @@ async function finish() {
   root.querySelector('[role="status"]').textContent = 'Loaded'
   release()
 
-  // The second portrait comes up in a few seconds (or on a theme switch);
-  // decode it now so that crossfade never waits on it.
-  decode({ ...gradPhoto, sizes: PORTRAIT_SIZES }).catch(() => {})
-
   await sleep(LEAVE_MS)
   root.remove()
   root = null
@@ -185,7 +182,28 @@ export function markReady(task) {
   if (done.size === Object.keys(TASKS).length) finish()
 }
 
+// A desktop: room to build the sections below the hero under the loader.
+const ROOMY = '(min-width: 1024px) and (pointer: fine)'
+
+/**
+ * Whether the sections below the hero wait until after its entrance (see
+ * useSettled). They do on a phone or tablet opening a fresh page at the top,
+ * so they never compete with the first screen. A desktop builds them under
+ * the loader instead, where their first layout can't cost the entrance a
+ * frame. A link into the page, a reload or back/forward (which restore a
+ * scroll position) need the whole page before the loader lets go too.
+ */
+export function defersBelowFold() {
+  // Navigation type covers restored scroll positions; reading scrollY here
+  // would force a style pass before there's anything to style.
+  if (location.hash) return false
+  const type = performance.getEntriesByType?.('navigation')[0]?.type
+  if (type && type !== 'navigate') return false
+  return !window.matchMedia?.(ROOMY).matches
+}
+
 export function startBoot() {
+  if (defersBelowFold()) markReady('below')
   root = document.getElementById('boot')
 
   // The fallback timer in index.html already removed it: nothing to wait for.

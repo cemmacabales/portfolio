@@ -1,11 +1,13 @@
 import { useId, useRef, useState } from 'react'
 import {
   motion, // eslint-disable-line no-unused-vars
+  useInView,
   useReducedMotion,
 } from 'framer-motion'
 import { ArrowUpRight, ChevronRight } from 'lucide-react'
 import { experience } from '../data/portfolio'
 import PetYard from './PetYard'
+import GlideLens from './GlideLens'
 import './ExperienceTile.css'
 
 const EASE = [0.16, 1, 0.3, 1]
@@ -230,6 +232,9 @@ function Panel({ entry, on, dir, now, reduce, tabId, panelId, onSee }) {
 export default function ExperienceTile({ variants }) {
   const uid = useId()
   const reduce = useReducedMotion()
+  const ref = useRef(null)
+  // Once the tile has come near, the lens can glide (see GlideLens).
+  const seen = useInView(ref, { once: true, margin: '120px 0px' })
   const tabs = useRef([])
   const [pick, setPick] = useState({ index: 0, dir: 1 })
   // Read once per visit; tenure only has to be right to the week.
@@ -265,7 +270,7 @@ export default function ExperienceTile({ variants }) {
   }
 
   return (
-    <motion.article variants={tileVariants} className="tile tile-experience">
+    <motion.article ref={ref} variants={tileVariants} className="tile tile-experience">
       <h3 className="tile-head">Experience</h3>
 
       <div className="tile-body xp-body">
@@ -301,7 +306,8 @@ export default function ExperienceTile({ variants }) {
                     onClick={() => select(i)}
                   >
                     {on && (
-                      <motion.span
+                      <GlideLens
+                        live={seen}
                         layoutId={`${uid}-lens`}
                         className="xp-lens"
                         transition={reduce ? { duration: 0 } : LENS_SPRING}

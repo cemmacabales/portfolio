@@ -269,8 +269,12 @@ export default function PetYard() {
     const live = liveRef.current
     if (!field) return undefined
 
-    let W = field.clientWidth
-    let H = field.clientHeight
+    // The yard's size arrives with the observer's first report, once it's laid
+    // out. Reading it now would force a layout of the whole page mid-mount
+    // (and of the About section while the browser skips it off screen).
+    let W = 0
+    let H = 0
+    let placed = false
     let fieldLeft = 0
     let pointer = null
     let raf = 0
@@ -292,7 +296,7 @@ export default function PetYard() {
         bubble: el.querySelector('.pet-bubble'),
         heart: el.querySelector('.pet-heart'),
         w,
-        x: clampX(W * cfg.start - w / 2, w),
+        x: 0,
         y: 0,
         vy: 0,
         dir: cfg.id === 'bot' ? -1 : 1,
@@ -642,9 +646,11 @@ export default function PetYard() {
       H = field.clientHeight
       fieldLeft = field.getBoundingClientRect().left
       for (const p of pets) {
-        p.x = clampX(p.x, p.w)
+        // The first report puts each pet at its spot; later ones keep them in bounds.
+        p.x = clampX(placed ? p.x : W * p.start - p.w / 2, p.w)
         p.target = clampX(p.target, p.w)
       }
+      placed = true
       for (const t of treats) t.x = Math.min(W - TREAT_W, Math.max(0, t.x))
       render()
     })

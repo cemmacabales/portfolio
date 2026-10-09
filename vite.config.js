@@ -130,13 +130,8 @@ export default defineConfig(({ isSsrBuild }) => ({
           gpu: ['vgpu'],
           icons: ['lucide-react'],
           analytics: ['posthog-js'], // loaded after boot, see src/posthog.js
-          utils: ['./src/utils/validation'],
-          // Split large components
-          components: [
-            './src/components/WorkList',
-            './src/components/BackgroundBento',
-            './src/components/ContactPanel'
-          ],
+          // The sections below the hero (src/components/BelowFold) are a lazy
+          // chunk of their own; listing them here would pull them back in.
           ui: [
             './src/components/SiteNav',
             './src/components/HeroBento',

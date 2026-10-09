@@ -8,7 +8,76 @@
   }
 
   .section {
-    padding-top: clamp(88px, 11vw, 152px);
+    --section-pad: clamp(88px, 11vw, 152px);
+    padding-top: var(--section-pad);
+  }
+
+  /*
+   * Below the hero, a section skips style, layout and paint until it nears
+   * the viewport, so loading the page only lays out the hero. `auto` keeps
+   * its real height once it has rendered; until then it holds roughly its
+   * content height (the padding comes on top). Its contents clip at the box
+   * plus the margin, which leaves room for the last tiles' shadows (the next
+   * section's top padding is wider). Safari has no overflow-clip-margin, so
+   * there the sections render as usual.
+   */
+  #work {
+    --section-h: 830px;
+  }
+
+  #about {
+    --section-h: 4560px;
+  }
+
+  #contact {
+    --section-h: 1140px;
+  }
+
+  @media (min-width: 700px) {
+    #work {
+      --section-h: 960px;
+    }
+
+    #about {
+      --section-h: 3180px;
+    }
+
+    #contact {
+      --section-h: 880px;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    #work {
+      --section-h: 1120px;
+    }
+
+    #about {
+      --section-h: 2110px;
+    }
+
+    #contact {
+      --section-h: 740px;
+    }
+  }
+
+  @supports (overflow-clip-margin: 1px) {
+    .section {
+      content-visibility: auto;
+      contain-intrinsic-block-size: auto var(--section-h, 1200px);
+      overflow-clip-margin: 96px;
+    }
+
+    /* For a moment before scrolling to a section (useSectionLinks). */
+    .sections-laid-out .section {
+      content-visibility: visible;
+    }
+  }
+
+  /* An empty stand-in while the sections' code loads (App's SectionShells),
+     as tall as the section it holds the place of. */
+  .section-shell {
+    min-block-size: calc(var(--section-pad) + var(--section-h));
   }
 
   .section-head {
@@ -76,6 +145,13 @@
     padding: var(--pad-tile);
   }
 
+  /*
+   * The lift and press use `translate` and `scale`, not `transform`:
+   * framer-motion owns these tiles' `transform` (their entrance, then an
+   * inline value at rest), which would override a hover transform and, with
+   * a transition on it, restart that transition on every frame of the
+   * entrance.
+   */
   a.tile,
   button.tile {
     display: block;
@@ -83,7 +159,8 @@
     text-align: left;
     color: inherit;
     transition:
-      transform 0.5s var(--ease-out),
+      translate 0.5s var(--ease-out),
+      scale 0.5s var(--ease-out),
       box-shadow 0.5s var(--ease-out),
       border-color 0.3s ease;
   }
@@ -91,14 +168,14 @@
   @media (hover: hover) and (pointer: fine) {
     a.tile:hover,
     button.tile:hover {
-      transform: translateY(-3px);
+      translate: 0 -3px;
       box-shadow: var(--shadow-float);
     }
   }
 
   a.tile:active,
   button.tile:active {
-    transform: scale(0.985);
+    scale: 0.985;
     transition-duration: 0.12s;
   }
 
@@ -353,7 +430,11 @@
     a.tile:hover,
     button.tile:hover,
     a.tile:active,
-    button.tile:active,
+    button.tile:active {
+      translate: none;
+      scale: none;
+    }
+
     .btn:active {
       transform: none;
     }

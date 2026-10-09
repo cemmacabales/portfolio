@@ -9,6 +9,7 @@ import { profile, featured } from '../data/portfolio'
 import { barongPhoto, gradPhoto, PORTRAIT_SIZES, REEL_SIZES } from '../data/photos'
 import { usePageVisible } from '../hooks/useCycle'
 import { useBooted } from '../hooks/useBooted'
+import { useDeferredMedia, useSettled } from '../hooks/useSettled'
 import { markReady } from '../boot'
 import posthog from '../posthog'
 import './HeroBento.css'
@@ -54,6 +55,16 @@ const PORTRAITS = [
 const FADE = 0.9
 const HOLD = 4
 
+// The photo coming up fades in over the one on show, which stays put
+// underneath until it's covered, so the swap never dips through a
+// half-transparent frame. The one underneath is never hidden, just covered,
+// and a touch smaller: so when it first paints (it loads once the page has
+// settled) the browser doesn't count it as a new, larger paint than the
+// portrait the page opened on, and LCP stays with the hero's entrance.
+const PHOTO_IN = { opacity: [0, 1], scale: [1.05, 1] }
+const PHOTO_UNDER = { opacity: 1, scale: 0.98 }
+const UNDER_AFTER_FADE = { opacity: { duration: 0 }, scale: { delay: FADE, duration: 0 } }
+
 /* ── Portrait: two photos that trade places ─────────────────── */
 function Portrait({ theme }) {
   const ref = useRef(null)
@@ -65,6 +76,11 @@ function Portrait({ theme }) {
   const [hovered, setHovered] = useState(false)
   const [held, setHeld] = useState(false)
   const [matchedTheme, setMatchedTheme] = useState(theme)
+  // The page opens on PORTRAITS[0]; the other photo loads once the page has
+  // settled, or as soon as it's asked for.
+  const settled = useSettled()
+  const [bothWanted, setBothWanted] = useState(false)
+  if (index !== 0 && !bothWanted) setBothWanted(true)
 
   // A theme flip crossfades to the matching photo and the rotation carries on
   // from there, even if the viewer had stopped it by picking a photo. If the
@@ -88,31 +104,25 @@ function Portrait({ theme }) {
     >
       {PORTRAITS.map((photo, i) => {
         const on = i === index
+        const load = i === 0 || settled || bothWanted
         return (
           <motion.div
             key={photo.src}
             className="portrait"
             style={{ '--backdrop': photo.backdrop, zIndex: on ? 2 : 1 }}
             initial={false}
-            animate={on ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 1.05 }}
-            // The outgoing photo stays put until the new one has covered it,
-            // so the swap never dips through a half-transparent frame.
-            transition={
-              on
-                ? { duration: FADE, ease: EASE }
-                : { opacity: { delay: FADE, duration: 0 }, scale: { delay: FADE, duration: 0 } }
-            }
+            animate={on ? PHOTO_IN : PHOTO_UNDER}
+            transition={on ? { duration: FADE, ease: EASE } : UNDER_AFTER_FADE}
             aria-hidden={!on}
           >
             <img
-              src={photo.src}
-              srcSet={photo.srcSet}
+              src={load ? photo.src : undefined}
+              srcSet={load ? photo.srcSet : undefined}
               sizes={PORTRAIT_SIZES}
               alt={on ? photo.alt : ''}
               width={photo.width}
               height={photo.height}
-              // The photo on show is the page's largest paint; the other one
-              // waits its turn behind the scripts.
+              // The photo on show is the page's largest paint.
               fetchPriority={on ? 'high' : 'low'}
               decoding="async"
             />
@@ -171,6 +181,9 @@ function CentientReel({ screens }) {
   const [index, setIndex] = useState(0)
   const [toggled, setToggled] = useState(false)
   const [hovered, setHovered] = useState(false)
+  // Off screen at first (on a phone it's far down), the screens load once the
+  // page has settled; on screen, with the page.
+  const load = useDeferredMedia(ref)
 
   // Plays by default; with reduced motion it starts paused, and the toggle flips it.
   const playing = reduce ? toggled : !toggled
@@ -194,7 +207,7 @@ function CentientReel({ screens }) {
           <span className="reel-url">beta.centient.work</span>
         </div>
         <div className="reel-screen">
-          {screens.map((screen, i) => {
+          {load && screens.map((screen, i) => {
             // 0 is showing, count - 1 just left (exits left), the rest wait on the right.
             const offset = (i - index + count) % count
             const state =
@@ -298,6 +311,11 @@ export default function HeroBento({ theme, showField, onOpenProject, onAskAssist
   const [fieldOk, setFieldOk] = useState(() => typeof navigator !== 'undefined' && 'gpu' in navigator)
   const booted = useBooted()
   const field = showField && fieldOk
+  // Images in tiles that start off screen load once the page has settled.
+  const resumeRef = useRef(null)
+  const resumeLoad = useDeferredMedia(resumeRef)
+  const featuredRef = useRef(null)
+  const featuredLoad = useDeferredMedia(featuredRef)
 
   // No field to warm up (touch devices, no WebGPU): nothing for the loader to wait on.
   useEffect(() => {
@@ -310,7 +328,7 @@ export default function HeroBento({ theme, showField, onOpenProject, onAskAssist
       <motion.div className="hero-grid" variants={grid} initial="hidden" animate={booted ? 'show' : 'hidden'}>
         {/* ── Main: who, in one line, plus the portrait ───────────── */}
         <motion.article variants={rise} className="tile tile-main">
-          <div className="main-copy">
+          <div className={`main-copy${field ? '' : ' no-field'}`}>
             {field && (
               <div className="main-field" aria-hidden="true">
                 <ShapeWaves
@@ -382,6 +400,7 @@ export default function HeroBento({ theme, showField, onOpenProject, onAskAssist
 
           <div className="duo">
             <motion.a
+              ref={resumeRef}
               variants={rise}
               href={profile.resume}
               download="Carl-Macabales-Resume.pdf"
@@ -390,7 +409,13 @@ export default function HeroBento({ theme, showField, onOpenProject, onAskAssist
             >
               <span className="resume-stack" aria-hidden="true">
                 <span className="resume-under" />
-                <img src={ResumePage} alt="" className="resume-sheet" width="272" height="352" loading="lazy" />
+                <img
+                  src={resumeLoad ? ResumePage : undefined}
+                  alt=""
+                  className="resume-sheet"
+                  width="272"
+                  height="352"
+                />
               </span>
               <span className="resume-badge" aria-hidden="true">
                 <ArrowDown size={18} strokeWidth={1.8} />
@@ -426,6 +451,7 @@ export default function HeroBento({ theme, showField, onOpenProject, onAskAssist
 
         {/* ── Featured: Centient ─────────────────────────────────── */}
         <motion.article
+          ref={featuredRef}
           variants={rise}
           className="tile tile-featured"
           aria-labelledby="featured-title"
@@ -433,7 +459,13 @@ export default function HeroBento({ theme, showField, onOpenProject, onAskAssist
           <div className="featured-copy">
             <div className="featured-top">
               <p className="featured-label">
-                <img src={featured.logo} alt="" className="featured-logo" width="40" height="40" loading="lazy" />
+                <img
+                  src={featuredLoad ? featured.logo : undefined}
+                  alt=""
+                  className="featured-logo"
+                  width="40"
+                  height="40"
+                />
                 Featured project
               </p>
               <p className="award-pill">

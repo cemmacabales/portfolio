@@ -6,6 +6,9 @@ let request = null
 function load() {
   request ??= fetch('/.netlify/functions/github')
     .then((res) => (res.ok ? res.json() : Promise.reject(new Error(`github ${res.status}`))))
+    // A reply without the calendar (an upstream hiccup passed through) is an
+    // error too: the tile shows its fallback instead of failing to render.
+    .then((data) => (Array.isArray(data?.days) ? data : Promise.reject(new Error('github: no days'))))
     .catch((error) => {
       request = null
       throw error

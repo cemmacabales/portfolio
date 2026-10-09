@@ -60,8 +60,9 @@
   mask-composite: intersect;
 }
 
-/* Touch devices get a quiet dot grid in the same spot instead of the field. */
-.main-copy:not(:has(.main-field))::before {
+/* Touch devices get a quiet dot grid in the same spot instead of the field.
+   A class rather than :has(), which re-checks on every change in the hero. */
+.main-copy.no-field::before {
   content: '';
   position: absolute;
   inset: 0 0 auto;

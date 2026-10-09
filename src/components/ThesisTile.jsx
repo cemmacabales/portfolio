@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence, useInView, useReducedMotion } from 'framer-motion' // eslint-disable-line no-unused-vars
 import { Plus } from 'lucide-react'
 import { thesis } from '../data/portfolio'
 import { useBooted } from '../hooks/useBooted'
 import posthog from '../posthog'
+import { canPortal } from '../utils/canPortal'
 import ThesisScan from './ThesisScan'
 import { CLASS_NAMES, SLICE_CLASSES } from './thesisClasses'
 import DiceBars from './ThesisDice'
@@ -30,9 +31,6 @@ export default function ThesisTile({ variants }) {
   // The tile leaves its slot empty while the story is out of it, the way an
   // App Store card does; the story's card wears its face at either end.
   const [lifted, setLifted] = useState(false)
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => setMounted(true), [])
 
   // Hidden ahead of time once JS is running, then swept in on first view.
   // Without JS, or with reduced motion, the finished overlay simply shows.
@@ -129,7 +127,7 @@ export default function ThesisTile({ variants }) {
         </figure>
       </div>
 
-      {mounted &&
+      {canPortal &&
         createPortal(
           <AnimatePresence onExitComplete={() => setLifted(false)}>
             {open && <ThesisStory key="story" onClose={close} getOrigin={getOrigin} returnFocus={returnFocus} />}

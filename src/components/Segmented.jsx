@@ -1,4 +1,5 @@
 import { useLayoutEffect, useRef, useState } from 'react'
+import { flushSync } from 'react-dom'
 import './Segmented.css'
 
 /*
@@ -25,8 +26,12 @@ export default function Segmented({ options, value, onChange, label, className =
       })
       measured.current = true
     }
-    measure()
-    const observer = new ResizeObserver(measure)
+    // A pick measures at once. The first placement waits for the observer,
+    // which reports once the group is laid out and before it paints: reading
+    // offsetLeft here would force a layout of the whole page mid-mount, and of
+    // a section the browser is skipping while it's off screen.
+    if (measured.current) measure()
+    const observer = new ResizeObserver(() => flushSync(measure))
     observer.observe(group)
     return () => observer.disconnect()
   }, [value])

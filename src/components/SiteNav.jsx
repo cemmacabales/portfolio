@@ -1,4 +1,5 @@
 import { useLayoutEffect, useRef, useState } from 'react'
+import { flushSync } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion' // eslint-disable-line no-unused-vars
 import { Sun, Moon, House, Layers, UserRound, Mail } from 'lucide-react'
 import { useScrollState } from '../hooks/useScrollState'
@@ -18,6 +19,7 @@ const LENS_SPRING = { type: 'spring', stiffness: 460, damping: 38, mass: 0.9 }
 
 function useLens(active, itemRefs) {
   const [lens, setLens] = useState({ x: 0, width: 0, visible: false })
+  const placed = useRef(false)
 
   useLayoutEffect(() => {
     const measure = () => {
@@ -28,10 +30,19 @@ function useLens(active, itemRefs) {
       }
       setLens({ x: el.offsetLeft, width: el.offsetWidth, visible: true })
     }
-    measure()
+    // A new section measures at once. The first placement waits for the
+    // observer, which reports once the items are laid out and before they
+    // paint, instead of forcing a layout of the page mid-mount. It reports
+    // again when the web font swaps in and the items change width.
+    if (placed.current) measure()
+    placed.current = true
+    const observer = new ResizeObserver(() => flushSync(measure))
+    for (const el of Object.values(itemRefs.current)) if (el) observer.observe(el)
     window.addEventListener('resize', measure)
-    document.fonts?.ready.then(measure)
-    return () => window.removeEventListener('resize', measure)
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('resize', measure)
+    }
   }, [active, itemRefs])
 
   return lens

@@ -101,7 +101,9 @@ const Calendar = memo(function Calendar({ weeks, live, label, onActive }) {
       pinned.current = el.scrollLeft >= el.scrollWidth - el.clientWidth - 1
       edges()
     }
-    pin()
+    // The observer's first report pins it, once the calendar is laid out and
+    // before it paints. Pinning here instead would force a layout of the whole
+    // page mid-mount, and of the About section while the browser skips it.
     const observer = new ResizeObserver(pin)
     observer.observe(el)
     el.addEventListener('scroll', onScroll, { passive: true })
