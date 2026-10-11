@@ -247,7 +247,7 @@ export const projects = [
   },
   {
     // The cover frames real iOS screens in Apple's iPhone 18 Pro bezel. The
-    // film is the 60-second promo, played from the row (see FilmPlayer).
+    // film is the 108-second promo, played from the row (see FilmPlayer).
     slug: 'deni',
     name: 'Deni',
     category: 'iPhone app · Medication tracker',
@@ -265,7 +265,7 @@ export const projects = [
       src: DeniPromo,
       poster: DeniPromoPoster,
       title: 'Deni promo film',
-      length: '1:00',
+      length: '1:48',
     },
     note: 'Coming soon to iPhone.',
   },
