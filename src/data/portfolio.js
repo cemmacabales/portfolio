@@ -259,6 +259,25 @@ export const featured = {
 // from the papers and write-ups; leave the array empty rather than invent one.
 export const projects = [
   {
+    // The cover frames real iOS screens in Apple's iPhone 18 Pro bezel. The
+    // film is the 108-second promo, played from the row (see FilmPlayer).
+    slug: 'deni',
+    name: 'Deni',
+    category: 'iPhone app · Medication tracker',
+    year: '2026',
+    image: DeniCover,
+    thumb: DeniThumb,
+    imageAlt:
+      'Deni on three iPhones: today’s doses on a pearl foil pack under a morning sky, the mood journal, and a week of doses in Insights',
+    summary:
+      'A medication tracker for iPhone. My dad started maintenance meds early in life, and it’s my mom who keeps him on track. Not everyone has someone like that. Deni is meant to be that reminder for anyone who doesn’t, or for anyone who simply wants something dependable to lean on. Deni organizes your meds like they’re all in one cabinet, so you always know what to take and when. A journal tracks how you’re feeling alongside your doses, and Insights sums up your week in a one-page report you can share with your doctor.',
+    metrics: [],
+    tech: ['React Native', 'Expo', 'TypeScript', 'SQLite'],
+    links: {},
+    film: deniFilm,
+    note: 'Coming soon to iPhone.',
+  },
+  {
     slug: 'centient',
     name: 'Centient',
     category: 'Full-stack · USDC on Stellar',
@@ -278,25 +297,6 @@ export const projects = [
       code: 'https://github.com/cemmacabales/centient',
     },
     demoLabel: 'Try the beta',
-  },
-  {
-    // The cover frames real iOS screens in Apple's iPhone 18 Pro bezel. The
-    // film is the 108-second promo, played from the row (see FilmPlayer).
-    slug: 'deni',
-    name: 'Deni',
-    category: 'iPhone app · Medication tracker',
-    year: '2026',
-    image: DeniCover,
-    thumb: DeniThumb,
-    imageAlt:
-      'Deni on three iPhones: today’s doses on a pearl foil pack under a morning sky, the mood journal, and a week of doses in Insights',
-    summary:
-      'A medication tracker for iPhone. My dad started maintenance meds early in life, and it’s my mom who keeps him on track. Not everyone has someone like that. Deni is meant to be that reminder for anyone who doesn’t, or for anyone who simply wants something dependable to lean on. Deni organizes your meds like they’re all in one cabinet, so you always know what to take and when. A journal tracks how you’re feeling alongside your doses, and Insights sums up your week in a one-page report you can share with your doctor.',
-    metrics: [],
-    tech: ['React Native', 'Expo', 'TypeScript', 'SQLite'],
-    links: {},
-    film: deniFilm,
-    note: 'Coming soon to iPhone.',
   },
   {
     slug: 'edge-coach',
