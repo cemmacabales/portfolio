@@ -87,7 +87,7 @@ Carl is open to full-time employment, freelance/contract work, and research coll
 
 ## Software Development Projects
 
-**Centient — Train AI, cent by cent** (2026, Carl's featured project)
+**Centient — Train AI, cent by cent** (2026)
 - Won a $5,000 USD Instawards grant
 - Human-feedback data labeling platform: contributors compare two AI answers, explain which is better, and are paid in USDC on Stellar as soon as the answer is accepted — no bank account needed
 - Quality guards: gold tasks, rate limiting, spam and bias detection, inter-annotator agreement
@@ -95,7 +95,7 @@ Carl is open to full-time employment, freelance/contract work, and research coll
 - Tech: Next.js, React, TypeScript, PostgreSQL, Prisma, Stellar SDK, Freighter/Albedo wallets, Redis, Sentry, Railway
 - Beta: https://beta.centient.work · Code: https://github.com/cemmacabales/centient
 
-**Deni — Medication tracker for iPhone** (Oct 2026, in progress)
+**Deni — Medication tracker for iPhone** (Oct 2026, in progress; Carl's featured project)
 - Not released yet: say "coming soon to iPhone", never that it's on the App Store
 - Why it exists: Carl's dad started maintenance meds early in life, and Carl's mom keeps him on track. Not everyone has someone like that, so Deni is meant to be that reminder for people who don't, or for anyone who wants something dependable to lean on. Don't call it "inspired by" his dad
 - Highlights: a medication cabinet with every med drawn to look like the real pill, a mood and symptom journal, and Insights that turns the week into a report to share with a doctor
@@ -104,7 +104,7 @@ Carl is open to full-time employment, freelance/contract work, and research coll
 - Add a med by picking its shape and colors so it looks like the real pill; a mood and symptom journal lists the doses taken before each entry
 - Insights lines up a week of doses, mood, and symptoms; the week becomes a one-page PDF report to share with a doctor
 - No accounts and no server: everything is saved on the phone. It helps people keep track and gives no medical advice
-- Has a 60-second promo film, playable from its row in Selected work
+- Has a 1:48 promo film, playable from the featured tile at the top of the page and from its row in Selected work
 - Tech: React Native, Expo, TypeScript, SQLite on the device
 - The code is private, so there's no public repo to link
 

@@ -203,7 +203,7 @@
 }
 
 /*
- * Overlays on imagery (the portrait, the Centient reel) share one flat
+ * Overlays on imagery (the portrait, the featured reel) share one flat
  * material: a translucent fill, a hairline edge, and a 32px height, so chips
  * and controls line up. Each surface sets the --ov-* colors for its backdrop.
  */
@@ -465,7 +465,7 @@
   }
 }
 
-/* ── Featured: Centient ──────────────────────────────────────── */
+/* ── Featured: Deni ─────────────────────────────────────────── */
 .tile-featured {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.12fr);
@@ -497,14 +497,13 @@
   color: var(--ink-2);
 }
 
+/* An app icon: the art fills the squircle, with a hairline to lift it off the tile. */
 .featured-logo {
   width: 40px;
   height: 40px;
-  padding: 3px;
-  border-radius: 12px;
-  border: 1px solid var(--line);
-  background: oklch(0.985 0.004 175);
-  object-fit: contain;
+  border-radius: 9px;
+  box-shadow: 0 0 0 1px var(--line);
+  object-fit: cover;
 }
 
 .award-pill {
@@ -573,6 +572,7 @@
 
 .featured-visual {
   position: relative;
+  container-type: size;
   margin: 10px;
   overflow: hidden;
   border-radius: calc(var(--r-tile) - 10px);
@@ -581,56 +581,51 @@
     var(--tile-sunk);
 }
 
-/* ── Centient reel: a browser window that bleeds off the corner ── */
-.reel-window {
+/* ── Deni reel: an iPhone that rises out of the bottom edge ─── */
+.reel-skies,
+.reel-sky {
   position: absolute;
-  top: 17%;
-  left: 7%;
-  width: 100%;
-  overflow: hidden;
-  border-radius: 14px;
-  background: oklch(0.985 0.002 175);
-  box-shadow: var(--shadow-float), 0 0 0 1px var(--line);
+  inset: 0;
+}
+
+.reel-sky {
+  transition: opacity 0.9s var(--ease-out);
+}
+
+/*
+ * The phone sits whole in the middle of the panel (a size container), sized
+ * so it clears the caption and controls by the same gap above and below
+ * (the phone is about 2.09 times as tall as it is wide). The frame is drawn
+ * in the phone's own width (cqw), so the band, corners and island keep the
+ * iPhone's proportions at any size.
+ */
+.reel-phone {
+  --phone-gap: 68px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(50cqw, calc((100cqh - 2 * var(--phone-gap)) / 2.09));
+  container-type: inline-size;
+  translate: -50% -50%;
   transition: transform 1.2s var(--ease-out);
 }
 
-.reel-bar {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  height: 34px;
-  padding: 0 14px;
-  border-bottom: 1px solid oklch(0.2 0.01 175 / 0.08);
-  background: oklch(0.955 0.004 175);
-}
-
-.reel-lights {
-  display: flex;
-  gap: 6px;
-}
-
-.reel-lights i {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: oklch(0.82 0.006 175);
-}
-
-.reel-url {
-  display: inline-flex;
-  align-items: center;
-  height: 22px;
-  padding: 0 12px;
-  border-radius: 999px;
-  background: oklch(0.99 0.002 175);
-  font-size: 0.75rem;
-  color: oklch(0.36 0.01 175);
+.reel-frame {
+  padding: 3.6cqw;
+  border-radius: 16.5cqw;
+  background: #0b0b0d;
+  box-shadow:
+    0 0 0 1.1cqw #c9ced6,
+    0 0 0 1.5cqw #8e949d,
+    0 40px 60px -24px oklch(0 0 0 / 0.55);
 }
 
 .reel-screen {
   position: relative;
-  aspect-ratio: 1600 / 1073;
-  background: #f8f9fb;
+  aspect-ratio: 1320 / 2868;
+  overflow: hidden;
+  border-radius: 13cqw;
+  background: #0b0b0d;
 }
 
 .reel-shot {
@@ -639,10 +634,21 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 0 0;
 }
 
-/* Light material over the mint-washed product panel. */
+.reel-island {
+  position: absolute;
+  z-index: 1;
+  top: 2.6%;
+  left: 50%;
+  width: 31%;
+  aspect-ratio: 125 / 37;
+  border-radius: 999px;
+  background: #000;
+  translate: -50% 0;
+}
+
+/* Light material over the sky. */
 .featured-visual {
   --ov-bg: color-mix(in oklch, var(--tile) 78%, transparent);
   --ov-solid: var(--tile);
@@ -751,8 +757,8 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .tile-featured:hover .reel-window {
-    transform: translate(-10px, -8px);
+  .tile-featured:hover .reel-phone {
+    transform: translateY(-10px);
   }
 }
 
@@ -800,11 +806,6 @@
     aspect-ratio: 16 / 10;
   }
 
-  .reel-window {
-    top: 15%;
-    left: 6%;
-    width: 104%;
-  }
 }
 
 @media (max-width: 760px) {
@@ -867,21 +868,20 @@
   }
 
   .featured-visual {
-    aspect-ratio: 1 / 0.92;
+    aspect-ratio: 3 / 4;
   }
 
-  .reel-window {
-    top: 18%;
-    left: 6%;
-    width: 112%;
-  }
-
-  /* No room beside the caption at phone width, so the controls drop to the corner. */
+  /* No room beside the caption at phone width, so the controls sit under the phone. */
   .reel-controls {
     top: auto;
     right: auto;
-    left: 12px;
-    bottom: 12px;
+    bottom: 16px;
+    left: 50%;
+    translate: -50% 0;
+  }
+
+  .reel-phone {
+    --phone-gap: 60px;
   }
 
   .main-role::before {
@@ -898,7 +898,8 @@
     animation: none;
   }
 
-  .reel-window,
+  .reel-phone,
+  .reel-sky,
   .reel-pip,
   .gh-arrow,
   .resume-sheet,
@@ -908,7 +909,7 @@
     transition: none;
   }
 
-  .tile-featured:hover .reel-window,
+  .tile-featured:hover .reel-phone,
   .tile-gh:hover .gh-arrow,
   .tile-resume:hover .resume-badge {
     transform: none;

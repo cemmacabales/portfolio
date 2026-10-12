@@ -11,10 +11,10 @@ import { barongPhoto, PORTRAIT_SIZES, REEL_SIZES } from './data/photos'
  * can't use it up before there's anything to wait for.
  *
  * What it waits for is whatever would otherwise stutter the entrance: React's
- * first commit, the web font, the photo on show and the Centient screens
+ * first commit, the web font, the photo on show and the featured app's screens
  * decoded (so the slideshows never decode mid-swap), and the WebGPU field
  * compiling its shaders and drawing a first frame. Only what starts on screen
- * holds the page: on a phone the résumé and Centient tiles are far below, so
+ * holds the page: on a phone the résumé and featured tiles are far below, so
  * they load on their own while the hero plays.
  */
 
@@ -25,7 +25,7 @@ const LEAVE_MS = 550 // keep in step with #boot's transition in index.html
 
 // How much of the percentage each task carries. `below` (the sections below
 // the hero) only holds the page when it opens somewhere other than the top.
-const TASKS = { app: 1, fonts: 1, portraits: 2, resume: 1, centient: 2, field: 2, below: 0 }
+const TASKS = { app: 1, fonts: 1, portraits: 2, resume: 1, featured: 2, field: 2, below: 0 }
 const TOTAL = Object.values(TASKS).reduce((sum, w) => sum + w, 0)
 
 // Each cell of the miniature bento fills once every task behind its tile is done.
@@ -34,7 +34,7 @@ const CELLS = {
   mint: ['app', 'fonts'],
   res: ['resume'],
   gh: ['app', 'fonts'],
-  feat: ['centient'],
+  feat: ['featured'],
   about: ['app', 'fonts'],
   skills: ['app', 'fonts'],
 }
@@ -172,7 +172,7 @@ export function markReady(task) {
   if (task === 'app') {
     requestAnimationFrame(() => settle('fonts', document.fonts?.ready))
     settleIfShown('resume', '.resume-sheet', [{ src: ResumePage }])
-    settleIfShown('centient', '.reel-screen', [
+    settleIfShown('featured', '.reel-screen', [
       { src: featured.logo },
       ...featured.screens.map((screen) => ({ ...screen, sizes: REEL_SIZES })),
     ])

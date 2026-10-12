@@ -1,11 +1,4 @@
 import CentientHome from '../assets/centient/home.webp'
-import CentientRank from '../assets/centient/rank.webp'
-import CentientPaid from '../assets/centient/paid.webp'
-import CentientAccount from '../assets/centient/account.webp'
-import CentientHome800 from '../assets/centient/home-800.webp'
-import CentientRank800 from '../assets/centient/rank-800.webp'
-import CentientPaid800 from '../assets/centient/paid-800.webp'
-import CentientAccount800 from '../assets/centient/account-800.webp'
 import CentientOwl from '../assets/centient-owl.webp'
 import BlocklabsLogo from '../assets/blocklabs.png'
 import PinkRaftLogo from '../assets/pinkraft.svg'
@@ -18,6 +11,19 @@ import PetchinguImage from '../assets/petchingu.webp'
 import DeniCover from '../assets/deni/cover.webp'
 import DeniPromo from '../assets/deni/promo.mp4'
 import DeniPromoPoster from '../assets/deni/promo-poster.webp'
+import DeniIcon from '../assets/deni/icon.webp'
+import DeniToday from '../assets/deni/today.webp'
+import DeniToday480 from '../assets/deni/today-480.webp'
+import DeniReminder from '../assets/deni/reminder.webp'
+import DeniReminder480 from '../assets/deni/reminder-480.webp'
+import DeniAdd from '../assets/deni/add.webp'
+import DeniAdd480 from '../assets/deni/add-480.webp'
+import DeniJournal from '../assets/deni/journal.webp'
+import DeniJournal480 from '../assets/deni/journal-480.webp'
+import DeniInsights from '../assets/deni/insights.webp'
+import DeniInsights480 from '../assets/deni/insights-480.webp'
+import DeniReport from '../assets/deni/report.webp'
+import DeniReport480 from '../assets/deni/report-480.webp'
 import MapuaImage from '../assets/Mapua.webp'
 import StPaulImage from '../assets/stpaul.webp'
 import IpsaImage from '../assets/ipsa.webp'
@@ -182,43 +188,71 @@ export const workflow = [
   },
 ]
 
+// Deni's 108-second promo, played from the hero and from its row (see FilmPlayer).
+const deniFilm = {
+  src: DeniPromo,
+  poster: DeniPromoPoster,
+  title: 'Deni promo film',
+  length: '1:48',
+}
+
+// The hero's featured project. `screens` are frames of the real app on an
+// iPhone, in the order the App Store shows them; `sky` is the backdrop behind
+// the phone for that screen, taken from the app's own sky at that hour.
 export const featured = {
-  slug: 'centient',
-  name: 'Centient',
-  tagline: 'Train AI, cent by cent.',
-  award: '$5,000 Instawards grant',
-  logo: CentientOwl,
-  // Screens for the hero slideshow, in the order a contributor meets them.
+  slug: 'deni',
+  name: 'Deni',
+  tagline: 'Every dose for today, in one pack.',
+  status: 'Coming soon to iPhone',
+  logo: DeniIcon,
   screens: [
     {
-      src: CentientHome,
-      srcSet: `${CentientHome800} 800w, ${CentientHome} 1600w`,
-      caption: 'Sign in with a Stellar wallet',
-      alt: 'Centient home screen: “Train AI, cent by cent.” with a Connect Freighter button',
+      src: DeniToday,
+      srcSet: `${DeniToday480} 480w, ${DeniToday} 800w`,
+      caption: 'Today, in one pack',
+      alt: 'Deni’s Today screen: 1 of 4 doses taken, with the evening doses waiting on a pearl foil pack under an afternoon sky',
+      sky: 'linear-gradient(180deg, #3f6bcc 0%, #7f9ad3 55%, #a9bbdd 100%)',
     },
     {
-      src: CentientRank,
-      srcSet: `${CentientRank800} 800w, ${CentientRank} 1600w`,
-      caption: 'Pick the better answer, say why',
-      alt: 'A Centient task with response A selected and the reason typed in',
+      src: DeniReminder,
+      srcSet: `${DeniReminder480} 480w, ${DeniReminder} 800w`,
+      caption: 'A reminder when a dose is due',
+      alt: 'A Deni reminder on the lock screen for Metformin, held open to show Take and Snooze 10 minutes',
+      sky: 'linear-gradient(180deg, #121219 0%, #2b2a33 60%, #4a3f3a 100%)',
     },
     {
-      src: CentientPaid,
-      srcSet: `${CentientPaid800} 800w, ${CentientPaid} 1600w`,
-      caption: 'Paid per accepted answer, on-chain',
-      alt: 'Centient confirming “+0.25 USDC on its way” after an answer is accepted',
+      src: DeniAdd,
+      srcSet: `${DeniAdd480} 480w, ${DeniAdd} 800w`,
+      caption: 'Add each med as it looks',
+      alt: 'Adding a med in Deni: an oval tan Ibuprofen tablet, with shape and color pickers below',
+      sky: 'linear-gradient(180deg, #1a2350 0%, #6b5c9a 50%, #f0bfa4 100%)',
     },
     {
-      src: CentientAccount,
-      srcSet: `${CentientAccount800} 800w, ${CentientAccount} 1600w`,
-      caption: 'Every payout tracked to confirmed',
-      alt: 'Centient account sheet: 0.5 USDC earned, two submissions marked confirmed',
+      src: DeniJournal,
+      srcSet: `${DeniJournal480} 480w, ${DeniJournal} 800w`,
+      caption: 'Note how you feel',
+      alt: 'Deni’s journal: mood slid to Very pleasant, with symptom chips and a note field',
+      sky: 'linear-gradient(180deg, #0b0c24 0%, #4a3f78 52%, #e88a78 100%)',
+    },
+    {
+      src: DeniInsights,
+      srcSet: `${DeniInsights480} 480w, ${DeniInsights} 800w`,
+      caption: 'Your week, side by side',
+      alt: 'Deni’s Insights: a week of doses for four meds in seven columns, with mood below',
+      sky: 'linear-gradient(180deg, #0a0d22 0%, #1a2350 60%, #2a3870 100%)',
+    },
+    {
+      src: DeniReport,
+      srcSet: `${DeniReport480} 480w, ${DeniReport} 800w`,
+      caption: 'A one-page report for your doctor',
+      alt: 'Deni’s report for a doctor: each med’s doses for the week, missed ones noted, then mood, symptoms and notes',
+      sky: 'linear-gradient(180deg, #06070f 0%, #141c44 60%, #22306a 100%)',
     },
   ],
   pitch:
-    'People rank pairs of AI answers and get paid in USDC on Stellar the moment an answer is accepted, with no bank account and nothing to cash out. Quality guards catch spam and bias, and every payout is co-signed from a multisig account that no single key can drain.',
-  stack: ['Next.js', 'TypeScript', 'PostgreSQL', 'Stellar'],
-  beta: 'https://beta.centient.work',
+    'My dad started maintenance meds early, and my mom keeps him on track. Deni is that reminder for anyone without someone like that: today’s doses on one pack, a nudge when one is due, a journal of how you feel, and your week on one page to share with your doctor. Everything stays on your iPhone, with no account and no tracking.',
+  stack: ['React Native', 'Expo', 'TypeScript', 'SQLite'],
+  film: deniFilm,
 }
 
 // Order is the order shown in "Selected work". `metrics` are real results
@@ -261,12 +295,7 @@ export const projects = [
     metrics: [],
     tech: ['React Native', 'Expo', 'TypeScript', 'SQLite'],
     links: {},
-    film: {
-      src: DeniPromo,
-      poster: DeniPromoPoster,
-      title: 'Deni promo film',
-      length: '1:48',
-    },
+    film: deniFilm,
     note: 'Coming soon to iPhone.',
   },
   {

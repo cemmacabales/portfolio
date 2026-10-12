@@ -1,9 +1,10 @@
-import { Fragment, useEffect, useRef, useState } from 'react'
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence, useInView, useReducedMotion } from 'framer-motion' // eslint-disable-line no-unused-vars
-import { ArrowUpRight, ArrowDown, Github, Trophy, Pause, Play } from 'lucide-react'
+import { ArrowUpRight, ArrowDown, Github, Smartphone, Pause, Play } from 'lucide-react'
 import ShapeWaves from './ShapeWaves'
 import HeroDesk from './HeroDesk'
 import AssistantTile from './AssistantTile'
+import FilmPlayer from './FilmPlayer'
 import ResumePage from '../assets/resume-page.webp'
 import { profile, featured } from '../data/portfolio'
 import { barongPhoto, gradPhoto, PORTRAIT_SIZES, REEL_SIZES } from '../data/photos'
@@ -169,10 +170,10 @@ function Portrait({ theme }) {
   )
 }
 
-/* ── Centient: the product, one screen at a time ─────────────── */
+/* ── Deni: the app on an iPhone, one screen at a time ────────── */
 const SLIDE = 3.2
 
-function CentientReel({ screens }) {
+function PhoneReel({ screens }) {
   const ref = useRef(null)
   const inView = useInView(ref, { amount: 0.35 })
   const reduce = useReducedMotion()
@@ -197,44 +198,50 @@ function CentientReel({ screens }) {
       onPointerEnter={() => setHovered(true)}
       onPointerLeave={() => setHovered(false)}
     >
-      <div className="reel-window">
-        <div className="reel-bar" aria-hidden="true">
-          <span className="reel-lights">
-            <i />
-            <i />
-            <i />
-          </span>
-          <span className="reel-url">beta.centient.work</span>
-        </div>
-        <div className="reel-screen">
-          {load && screens.map((screen, i) => {
-            // 0 is showing, count - 1 just left (exits left), the rest wait on the right.
-            const offset = (i - index + count) % count
-            const state =
-              offset === 0
-                ? { opacity: 1, x: '0%', filter: 'blur(0px)' }
-                : offset === count - 1
-                  ? { opacity: 0, x: '-7%', filter: 'blur(6px)' }
-                  : { opacity: 0, x: '7%', filter: 'blur(6px)' }
-            return (
-              <motion.img
-                key={screen.src}
-                src={screen.src}
-                srcSet={screen.srcSet}
-                sizes={REEL_SIZES}
-                alt={offset === 0 ? screen.alt : ''}
-                aria-hidden={offset !== 0}
-                className="reel-shot"
-                width="1600"
-                height="1073"
-                loading="lazy"
-                decoding="async"
-                initial={false}
-                animate={state}
-                transition={{ duration: 0.7, ease: EASE }}
-              />
-            )
-          })}
+      {/* The sky behind the phone follows the screen, as the app's does with the hour. */}
+      <div className="reel-skies" aria-hidden="true">
+        {screens.map((screen, i) => (
+          <span
+            key={screen.src}
+            className="reel-sky"
+            style={{ backgroundImage: screen.sky, opacity: i === index ? 1 : 0 }}
+          />
+        ))}
+      </div>
+
+      <div className="reel-phone">
+        <div className="reel-frame">
+          <div className="reel-screen">
+            {load && screens.map((screen, i) => {
+              // 0 is showing, count - 1 just left (exits left), the rest wait on the right.
+              const offset = (i - index + count) % count
+              const state =
+                offset === 0
+                  ? { opacity: 1, x: '0%', filter: 'blur(0px)' }
+                  : offset === count - 1
+                    ? { opacity: 0, x: '-7%', filter: 'blur(6px)' }
+                    : { opacity: 0, x: '7%', filter: 'blur(6px)' }
+              return (
+                <motion.img
+                  key={screen.src}
+                  src={screen.src}
+                  srcSet={screen.srcSet}
+                  sizes={REEL_SIZES}
+                  alt={offset === 0 ? screen.alt : ''}
+                  aria-hidden={offset !== 0}
+                  className="reel-shot"
+                  width="800"
+                  height="1738"
+                  loading="lazy"
+                  decoding="async"
+                  initial={false}
+                  animate={state}
+                  transition={{ duration: 0.7, ease: EASE }}
+                />
+              )
+            })}
+            <span className="reel-island" aria-hidden="true" />
+          </div>
         </div>
       </div>
 
@@ -256,7 +263,7 @@ function CentientReel({ screens }) {
         </span>
       </p>
 
-      <div className="overlay-pill reel-controls" role="group" aria-label="Centient screens">
+      <div className="overlay-pill reel-controls" role="group" aria-label="Deni screens">
         {screens.map((screen, i) => (
           <button
             key={screen.src}
@@ -316,6 +323,8 @@ export default function HeroBento({ theme, showField, onOpenProject, onAskAssist
   const resumeLoad = useDeferredMedia(resumeRef)
   const featuredRef = useRef(null)
   const featuredLoad = useDeferredMedia(featuredRef)
+  const [filmOpen, setFilmOpen] = useState(false)
+  const closeFilm = useCallback(() => setFilmOpen(false), [])
 
   // No field to warm up (touch devices, no WebGPU): nothing for the loader to wait on.
   useEffect(() => {
@@ -449,7 +458,7 @@ export default function HeroBento({ theme, showField, onOpenProject, onAskAssist
           </div>
         </div>
 
-        {/* ── Featured: Centient ─────────────────────────────────── */}
+        {/* ── Featured: Deni ─────────────────────────────────────── */}
         <motion.article
           ref={featuredRef}
           variants={rise}
@@ -469,8 +478,8 @@ export default function HeroBento({ theme, showField, onOpenProject, onAskAssist
                 Featured project
               </p>
               <p className="award-pill">
-                <Trophy size={16} strokeWidth={2} aria-hidden="true" />
-                {featured.award}
+                <Smartphone size={16} strokeWidth={2} aria-hidden="true" />
+                {featured.status}
               </p>
             </div>
 
@@ -487,17 +496,17 @@ export default function HeroBento({ theme, showField, onOpenProject, onAskAssist
             </ul>
 
             <div className="featured-actions">
-              <a
-                href={featured.beta}
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                type="button"
                 className="btn btn-mint"
-                onClick={() => posthog.capture('featured_project_beta_opened', { project_slug: featured.slug })}
+                onClick={() => {
+                  setFilmOpen(true)
+                  posthog.capture('project_film_played', { project_slug: featured.slug, source: 'featured' })
+                }}
               >
-                Try the beta
-                <ArrowUpRight size={18} strokeWidth={1.8} aria-hidden="true" />
-                <span className="visually-hidden"> (opens in a new tab)</span>
-              </a>
+                <Play size={16} strokeWidth={0} fill="currentColor" aria-hidden="true" />
+                Watch the film
+              </button>
               <a
                 href={`#work-${featured.slug}`}
                 className="btn btn-line"
@@ -511,12 +520,14 @@ export default function HeroBento({ theme, showField, onOpenProject, onAskAssist
             </div>
           </div>
 
-          <CentientReel screens={featured.screens} />
+          <PhoneReel screens={featured.screens} />
         </motion.article>
 
         {/* ── Hobbies, beside where to find me and what I work on ── */}
         <HeroDesk variants={rise} />
       </motion.div>
+
+      <FilmPlayer film={featured.film} open={filmOpen} onClose={closeFilm} />
     </section>
   )
 }

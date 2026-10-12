@@ -17,8 +17,9 @@ export const barongPhoto = {
 }
 
 // How wide the hero draws these (measured from HeroBento.css): the portrait
-// spans the column on phones and stays under 380px beside the copy; a Centient
-// screen spans the column up to 960px and stays under 680px after that.
+// spans the column on phones and stays under 380px beside the copy; the
+// featured phone's screen is about half the column on phones and under 240px
+// everywhere else.
 // boot.js decodes with the same sizes, so it warms the copy the page will use.
 export const PORTRAIT_SIZES = '(max-width: 760px) calc(100vw - 54px), 380px'
-export const REEL_SIZES = '(max-width: 960px) 100vw, 680px'
+export const REEL_SIZES = '(max-width: 760px) 50vw, 240px'
