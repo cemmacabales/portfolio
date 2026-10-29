@@ -95,8 +95,8 @@ Carl is open to full-time employment, freelance/contract work, and research coll
 - Tech: Next.js, React, TypeScript, PostgreSQL, Prisma, Stellar SDK, Freighter/Albedo wallets, Redis, Sentry, Railway
 - Beta: https://beta.centient.work · Code: https://github.com/cemmacabales/centient
 
-**Deni — Medication tracker for iPhone** (Oct 2026, in progress; Carl's featured project)
-- Not released yet: say "coming soon to iPhone", never that it's on the App Store
+**Deni — Medication tracker for iPhone** (Oct 2026; Carl's featured project)
+- Out now on the App Store: https://apps.apple.com/us/app/deni-medication-tracker/id6821553110
 - Why it exists: Carl's dad started maintenance meds early in life, and Carl's mom keeps him on track. Not everyone has someone like that, so Deni is meant to be that reminder for people who don't, or for anyone who wants something dependable to lean on. Don't call it "inspired by" his dad
 - Highlights: a medication cabinet with every med drawn to look like the real pill, a mood and symptom journal, and Insights that turns the week into a report to share with a doctor
 - The day's doses sit on one pearl foil blister pack under a sky that changes with the time of day; tap a dose to take it

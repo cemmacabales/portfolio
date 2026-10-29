@@ -496,9 +496,20 @@ export default function HeroBento({ theme, showField, onOpenProject, onAskAssist
             </ul>
 
             <div className="featured-actions">
+              <a
+                href={featured.appStore}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-mint"
+                onClick={() => posthog.capture('project_app_store_opened', { project_slug: featured.slug, source: 'featured' })}
+              >
+                Get it on the App Store
+                <ArrowUpRight size={16} strokeWidth={1.8} aria-hidden="true" />
+                <span className="visually-hidden"> (opens in a new tab)</span>
+              </a>
               <button
                 type="button"
-                className="btn btn-mint"
+                className="btn btn-line"
                 onClick={() => {
                   setFilmOpen(true)
                   posthog.capture('project_film_played', { project_slug: featured.slug, source: 'featured' })

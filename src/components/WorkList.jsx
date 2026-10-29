@@ -123,8 +123,14 @@ function WorkRow({ project, index, open, onToggle, onShowModels }) {
             </ul>
 
             <div className="work-actions">
+              {demo && (
+                <ExternalButton href={demo} variant="btn-mint">
+                  {project.demoLabel ?? 'Live demo'}
+                </ExternalButton>
+              )}
+              {/* The link out leads when there is one; the film steps back. */}
               {film && (
-                <button type="button" className="btn btn-sm btn-mint" onClick={playFilm}>
+                <button type="button" className={`btn btn-sm ${demo ? 'btn-line' : 'btn-mint'}`} onClick={playFilm}>
                   <Play size={14} strokeWidth={0} fill="currentColor" aria-hidden="true" />
                   Watch the film
                 </button>
@@ -138,11 +144,6 @@ function WorkRow({ project, index, open, onToggle, onShowModels }) {
                   Try the models
                   <ArrowUpRight size={16} strokeWidth={1.8} aria-hidden="true" />
                 </button>
-              )}
-              {demo && (
-                <ExternalButton href={demo} variant="btn-mint">
-                  {project.demoLabel ?? 'Live demo'}
-                </ExternalButton>
               )}
               {paper && (
                 <ExternalButton href={paper} variant="btn-line">

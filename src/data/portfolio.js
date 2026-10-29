@@ -196,6 +196,8 @@ const deniFilm = {
   length: '1:48',
 }
 
+const deniAppStore = 'https://apps.apple.com/us/app/deni-medication-tracker/id6821553110'
+
 // The hero's featured project. `screens` are frames of the real app on an
 // iPhone, in the order the App Store shows them; `sky` is the backdrop behind
 // the phone for that screen, taken from the app's own sky at that hour.
@@ -203,7 +205,8 @@ export const featured = {
   slug: 'deni',
   name: 'Deni',
   tagline: 'Every dose for today, in one pack.',
-  status: 'Coming soon to iPhone',
+  status: 'Out now on iPhone',
+  appStore: deniAppStore,
   logo: DeniIcon,
   screens: [
     {
@@ -273,9 +276,9 @@ export const projects = [
       'A medication tracker for iPhone. My dad started maintenance meds early in life, and it’s my mom who keeps him on track. Not everyone has someone like that. Deni is meant to be that reminder for anyone who doesn’t, or for anyone who simply wants something dependable to lean on. Deni organizes your meds like they’re all in one cabinet, so you always know what to take and when. A journal tracks how you’re feeling alongside your doses, and Insights sums up your week in a one-page report you can share with your doctor.',
     metrics: [],
     tech: ['React Native', 'Expo', 'TypeScript', 'SQLite'],
-    links: {},
+    links: { demo: deniAppStore },
+    demoLabel: 'Get it on the App Store',
     film: deniFilm,
-    note: 'Coming soon to iPhone.',
   },
   {
     slug: 'centient',
