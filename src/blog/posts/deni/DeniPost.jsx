@@ -61,9 +61,9 @@ export default function DeniPost() {
   return (
     <BlogPage>
       <article className="deni-post">
-        <header className="deni-hero" style={{ viewTransitionName: 'deni-sky' }} data-vt>
+        <header className="deni-hero">
           <div className="deni-hero-inner">
-            <div className="deni-hero-copy" style={{ viewTransitionName: 'deni-copy' }} data-vt>
+            <div className="deni-hero-copy">
               <a href="/blog/" className="deni-back">
                 <ArrowLeft size={16} strokeWidth={2} aria-hidden="true" />
                 All posts
@@ -82,7 +82,6 @@ export default function DeniPost() {
             </div>
             <Phone
               className="deni-hero-phone"
-              vt="deni-phone"
               priority
               {...deniShots.today}
               sizes="(max-width: 760px) 220px, 300px"

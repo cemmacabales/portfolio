@@ -22,18 +22,6 @@
       try {
         if (sessionStorage.getItem('boot-seen')) document.documentElement.classList.add('is-warm');
       } catch (e) {}
-      // Warm, the prerendered nav and tab bar are what a page arriving from
-      // the blog morphs into. They step out of #root before the first frame,
-      // so React's first commit (which clears #root) can land mid-transition
-      // without cutting it short; src/boot.js retires them once it's over.
-      if (document.documentElement.classList.contains('is-warm')) {
-        addEventListener('pagereveal', function () {
-          document.querySelectorAll('[data-ssr] > :is(.site-nav, .tab-bar)').forEach(function (el) {
-            el.setAttribute('data-held', '');
-            document.body.append(el);
-          });
-        }, { once: true });
-      }
     </script>
     <style>
       /*
@@ -42,13 +30,6 @@
        * with the bundle). The cells are the hero bento in miniature;
        * src/boot.js fills each one as that tile's assets become ready.
        */
-      /* The page-to-page transition's opt-in (see App.css), here as well so
-         a page arriving from the blog never misses it while the stylesheets
-         load. */
-      @view-transition {
-        navigation: auto;
-      }
-
       html.is-booting {
         overflow: hidden;
         scrollbar-gutter: stable;
@@ -62,17 +43,11 @@
       }
 
       /* A warm visit skips the loader. The prerendered nav, tab bar and
-         spinner hold the first frame instead, so a page arriving from the
-         blog has a nav to morph into (App.css). */
+         spinner hold the first frame instead, so the nav never blinks out
+         while the page rises in (App.css). */
       html.is-warm #boot,
       html.is-warm [data-ssr] > :not(.site-nav, .tab-bar, .page-spinner) {
         display: none;
-      }
-
-      /* React's own wait underneath until the held ones retire. */
-      html:has([data-held]) #root :is(.site-nav, .tab-bar) {
-        visibility: hidden;
-        view-transition-name: none;
       }
 
       html.is-warm [data-ssr] {

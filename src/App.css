@@ -445,109 +445,15 @@
 
 /*
  * ── Page to page: the home and the blog ─────────────────────────
- * Both kinds of page opt in, so following a link between them moves instead
- * of flashing (Chrome, Edge, Safari 18.2+; elsewhere it's a normal load). The
- * nav and tab bar are named on every page, so they hold still while the page
- * under them changes: the old one sinks and fades, then the new one rises in.
- * src/pageReveal.js tags each page change as it's revealed, which keeps this
- * motion off the theme switch. Deni's sky and phone carry the names
- * `deni-sky` and `deni-phone` on the post's hero and its cover in /blog, and
- * on the home's featured tile only once "Read the story" is clicked there
- * (HeroBento), so they fly between the three. Opacity and transform only.
+ * The same in every browser: src/pageReveal.js sinks the page out before a
+ * link to another page is followed (is-leaving), and the next one rises in
+ * as it renders (is-entering), with the page spinner (SiteNav.css) if it
+ * takes a moment. Only the page itself moves: the nav and the other fixed
+ * pieces (the skip link hides by transform, so moving it would show it)
+ * stay put. No view transitions between pages: morphing Deni's sky and
+ * phone from page to page kept catching on clipping, corners and glass.
+ * Opacity and transform only.
  */
-@view-transition {
-  navigation: auto;
-}
-
-.site-nav {
-  view-transition-name: site-nav;
-}
-
-.tab-bar {
-  view-transition-name: tab-bar;
-}
-
-/* The tab bar's glass blur is copied onto its snapshot's group, which is
-   square; rounding the group keeps the blur inside the pill. */
-::view-transition-group(tab-bar) {
-  border-radius: 999px;
-}
-
-.vt-deni .featured-visual {
-  view-transition-name: deni-sky;
-}
-
-.vt-deni .reel-phone {
-  view-transition-name: deni-phone;
-}
-
-/* Everything named inside the sky (the phones, the post's title, the
-   cover's hour) flies inside it, clipped to it the way its card clips them
-   (the cover's phone runs off the card's bottom edge) and stacked as on the
-   page. Where groups can't nest (Safari), they fly on their own. */
-[data-vt] [data-vt],
-.vt-deni .reel-phone {
-  view-transition-group: nearest;
-}
-
-::view-transition-group(deni-sky) {
-  overflow: clip;
-}
-
-/* The two skies are different shapes, so each fills the sky as it grows or
-   shrinks, cropped rather than stretched, and the new one fades in over the
-   old, which stays solid: a fade of both showed the page through. */
-::view-transition-old(deni-sky),
-::view-transition-new(deni-sky) {
-  height: 100%;
-  object-fit: cover;
-}
-
-::view-transition-old(deni-sky) {
-  animation: none;
-}
-
-/* Only the fade: the browser's own also blends the two skies additively. */
-::view-transition-new(deni-sky) {
-  animation-name: vt-sky-in;
-}
-
-/* The cover's hour is glass: its blur is copied onto its group, which is
-   square, as with the tab bar. */
-::view-transition-group(deni-hour) {
-  border-radius: 999px;
-}
-
-/* Not nested, the cover's hour and back phone would be lifted out of the
-   card too, so they stay part of its sky, which then shows only near its
-   own size: it gives way at once opening the post, and comes in as the sky
-   lands going back. */
-@supports not (view-transition-group: nearest) {
-  .deni-cover-hour,
-  .deni-cover-back {
-    view-transition-name: none !important;
-  }
-
-  :root:active-view-transition-type(forward)::view-transition-new(deni-sky) {
-    animation: vt-sky-in 0.1s ease-out both;
-  }
-
-  :root:active-view-transition-type(back)::view-transition-new(deni-sky) {
-    animation: vt-sky-in 0.24s ease-out 0.3s both;
-  }
-}
-
-/* Without a direction (a browser that can't tell), a plain cross-fade.
-   None of this touches the theme switch (is-theming), whose reveal sets its
-   own timing; a longer group here would outlast it. */
-:root:not(.is-theming)::view-transition-old(root),
-:root:not(.is-theming)::view-transition-new(root) {
-  animation-duration: 0.35s;
-}
-
-/* The page sinks and fades out, then the next one fades in rising from
-   below: the same both ways, so Work → Blog and Blog → Work mirror. The new
-   page starts only once the old one is gone, so the two never overlap. */
 @keyframes vt-leave {
   to {
     opacity: 0;
@@ -562,87 +468,6 @@
   }
 }
 
-@keyframes vt-sky-in {
-  from {
-    opacity: 0;
-  }
-}
-
-@keyframes vt-copy-in {
-  from {
-    opacity: 0;
-    transform: translateY(24px) scale(0.96);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  /* A named piece with no partner on the other page (the post's hero
-     leaving for the work section, say) moves with the page around it. */
-  :root:active-view-transition-type(forward, back)::view-transition-old(root),
-  :root:active-view-transition-type(forward, back)::view-transition-old(*):only-child {
-    animation: vt-leave 0.22s cubic-bezier(0.4, 0, 1, 1) both;
-  }
-
-  :root:active-view-transition-type(forward, back)::view-transition-new(root),
-  :root:active-view-transition-type(forward, back)::view-transition-new(*):only-child {
-    animation: vt-enter 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.22s both;
-  }
-
-  /* The post's title and dek settle in behind the sky and phone. Leaving,
-     they and the cover's hour and back phone go quickly, before the sky
-     changing shape around them can cut them off or slide them about. */
-  :root:active-view-transition-type(forward, back)::view-transition-new(deni-copy):only-child {
-    animation: vt-copy-in 0.42s cubic-bezier(0.16, 1, 0.3, 1) 0.22s both;
-  }
-
-  :root:active-view-transition-type(forward, back)::view-transition-old(deni-copy):only-child,
-  :root:active-view-transition-type(forward, back)::view-transition-old(deni-hour):only-child,
-  :root:active-view-transition-type(forward, back)::view-transition-old(deni-phone-back):only-child {
-    animation: vt-leave 0.12s cubic-bezier(0.4, 0, 1, 1) both;
-  }
-}
-
-:root:not(.is-theming)::view-transition-group(*) {
-  animation-duration: 0.6s;
-  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* Deni's pieces with nowhere to fly on the other page (src/pageReveal.js). */
-.vt-flat [data-vt] {
-  view-transition-name: none !important;
-}
-
-/* The theme reveal uncovers the whole page at once. */
-:root.is-theming .site-nav,
-:root.is-theming .tab-bar,
-:root.is-theming [data-vt],
-:root.is-theming .vt-deni :is(.featured-visual, .reel-phone) {
-  view-transition-name: none !important;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  /* Only the plain cross-fade, and a quick one. */
-  .site-nav,
-  .tab-bar,
-  [data-vt],
-  .vt-deni :is(.featured-visual, .reel-phone) {
-    view-transition-name: none !important;
-  }
-
-  ::view-transition-old(root),
-  ::view-transition-new(root) {
-    animation-duration: 0.2s;
-  }
-}
-
-/*
- * Without page-to-page view transitions (Firefox, and browsers built on it
- * like Zen), src/pageReveal.js plays the same motion by hand: the page sinks
- * out before the link is followed (is-leaving), and the next one rises in as
- * it renders (is-entering). Only the page itself moves: the nav and the
- * other fixed pieces (the skip link hides by transform, so moving it would
- * show it) stay put.
- */
 @media (prefers-reduced-motion: no-preference) {
   html.is-leaving #root > :is(main, footer) {
     animation: vt-leave 0.22s cubic-bezier(0.4, 0, 1, 1) both;

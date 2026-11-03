@@ -82,9 +82,7 @@ export function useTheme({ hydrate = false } = {}) {
     const html = document.documentElement
     html.style.setProperty('--vt-x', `${rect.left + rect.width / 2}px`)
     html.style.setProperty('--vt-y', `${rect.top + rect.height / 2}px`)
-    // Scopes the circular reveal to this transition (App.css): page-to-page
-    // view transitions cross-fade instead, and the nav's own transition name
-    // stands down so the circle uncovers it with the rest of the page.
+    // Scopes the circular reveal to this transition (App.css).
     html.classList.add('is-theming')
     const transition = document.startViewTransition(() => {
       flushSync(() => setTheme(next))

@@ -1,16 +1,12 @@
 /*
  * An iPhone drawn in CSS around a real screen, the same build as the hero's
  * PhoneReel (frame in cqw, so it keeps its proportions at any width). Set
- * its width with --phone-w. `vt` names it for the page-to-page transition
- * (App.css); `priority` marks the one screen that is the page's largest paint.
+ * its width with --phone-w. `priority` marks the one screen that is the
+ * page's largest paint.
  */
-export default function Phone({ src, srcSet, sizes, alt, priority = false, vt, className = '', style }) {
+export default function Phone({ src, srcSet, sizes, alt, priority = false, className = '', style }) {
   return (
-    <div
-      className={`phone ${className}`.trim()}
-      style={vt ? { ...style, viewTransitionName: vt } : style}
-      data-vt={vt ? '' : undefined}
-    >
+    <div className={`phone ${className}`.trim()} style={style}>
       <div className="phone-frame">
         <div className="phone-screen">
           <span className="phone-island" aria-hidden="true" />

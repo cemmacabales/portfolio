@@ -71,8 +71,8 @@ export default defineConfig(({ isSsrBuild }) => ({
             return `<link rel="preload" as="style" crossorigin href="${href}" data-app-css onload="this.onload=null;this.rel='stylesheet'">`
           })
           // A warm visit has no loader to show first (see is-warm in
-          // index.html): its first frame is the prerendered nav, which a page
-          // arriving from the blog morphs into, so there they block as usual.
+          // index.html): its first frame is the prerendered nav, which must
+          // paint styled, so there they block as usual.
           const warm = `<script>if(document.documentElement.classList.contains('is-warm'))document.querySelectorAll('link[data-app-css]').forEach(function(l){l.setAttribute('blocking','render');l.rel='stylesheet'})</script>`
           return out.replace('</head>', () => `${warm}\n  <noscript>${blocking.join('')}</noscript>\n  </head>`)
         }

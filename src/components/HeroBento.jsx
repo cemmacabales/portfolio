@@ -312,36 +312,8 @@ const FIELD = {
   dark: { backgroundColor: '#141716', color: '#3f4947', hoverColor: '#64ffda', glow: 0.35 },
 }
 
-// A plain click on "Read the story" names the featured tile's sky and phone,
-// so they fly into the post's hero (App.css). A click that opens a new tab
-// leaves this page as it is.
-function openStory(event) {
+function openStory() {
   posthog.capture('project_story_opened', { project_slug: featured.slug, source: 'featured' })
-  if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
-  event.currentTarget.closest('.tile-featured')?.classList.add('vt-deni')
-  // Tells the post its hero has a partner to fly from (src/pageReveal.js).
-  try {
-    sessionStorage.setItem('vt-story', '1')
-  } catch {
-    // Without storage, the post rises in with the page instead.
-  }
-}
-
-// Coming back to this page (Back restores it from memory), the names come
-// off once the transition in has played, so they never catch the theme
-// switch or a later link.
-function useClearStoryNames() {
-  useEffect(() => {
-    const clear = () => document.querySelector('.vt-deni')?.classList.remove('vt-deni')
-    const onReveal = (event) => {
-      if (event.viewTransition) event.viewTransition.finished.then(clear, clear)
-      else clear()
-    }
-    const type = 'onpagereveal' in window ? 'pagereveal' : 'pageshow'
-    const listener = type === 'pagereveal' ? onReveal : clear
-    window.addEventListener(type, listener)
-    return () => window.removeEventListener(type, listener)
-  }, [])
 }
 
 export default function HeroBento({ theme, showField, onAskAssistant }) {
@@ -357,7 +329,6 @@ export default function HeroBento({ theme, showField, onAskAssistant }) {
   const featuredLoad = useDeferredMedia(featuredRef)
   const [filmOpen, setFilmOpen] = useState(false)
   const closeFilm = useCallback(() => setFilmOpen(false), [])
-  useClearStoryNames()
 
   // No field to warm up (touch devices, no WebGPU): nothing for the loader to wait on.
   useEffect(() => {
