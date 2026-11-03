@@ -1,16 +1,19 @@
 /*
- * Sits right above the assistant's launcher, in the same glass, a size down.
+ * Sits right above the assistant's launcher, in the same glass, much smaller.
  * The caps are real keycaps: a lip along the bottom that flattens when held.
+ * It arrives out of the avatar: it grows from the launcher's center, rises
+ * past its spot and settles, as the avatar gives a small push.
  */
 .race-hint {
+  --hint-gap: 10px;
   position: fixed;
   right: max(24px, env(safe-area-inset-right));
-  bottom: calc(max(24px, env(safe-area-inset-bottom)) + 56px + 12px);
+  bottom: calc(max(24px, env(safe-area-inset-bottom)) + 56px + var(--hint-gap));
   z-index: calc(var(--z-chat) - 1);
   display: flex;
   align-items: center;
-  height: 36px;
-  padding: 0 5px;
+  height: 28px;
+  padding: 0 4px;
   border: 1px solid var(--glass-border);
   border-radius: 999px;
   background: color-mix(in oklch, var(--glass-solid) 84%, transparent);
@@ -20,7 +23,9 @@
   color: var(--ink);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  animation: race-hint-in 0.6s var(--ease-out) 0.9s both;
+  /* The launcher's center, 28px in from the right and below this pill. */
+  transform-origin: calc(100% - 28px) calc(100% + var(--hint-gap) + 28px);
+  animation: race-hint-in 0.7s cubic-bezier(0.34, 1.4, 0.64, 1) both;
   transition:
     opacity 0.2s ease,
     visibility 0s linear 0s,
@@ -36,6 +41,12 @@
   outline-offset: 3px;
 }
 
+/* The avatar's push as the hint leaves it. Keyed to the hint existing, so it
+   plays once, when the hint mounts. */
+:root:has(.race-hint) .chat-launcher-face {
+  animation: race-hint-push 0.5s var(--ease-out);
+}
+
 /* Out of the way while the chat sheet is up; it grows over this corner. */
 :root:has(.chat[data-open='true']) .race-hint {
   opacity: 0;
@@ -47,22 +58,22 @@
 
 .race-hint-keys {
   display: flex;
-  gap: 3px;
+  gap: 2px;
 }
 
 .race-hint kbd {
   display: grid;
   place-items: center;
-  min-width: 24px;
-  height: 24px;
-  padding: 0 5px;
-  border-radius: 7px;
+  min-width: 19px;
+  height: 19px;
+  padding: 0 4px;
+  border-radius: 5px;
   background: var(--tile);
   box-shadow:
-    inset 0 -2px 0 var(--line-strong),
+    inset 0 -1.5px 0 var(--line-strong),
     0 0 0 0.5px var(--line-strong);
   font: inherit;
-  font-size: 0.8125rem;
+  font-size: 0.6875rem;
   font-weight: 600;
   line-height: 1;
   color: var(--ink);
@@ -74,11 +85,11 @@
 }
 
 .race-hint kbd.is-word {
-  font-size: 0.6875rem;
+  font-size: 0.5625rem;
 }
 
 .race-hint kbd[data-on='true'] {
-  transform: translateY(1.5px);
+  transform: translateY(1px);
   background: var(--mint);
   box-shadow: 0 0 0 0.5px color-mix(in oklch, var(--mint) 60%, black);
   color: var(--mint-ink);
@@ -99,8 +110,8 @@
 
 .race-hint-label > span > span {
   display: block;
-  padding: 0 10px 0 9px;
-  font-size: var(--text-xs);
+  padding: 0 8px 0 7px;
+  font-size: 0.75rem;
   font-weight: 500;
   white-space: nowrap;
   color: var(--ink-2);
@@ -127,13 +138,13 @@
   transition-delay: 0.08s;
 }
 
-/* The once-a-visit demo: ⌘ goes down, then K, as the label slides out. */
-.race-hint[data-peek='true'] kbd {
-  animation: race-hint-tap 0.9s var(--ease-out) 0.25s;
+/* Once it's out of the avatar, it plays the shortcut: ⌘ goes down, then K. */
+.race-hint kbd {
+  animation: race-hint-tap 0.9s var(--ease-out) 0.65s;
 }
 
-.race-hint[data-peek='true'] kbd + kbd {
-  animation-delay: 0.45s;
+.race-hint kbd + kbd {
+  animation-delay: 0.85s;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -158,7 +169,21 @@
 @keyframes race-hint-in {
   from {
     opacity: 0;
-    transform: translateY(6px) scale(0.92);
+    transform: scale(0.15);
+    filter: blur(4px);
+  }
+  40% {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+@keyframes race-hint-push {
+  30% {
+    transform: scale(0.9);
+  }
+  70% {
+    transform: scale(1.04);
   }
 }
 
@@ -169,7 +194,7 @@
   }
   18%,
   55% {
-    transform: translateY(1.5px);
+    transform: translateY(1px);
     background: var(--mint);
     box-shadow: 0 0 0 0.5px color-mix(in oklch, var(--mint) 60%, black);
     color: var(--mint-ink);
@@ -186,7 +211,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .race-hint,
-  .race-hint[data-peek='true'] kbd {
+  .race-hint kbd,
+  :root:has(.race-hint) .chat-launcher-face {
     animation: none;
   }
 
