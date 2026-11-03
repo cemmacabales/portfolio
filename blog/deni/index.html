@@ -41,6 +41,16 @@
     <meta name="twitter:image" content="https://cemmacabales.com/blog/deni/og.jpg" />
     <meta name="theme-color" content="#ebefed" />
 
+    <!-- Hovering a link renders the blog page it leads to ahead (Chrome,
+         Edge), so it's ready to morph into when the click lands. The home is
+         only fetched: rendering it ahead would start its WebGPU field. -->
+    <script type="speculationrules">
+      {
+        "prerender": [{ "where": { "href_matches": "/blog/*" }, "eagerness": "moderate" }],
+        "prefetch": [{ "where": { "href_matches": "/" }, "eagerness": "moderate" }]
+      }
+    </script>
+
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",

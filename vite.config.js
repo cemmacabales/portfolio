@@ -2,6 +2,7 @@ import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import { handler as githubActivity } from './netlify/functions/github.js'
 import process from 'node:process'
+import { readFileSync } from 'node:fs'
 import { handler as chatReply } from './netlify/functions/chat.js'
 
 // https://vite.dev/config/
@@ -43,6 +44,15 @@ export default defineConfig(({ isSsrBuild }) => ({
       }
     },
     {
+      // Every page sets the direction of the page-to-page transition before
+      // its first frame (see src/pageReveal.js).
+      name: 'page-reveal',
+      transformIndexHtml() {
+        const code = readFileSync(new URL('./src/pageReveal.js', import.meta.url), 'utf8')
+        return [{ tag: 'script', children: code, injectTo: 'head' }]
+      }
+    },
+    {
       // The stylesheets stop blocking the first paint, so the boot loader
       // (styled inline in index.html) shows as soon as the HTML arrives. Nothing
       // else is visible until the app renders, and main.jsx holds that render
@@ -60,7 +70,11 @@ export default defineConfig(({ isSsrBuild }) => ({
             blocking.push(tag)
             return `<link rel="preload" as="style" crossorigin href="${href}" data-app-css onload="this.onload=null;this.rel='stylesheet'">`
           })
-          return out.replace('</head>', () => `<noscript>${blocking.join('')}</noscript>\n  </head>`)
+          // A warm visit has no loader to show first (see is-warm in
+          // index.html): its first frame is the prerendered nav, which a page
+          // arriving from the blog morphs into, so there they block as usual.
+          const warm = `<script>if(document.documentElement.classList.contains('is-warm'))document.querySelectorAll('link[data-app-css]').forEach(function(l){l.setAttribute('blocking','render');l.rel='stylesheet'})</script>`
+          return out.replace('</head>', () => `${warm}\n  <noscript>${blocking.join('')}</noscript>\n  </head>`)
         }
       }
     },

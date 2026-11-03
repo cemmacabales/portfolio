@@ -63,7 +63,7 @@ export default function DeniPost() {
       <article className="deni-post">
         <header className="deni-hero" style={{ viewTransitionName: 'deni-sky' }} data-vt>
           <div className="deni-hero-inner">
-            <div className="deni-hero-copy">
+            <div className="deni-hero-copy" style={{ viewTransitionName: 'deni-copy' }} data-vt>
               <a href="/blog/" className="deni-back">
                 <ArrowLeft size={16} strokeWidth={2} aria-hidden="true" />
                 All posts

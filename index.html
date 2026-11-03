@@ -18,6 +18,10 @@
       }
       // Holds the page under the boot loader until src/boot.js lets go.
       document.documentElement.classList.add('is-booting');
+      // Once the loader has played this visit, the home opens without it.
+      try {
+        if (sessionStorage.getItem('boot-seen')) document.documentElement.classList.add('is-warm');
+      } catch (e) {}
     </script>
     <style>
       /*
@@ -26,6 +30,13 @@
        * with the bundle). The cells are the hero bento in miniature;
        * src/boot.js fills each one as that tile's assets become ready.
        */
+      /* The page-to-page transition's opt-in (see App.css), here as well so
+         a page arriving from the blog never misses it while the stylesheets
+         load. */
+      @view-transition {
+        navigation: auto;
+      }
+
       html.is-booting {
         overflow: hidden;
         scrollbar-gutter: stable;
@@ -36,6 +47,18 @@
          in a moment, so skip styling and laying out this one meanwhile. */
       html.is-booting [data-ssr] {
         display: none;
+      }
+
+      /* A warm visit skips the loader. The prerendered nav and tab bar hold
+         the first frame instead, so a page arriving from the blog has them
+         to morph into (App.css); React replaces them on its first commit. */
+      html.is-warm #boot,
+      html.is-warm [data-ssr] > :not(.site-nav, .tab-bar) {
+        display: none;
+      }
+
+      html.is-warm [data-ssr] {
+        display: contents;
       }
 
       #boot {
@@ -246,6 +269,15 @@
     <meta name="application-name" content="Carl Macabales Portfolio" />
     
     <!-- Structured Data -->
+    <!-- Hovering a link to the blog renders that page ahead (Chrome, Edge),
+         so it's ready to morph into when the click lands. The blog never
+         starts anything heavy; the home isn't prerendered for that reason. -->
+    <script type="speculationrules">
+      {
+        "prerender": [{ "where": { "href_matches": "/blog/*" }, "eagerness": "moderate" }]
+      }
+    </script>
+
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",

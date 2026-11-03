@@ -9,8 +9,8 @@ import './SiteNav.css'
 const LINKS = [
   { id: 'work', label: 'Work', icon: Layers },
   { id: 'about', label: 'About', icon: UserRound },
-  { id: 'blog', label: 'Blog', icon: BookOpen, href: '/blog/' },
   { id: 'contact', label: 'Contact', icon: Mail },
+  { id: 'blog', label: 'Blog', icon: BookOpen, href: '/blog/' },
 ]
 
 const TABS = [{ id: 'home', label: 'Home', icon: House }, ...LINKS]

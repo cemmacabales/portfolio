@@ -54,6 +54,12 @@ export function loadPostHog() {
     }
     return
   }
+  // A page rendered ahead of a click (the speculation rules in each page's
+  // HTML) isn't a visit until it's shown, if it ever is.
+  if (document.prerendering) {
+    document.addEventListener('prerenderingchange', loadPostHog, { once: true })
+    return
+  }
   if (loading) return
   loading = true
 

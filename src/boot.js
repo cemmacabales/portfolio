@@ -10,6 +10,10 @@ import { barongPhoto, PORTRAIT_SIZES, REEL_SIZES } from './data/photos'
  * when this module starts, not from navigation, so a slow bundle download
  * can't use it up before there's anything to wait for.
  *
+ * It plays once a visit. After that (is-warm, set in index.html from
+ * sessionStorage) the home opens without it: the page lets go as soon as
+ * React's first commit lands, and the hero's entrance plays as usual.
+ *
  * What it waits for is whatever would otherwise stutter the entrance: React's
  * first commit, the web font, the photo on show and the featured app's screens
  * decoded (so the slideshows never decode mid-swap), and the WebGPU field
@@ -38,6 +42,10 @@ const CELLS = {
   about: ['app', 'fonts'],
   skills: ['app', 'fonts'],
 }
+
+// Set by index.html's head script, before the first frame.
+const warm = () => document.documentElement.classList.contains('is-warm')
+const SEEN_KEY = 'boot-seen'
 
 const done = new Set()
 const listeners = new Set()
@@ -127,8 +135,23 @@ function jumpToHash() {
 function release() {
   performance.mark?.('boot:release')
   booted = true
+  try {
+    sessionStorage.setItem(SEEN_KEY, '1')
+  } catch {
+    // Storage is off (some private modes): the loader just plays again.
+  }
   listeners.forEach((listener) => listener())
 }
+
+function unblock() {
+  document.documentElement.classList.remove('is-booting')
+  document.getElementById('root')?.removeAttribute('aria-busy')
+}
+
+// Warm, only the page itself needs to be in: React's first commit, and the
+// sections below the hero when it opens on one of them.
+const ready = () =>
+  warm() ? done.has('app') && done.has('below') : done.size === Object.keys(TASKS).length
 
 // Arriving from a blog page, the files are cached and the visitor has seen
 // the loader already, so it lets go as soon as the hero is ready.
@@ -138,7 +161,7 @@ async function finish() {
   if (finishing) return
   finishing = true
 
-  const early = (fromBlog() ? 0 : MIN_MS) - performance.now()
+  const early = (root && !fromBlog() ? MIN_MS : 0) - performance.now()
   if (early > 0) await sleep(early)
 
   // Let the hero commit and lay out before it has to move.
@@ -146,6 +169,14 @@ async function finish() {
   await nextFrame()
 
   jumpToHash()
+
+  // No loader on show: the page goes at once.
+  if (!root) {
+    unblock()
+    release()
+    return
+  }
+
   target = 100
   root.querySelectorAll('[data-cell]').forEach((cell) => cell.classList.add('is-on'))
   await sleep(HOLD_MS)
@@ -160,8 +191,7 @@ async function finish() {
   await sleep(LEAVE_MS)
   root.remove()
   root = null
-  document.documentElement.classList.remove('is-booting')
-  document.getElementById('root')?.removeAttribute('aria-busy')
+  unblock()
 }
 
 /** Marks one boot task finished. Safe to call more than once. */
@@ -173,7 +203,7 @@ export function markReady(task) {
 
   // The web font is only requested once text renders in it, so wait for a
   // painted frame after React's first commit before asking whether it's in.
-  if (task === 'app') {
+  if (task === 'app' && root) {
     requestAnimationFrame(() => settle('fonts', document.fonts?.ready))
     settleIfShown('resume', '.resume-sheet', [{ src: ResumePage }])
     settleIfShown('featured', '.reel-screen', [
@@ -183,7 +213,7 @@ export function markReady(task) {
   }
 
   paint()
-  if (done.size === Object.keys(TASKS).length) finish()
+  if (ready()) finish()
 }
 
 // A desktop: room to build the sections below the hero under the loader.
@@ -213,6 +243,15 @@ export function startBoot() {
   // The fallback timer in index.html already removed it: nothing to wait for.
   if (!root) {
     release()
+    return
+  }
+
+  // Warm, it never showed (index.html hides it). Taking it out also tells
+  // the fallback timer the app is running.
+  if (warm()) {
+    root.remove()
+    root = null
+    setTimeout(finish, CAP_MS)
     return
   }
 
