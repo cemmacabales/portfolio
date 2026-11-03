@@ -161,9 +161,9 @@ function retireHeldNav() {
 // whole page change (the old page sinking out, then this one rising in)
 // waits, paused on the old page, until this one is in, and everything that
 // animates in meanwhile (the hero, a section's reveal) lands at once, so the
-// page rises in whole. The spinner shows if the wait runs long. Without
-// view transitions (Firefox, Zen) the page rises in by CSS (is-entering,
-// from src/pageReveal.js) and its entrances land the same way.
+// page rises in whole. Without view transitions (Firefox, Zen) the page
+// rises in by CSS (is-entering, from src/pageReveal.js) and its entrances
+// land the same way.
 const ENTRANCE_HOLD_MS = 1500
 // Without a view transition to wait on, how long entrances keep landing at
 // once after the page lets go (the CSS rise takes 0.4s).

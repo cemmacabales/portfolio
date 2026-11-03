@@ -467,20 +467,10 @@
   view-transition-name: tab-bar;
 }
 
-/* Its own layer, so it shows while the home holds its entrance (boot.js),
-   and it never fades with either page: it keeps its own state. */
-.page-spinner {
-  view-transition-name: page-spinner;
-}
-
-::view-transition-group(page-spinner),
-::view-transition-new(page-spinner) {
-  animation: none;
-}
-
-::view-transition-old(page-spinner) {
-  animation: none;
-  opacity: 0;
+/* The tab bar's glass blur is copied onto its snapshot's group, which is
+   square; rounding the group keeps the blur inside the pill. */
+::view-transition-group(tab-bar) {
+  border-radius: 999px;
 }
 
 .vt-deni .featured-visual {
@@ -556,7 +546,6 @@
 :root.is-theming .site-nav,
 :root.is-theming .tab-bar,
 :root.is-theming [data-vt],
-:root.is-theming .page-spinner,
 :root.is-theming .vt-deni :is(.featured-visual, .reel-phone) {
   view-transition-name: none !important;
 }
@@ -565,7 +554,6 @@
   /* Only the plain cross-fade, and a quick one. */
   .site-nav,
   .tab-bar,
-  .page-spinner,
   [data-vt],
   .vt-deni :is(.featured-visual, .reel-phone) {
     view-transition-name: none !important;
