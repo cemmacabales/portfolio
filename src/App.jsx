@@ -5,6 +5,7 @@ import HeroBento from './components/HeroBento'
 import GradualBlur from './components/GradualBlur'
 import ModelSelectionModal from './components/ModelSelectionModal'
 import AiChatbot from './components/AiChatbot'
+import TypeRaceHint from './components/TypeRaceHint'
 import { useTheme } from './hooks/useTheme'
 import { useGlassSheen } from './hooks/useGlassSheen'
 import { useOffscreenPause } from './hooks/useOffscreenPause'
@@ -19,6 +20,11 @@ import './App.css'
 
 const loadBelowFold = () => import('./components/BelowFold')
 const LazyBelowFold = lazy(loadBelowFold)
+
+// The typing test is fetched the first time someone reaches for it (hovering
+// the ⌘K hint fetches it early).
+const loadTypeRace = () => import('./components/TypeRace')
+const LazyTypeRace = lazy(loadTypeRace)
 // When they're wanted from the start (a desktop, or a link into the page),
 // fetch them alongside the first render instead of after it.
 if (typeof window !== 'undefined' && !defersBelowFold()) loadBelowFold()
@@ -42,6 +48,8 @@ function App({ belowFold }) {
   const [openSlug, setOpenSlug] = useState(null)
   const [modelProject, setModelProject] = useState(null)
   const [isModelModalOpen, setIsModelModalOpen] = useState(false)
+  const [raceOpen, setRaceOpen] = useState(false)
+  const [raceWanted, setRaceWanted] = useState(false)
 
   const [belowWanted, wantBelow] = useBelowFold()
   const [belowMounted, setBelowMounted] = useState(false)
@@ -104,6 +112,28 @@ function App({ belowFold }) {
     }
   }, [])
 
+  const openRace = useCallback((source) => {
+    posthog.capture('typing_test_opened', { source })
+    setRaceWanted(true)
+    setRaceOpen(true)
+  }, [])
+  const closeRace = useCallback(() => setRaceOpen(false), [])
+
+  // ⌘K (Ctrl+K elsewhere) opens the typing test from anywhere but a text
+  // field, where it already means something. Once open, the test handles the
+  // shortcut itself, to close.
+  useEffect(() => {
+    if (raceOpen) return undefined
+    const onKey = (e) => {
+      if (!(e.metaKey || e.ctrlKey) || e.altKey || e.shiftKey || e.key.toLowerCase() !== 'k') return
+      if (e.target.closest?.('input, textarea, select, [contenteditable="true"]')) return
+      e.preventDefault()
+      openRace('shortcut')
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [raceOpen, openRace])
+
   const showModels = useCallback((project) => {
     posthog.capture('project_model_selector_opened', { project_slug: project.slug })
     setModelProject(project)
@@ -155,7 +185,13 @@ function App({ belowFold }) {
         onClose={() => setIsModelModalOpen(false)}
         project={modelProject}
       />
+      <TypeRaceHint onOpen={() => openRace('hint')} onIntent={loadTypeRace} />
       <AiChatbot />
+      {raceWanted && (
+        <Suspense fallback={null}>
+          <LazyTypeRace open={raceOpen} onClose={closeRace} />
+        </Suspense>
+      )}
     </MotionConfig>
   )
 }

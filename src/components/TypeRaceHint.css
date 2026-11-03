@@ -1,0 +1,198 @@
+/*
+ * Sits right above the assistant's launcher, in the same glass, a size down.
+ * The caps are real keycaps: a lip along the bottom that flattens when held.
+ */
+.race-hint {
+  position: fixed;
+  right: max(24px, env(safe-area-inset-right));
+  bottom: calc(max(24px, env(safe-area-inset-bottom)) + 56px + 12px);
+  z-index: calc(var(--z-chat) - 1);
+  display: flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 5px;
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  background: color-mix(in oklch, var(--glass-solid) 84%, transparent);
+  -webkit-backdrop-filter: blur(22px) saturate(185%);
+  backdrop-filter: blur(22px) saturate(185%);
+  box-shadow: var(--glass-shadow);
+  color: var(--ink);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  animation: race-hint-in 0.6s var(--ease-out) 0.9s both;
+  transition:
+    opacity 0.2s ease,
+    visibility 0s linear 0s,
+    scale 0.2s var(--ease-out);
+}
+
+.race-hint:active {
+  scale: 0.95;
+}
+
+.race-hint:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+/* Out of the way while the chat sheet is up; it grows over this corner. */
+:root:has(.chat[data-open='true']) .race-hint {
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.12s linear,
+    visibility 0s linear 0.12s;
+}
+
+.race-hint-keys {
+  display: flex;
+  gap: 3px;
+}
+
+.race-hint kbd {
+  display: grid;
+  place-items: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 5px;
+  border-radius: 7px;
+  background: var(--tile);
+  box-shadow:
+    inset 0 -2px 0 var(--line-strong),
+    0 0 0 0.5px var(--line-strong);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--ink);
+  transition:
+    transform 0.25s var(--ease-out),
+    box-shadow 0.25s var(--ease-out),
+    background-color 0.35s ease,
+    color 0.35s ease;
+}
+
+.race-hint kbd.is-word {
+  font-size: 0.6875rem;
+}
+
+.race-hint kbd[data-on='true'] {
+  transform: translateY(1.5px);
+  background: var(--mint);
+  box-shadow: 0 0 0 0.5px color-mix(in oklch, var(--mint) 60%, black);
+  color: var(--mint-ink);
+  transition-duration: 0.06s;
+}
+
+/* Slides out to the left of the caps, like the launcher's own label. */
+.race-hint-label {
+  display: grid;
+  grid-template-columns: 0fr;
+  transition: grid-template-columns 0.5s var(--ease-out);
+}
+
+.race-hint-label > span {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.race-hint-label > span > span {
+  display: block;
+  padding: 0 10px 0 9px;
+  font-size: var(--text-xs);
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--ink-2);
+  opacity: 0;
+  transform: translateX(8px);
+  transition:
+    opacity 0.25s var(--ease-out),
+    transform 0.5s var(--ease-out);
+}
+
+.race-hint-label b {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.race-hint[data-peek='true'] .race-hint-label {
+  grid-template-columns: 1fr;
+}
+
+.race-hint[data-peek='true'] .race-hint-label > span > span {
+  opacity: 1;
+  transform: none;
+  transition-delay: 0.08s;
+}
+
+/* The once-a-visit demo: ⌘ goes down, then K, as the label slides out. */
+.race-hint[data-peek='true'] kbd {
+  animation: race-hint-tap 0.9s var(--ease-out) 0.25s;
+}
+
+.race-hint[data-peek='true'] kbd + kbd {
+  animation-delay: 0.45s;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .race-hint:hover .race-hint-label {
+    grid-template-columns: 1fr;
+  }
+
+  .race-hint:hover .race-hint-label > span > span {
+    opacity: 1;
+    transform: none;
+    transition-delay: 0.08s;
+  }
+}
+
+/* No keyboard, no shortcut to hint at. */
+@media (hover: none), (pointer: coarse), (max-width: 760px) {
+  .race-hint {
+    display: none;
+  }
+}
+
+@keyframes race-hint-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.92);
+  }
+}
+
+@keyframes race-hint-tap {
+  0%,
+  100% {
+    transform: none;
+  }
+  18%,
+  55% {
+    transform: translateY(1.5px);
+    background: var(--mint);
+    box-shadow: 0 0 0 0.5px color-mix(in oklch, var(--mint) 60%, black);
+    color: var(--mint-ink);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .race-hint {
+    background: var(--glass-solid);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .race-hint,
+  .race-hint[data-peek='true'] kbd {
+    animation: none;
+  }
+
+  .race-hint-label,
+  .race-hint-label > span > span,
+  .race-hint kbd {
+    transition: none;
+  }
+}
