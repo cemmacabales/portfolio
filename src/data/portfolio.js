@@ -9,21 +9,8 @@ import ReadMyFaceImage from '../assets/readmyface.webp'
 import MyAptImage from '../assets/myapt.webp'
 import PetchinguImage from '../assets/petchingu.webp'
 import DeniCover from '../assets/deni/cover.webp'
-import DeniPromo from '../assets/deni/promo.mp4'
-import DeniPromoPoster from '../assets/deni/promo-poster.webp'
-import DeniIcon from '../assets/deni/icon.webp'
-import DeniToday from '../assets/deni/today.webp'
-import DeniToday480 from '../assets/deni/today-480.webp'
-import DeniReminder from '../assets/deni/reminder.webp'
-import DeniReminder480 from '../assets/deni/reminder-480.webp'
-import DeniAdd from '../assets/deni/add.webp'
-import DeniAdd480 from '../assets/deni/add-480.webp'
 import DeniJournal from '../assets/deni/journal.webp'
 import DeniJournal480 from '../assets/deni/journal-480.webp'
-import DeniInsights from '../assets/deni/insights.webp'
-import DeniInsights480 from '../assets/deni/insights-480.webp'
-import DeniReport from '../assets/deni/report.webp'
-import DeniReport480 from '../assets/deni/report-480.webp'
 import MapuaImage from '../assets/Mapua.webp'
 import StPaulImage from '../assets/stpaul.webp'
 import IpsaImage from '../assets/ipsa.webp'
@@ -43,6 +30,7 @@ import SpiderMan2Cover from '../assets/games/spiderman-2.webp'
 import Gt7Cover from '../assets/games/gt7.webp'
 import RagnarokCover from '../assets/games/ragnarok.webp'
 import { barongPhoto, gradPhoto } from './photos'
+import { deniAppStore, deniFilm, deniIcon, deniShots, deniStory } from './deni'
 
 import pythonIcon from 'devicon/icons/python/python-plain.svg'
 import pytorchIcon from 'devicon/icons/pytorch/pytorch-original.svg'
@@ -188,16 +176,6 @@ export const workflow = [
   },
 ]
 
-// Deni's 108-second promo, played from the hero and from its row (see FilmPlayer).
-const deniFilm = {
-  src: DeniPromo,
-  poster: DeniPromoPoster,
-  title: 'Deni promo film',
-  length: '1:48',
-}
-
-const deniAppStore = 'https://apps.apple.com/us/app/deni-medication-tracker/id6821553110'
-
 // The hero's featured project. `screens` are frames of the real app on an
 // iPhone, in the order the App Store shows them; `sky` is the backdrop behind
 // the phone for that screen, taken from the app's own sky at that hour.
@@ -207,25 +185,22 @@ export const featured = {
   tagline: 'Every dose for today, in one pack.',
   status: 'Out now on iPhone',
   appStore: deniAppStore,
-  logo: DeniIcon,
+  logo: deniIcon,
   screens: [
     {
-      src: DeniToday,
-      srcSet: `${DeniToday480} 480w, ${DeniToday} 800w`,
+      ...deniShots.today,
       caption: 'Today, in one pack',
       alt: 'Deni’s Today screen: 1 of 4 doses taken, with the evening doses waiting on a pearl foil pack under an afternoon sky',
       sky: 'linear-gradient(180deg, #3f6bcc 0%, #7f9ad3 55%, #a9bbdd 100%)',
     },
     {
-      src: DeniReminder,
-      srcSet: `${DeniReminder480} 480w, ${DeniReminder} 800w`,
+      ...deniShots.reminder,
       caption: 'A reminder when a dose is due',
       alt: 'A Deni reminder on the lock screen for Metformin, held open to show Take and Snooze 10 minutes',
       sky: 'linear-gradient(180deg, #121219 0%, #2b2a33 60%, #4a3f3a 100%)',
     },
     {
-      src: DeniAdd,
-      srcSet: `${DeniAdd480} 480w, ${DeniAdd} 800w`,
+      ...deniShots.add,
       caption: 'Add each med as it looks',
       alt: 'Adding a med in Deni: an oval tan Ibuprofen tablet, with shape and color pickers below',
       sky: 'linear-gradient(180deg, #1a2350 0%, #6b5c9a 50%, #f0bfa4 100%)',
@@ -238,15 +213,13 @@ export const featured = {
       sky: 'linear-gradient(180deg, #0b0c24 0%, #4a3f78 52%, #e88a78 100%)',
     },
     {
-      src: DeniInsights,
-      srcSet: `${DeniInsights480} 480w, ${DeniInsights} 800w`,
+      ...deniShots.insights,
       caption: 'Your week, side by side',
       alt: 'Deni’s Insights: a week of doses for four meds in seven columns, with mood below',
       sky: 'linear-gradient(180deg, #0a0d22 0%, #1a2350 60%, #2a3870 100%)',
     },
     {
-      src: DeniReport,
-      srcSet: `${DeniReport480} 480w, ${DeniReport} 800w`,
+      ...deniShots.report,
       caption: 'A one-page report for your doctor',
       alt: 'Deni’s report for a doctor: each med’s doses for the week, missed ones noted, then mood, symptoms and notes',
       sky: 'linear-gradient(180deg, #06070f 0%, #141c44 60%, #22306a 100%)',
@@ -256,6 +229,7 @@ export const featured = {
     'My dad started maintenance meds early, and my mom keeps him on track. Deni is that reminder for anyone without someone like that: today’s doses on one pack, a nudge when one is due, a journal of how you feel, and your week on one page to share with your doctor. Everything stays on your iPhone, with no account and no tracking.',
   stack: ['React Native', 'Expo', 'TypeScript', 'SQLite'],
   film: deniFilm,
+  story: deniStory,
 }
 
 // Order is the order shown in "Selected work". `metrics` are real results
@@ -279,6 +253,8 @@ export const projects = [
     links: { demo: deniAppStore },
     demoLabel: 'Get it on the App Store',
     film: deniFilm,
+    // A blog post that tells the project's story (see src/blog/).
+    story: deniStory,
   },
   {
     slug: 'centient',

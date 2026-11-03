@@ -21,6 +21,10 @@ PostHog analytics needs `VITE_POSTHOG_KEY` and `VITE_POSTHOG_HOST` (dev throws i
 
 This is a single-page portfolio with no router — all sections (home, about, projects, skills, contact) live in one `App.jsx` and are navigated via `scrollIntoView`. The `Dock` component is the nav bar; it calls `scrollToSection` which also updates `activeSection` state for highlighting.
 
+**Blog** — real pages beside the one-page home, not routes in it: `blog/index.html` (`/blog/`) and `blog/<slug>/index.html` (`/blog/<slug>/`, always with the trailing slash), listed in `rollupOptions.input` in `vite.config.js`. `scripts/prerender.js` renders each one (from `blogPages` in `src/entry-server.jsx`) straight into `#root`, and `src/blog/mount.jsx` hydrates it. `src/blog/BlogPage.jsx` is the shared frame (`SiteNav page="blog"`, theme, footer); each post's own world (paper, colors, CSS) lives in `src/blog/posts/<slug>/` and loads only there. Posts are listed in `src/blog/posts.js`; a new one also needs its HTML entry, a `blogPages` entry and a sitemap URL.
+- Blog code must never import `src/data/portfolio.js`: anything it shares with the home goes in a module listed in the `shared` manual chunk (like `src/data/deni.js`), or the page downloads the home's `ui` chunk.
+- Pages morph into each other with cross-document view transitions (`@view-transition` and the names `site-nav`, `tab-bar`, `deni-sky`, `deni-phone` in `App.css`). The theme switch's circular reveal is scoped to `:root.is-theming`, which `useTheme` sets. Neither dev mode (Vite injects CSS after the first render) nor the desktop app's browser pane runs the page-to-page morph: check it in a production build in real Chrome.
+
 **`src/App.jsx`** — monolithic entry point containing all section JSX, state, and two custom hooks:
 - `useProjectAnimations` — manages GSAP-based card entrance/exit when switching between `ml` and `software` project categories. Has a 2-second safety timeout to un-stick `isTransitioning` if GSAP callbacks don't fire.
 - `useIsMobile` — aliased from `src/mobile-detection.js`; drives conditional rendering (MagnetLines background is desktop-only; form layout adjusts on mobile).

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <script>
+      // Apply the saved theme before first paint so there is no flash.
+      try {
+        var t = localStorage.getItem('theme-v2');
+        document.documentElement.dataset.theme = t === 'dark' ? 'dark' : 'light';
+      } catch (e) {
+        document.documentElement.dataset.theme = 'light';
+      }
+      // Each cover's sky follows the reader's clock, on Deni's hours. Set
+      // before first paint, and read by CSS only, so the prerendered page and
+      // React agree on the markup.
+      var h = new Date().getHours();
+      document.documentElement.dataset.sky =
+        h >= 5 && h < 12 ? 'morning' : h >= 12 && h < 17 ? 'afternoon' : h >= 17 && h < 22 ? 'evening' : 'night';
+    </script>
+
+    <title>Blog · Carl Macabales</title>
+    <meta name="description" content="How the work got made: why each of Carl Macabales’s projects exists, what he tried, and what shipped." />
+    <meta name="author" content="Carl Emmanuel Macabales" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://cemmacabales.com/blog/" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Blog · Carl Macabales" />
+    <meta property="og:description" content="How the work got made: why each project exists, what I tried, and what shipped." />
+    <meta property="og:url" content="https://cemmacabales.com/blog/" />
+    <meta property="og:site_name" content="Carl Macabales" />
+    <meta property="og:image" content="https://cemmacabales.com/blog/deni/og.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Deni, a medication tracker for iPhone, on three phones under a morning sky" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Blog · Carl Macabales" />
+    <meta name="twitter:description" content="How the work got made: why each project exists, what I tried, and what shipped." />
+    <meta name="twitter:image" content="https://cemmacabales.com/blog/deni/og.jpg" />
+    <meta name="theme-color" content="#ebefed" />
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Blog",
+          "@id": "https://cemmacabales.com/blog/#blog",
+          "url": "https://cemmacabales.com/blog/",
+          "name": "Carl Macabales · Blog",
+          "inLanguage": "en",
+          "isPartOf": { "@id": "https://cemmacabales.com/#website" },
+          "author": { "@id": "https://cemmacabales.com/#carl" },
+          "blogPost": [{ "@id": "https://cemmacabales.com/blog/deni/#post" }]
+        },
+        {
+          "@type": "Person",
+          "@id": "https://cemmacabales.com/#carl",
+          "name": "Carl Emmanuel Macabales",
+          "url": "https://cemmacabales.com/"
+        }
+      ]
+    }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/blog/index.main.jsx"></script>
+  </body>
+</html>

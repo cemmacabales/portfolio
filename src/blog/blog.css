@@ -1,0 +1,83 @@
+/*
+ * The blog's frame: what every blog page shares. A post's own world (its
+ * paper, skies, materials) lives beside it in posts/<slug>/ and only loads
+ * on that post.
+ */
+
+.blog-main {
+  padding-top: calc(var(--nav-h) + 8px);
+}
+
+/* ── Footer ───────────────────────────────────────────────────── */
+.blog-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px 32px;
+  padding-top: clamp(56px, 8vw, 104px);
+  padding-bottom: clamp(32px, 5vw, 56px);
+}
+
+.blog-footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.blog-footer-note {
+  font-size: var(--text-sm);
+  color: var(--ink-2);
+}
+
+@media (max-width: 760px) {
+  /* Room for the floating tab bar. */
+  .blog-footer {
+    padding-bottom: calc(108px + env(safe-area-inset-bottom));
+  }
+}
+
+/* ── A CSS iPhone around a real screen (see Phone.jsx) ────────── */
+.phone {
+  flex: none;
+  width: var(--phone-w, 240px);
+  container-type: inline-size;
+}
+
+.phone-frame {
+  padding: 3.6cqw;
+  border-radius: 16.5cqw;
+  background: #0b0b0d;
+  box-shadow:
+    0 0 0 1.1cqw #c9ced6,
+    0 0 0 1.5cqw #8e949d,
+    0 40px 60px -24px oklch(0 0 0 / 0.55);
+}
+
+.phone-screen {
+  position: relative;
+  aspect-ratio: 1320 / 2868;
+  overflow: hidden;
+  border-radius: 13cqw;
+  background: #0b0b0d;
+}
+
+.phone-screen img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.phone-island {
+  position: absolute;
+  z-index: 1;
+  top: 2.6%;
+  left: 50%;
+  width: 31%;
+  aspect-ratio: 125 / 37;
+  border-radius: 999px;
+  background: #000;
+  translate: -50% 0;
+}

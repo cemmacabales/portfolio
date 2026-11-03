@@ -1,0 +1,41 @@
+/*
+ * Deni's "Foil and sky" system, from the app (~/meditrack, the design system
+ * sheet in docs/materials): a pearl foil pack under a sky that follows the
+ * time of day. Shared by the post and its cover on /blog.
+ *
+ * Each sky is dark where text sits on it: white body text needs 7:1, and
+ * the deepest stops here run 7.7:1 (#3d4aa6) to 20:1 (#06070f).
+ */
+:root {
+  --deni-blue: #2f6bf2;
+  --deni-rose: #e8445a;
+  --deni-ink: #141b2d;
+
+  --deni-sky-morning:
+    radial-gradient(120% 70% at 85% 0%, rgb(255 255 255 / 0.22), transparent 55%),
+    linear-gradient(180deg, #313c95 0%, #5a5fae 42%, #a993c3 70%, #f2c3a6 100%);
+  --deni-sky-afternoon:
+    radial-gradient(100% 70% at 82% 0%, rgb(255 255 255 / 0.3), transparent 50%),
+    linear-gradient(180deg, #2448b0 0%, #4d7fe0 50%, #a9c2f0 100%);
+  --deni-sky-evening:
+    radial-gradient(100% 60% at 18% 0%, rgb(140 120 220 / 0.32), transparent 55%),
+    linear-gradient(180deg, #1a2350 0%, #4b3f80 48%, #ec8f78 100%);
+  --deni-sky-night:
+    radial-gradient(90% 60% at 80% 6%, rgb(120 140 220 / 0.18), transparent 55%),
+    linear-gradient(180deg, #06070f 0%, #141c44 60%, #22306a 100%);
+}
+
+/* Deni's capsule: blue cap, rose body, lit from the top left. */
+.deni-capsule {
+  display: block;
+  width: var(--capsule-w, 14px);
+  aspect-ratio: 1 / 2.3;
+  border-radius: 999px;
+  background:
+    radial-gradient(60% 30% at 34% 18%, rgb(255 255 255 / 0.55), transparent 70%),
+    linear-gradient(180deg, #4d82f7 0 50%, #ee5a6e 50% 100%);
+  box-shadow:
+    inset -2px -3px 5px rgb(0 0 0 / 0.16),
+    0 2px 4px -1px rgb(20 27 45 / 0.3);
+  rotate: 32deg;
+}

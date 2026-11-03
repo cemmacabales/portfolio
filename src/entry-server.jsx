@@ -1,6 +1,8 @@
 import { renderToString } from 'react-dom/server'
 import App from './App.jsx'
 import BelowFold from './components/BelowFold.jsx'
+import BlogIndex from './blog/pages/BlogIndex.jsx'
+import DeniPost from './blog/posts/deni/DeniPost.jsx'
 
 /*
  * Build-time render for scripts/prerender.js. The HTML it returns goes into
@@ -13,4 +15,13 @@ import BelowFold from './components/BelowFold.jsx'
  */
 export function render() {
   return renderToString(<App belowFold={BelowFold} />)
+}
+
+/*
+ * The blog's pages. Unlike the home, their markup is the page: it shows at
+ * once, and src/blog/mount.jsx hydrates it in place.
+ */
+export const blogPages = {
+  'blog/index.html': () => renderToString(<BlogIndex />),
+  'blog/deni/index.html': () => renderToString(<DeniPost />),
 }

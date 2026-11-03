@@ -158,7 +158,7 @@
     bottom: max(16px, env(safe-area-inset-bottom));
     z-index: var(--z-nav);
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     width: calc(100% - 16px * 2 - 60px - 10px);
     max-width: 360px;
     height: 60px;
@@ -195,11 +195,11 @@
 
 /*
  * The role only fits beside the actions once the viewport clears the pill
- * (399px), gap, toggle, and 4vw gutters: about 500px on phones, and about
- * 866px once the section links join the toggle. Below each, the pill shows
- * just the name (the hero says the role anyway).
+ * (417px), gap, toggle, and 4vw gutters: about 500px on phones, and about
+ * 955px once the four section links join the toggle. Below each, the pill
+ * shows just the name (the hero says the role anyway).
  */
-@media (max-width: 520px), (min-width: 761px) and (max-width: 900px) {
+@media (max-width: 520px), (min-width: 761px) and (max-width: 960px) {
   .nav-brand-role {
     display: none;
   }

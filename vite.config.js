@@ -51,7 +51,10 @@ export default defineConfig(({ isSsrBuild }) => ({
       apply: 'build',
       transformIndexHtml: {
         order: 'post',
-        handler(html) {
+        handler(html, ctx) {
+          // Only the home has a boot loader to show first. A blog page's HTML
+          // is the page itself (prerendered), so its styles keep blocking.
+          if (ctx.path !== '/index.html') return html
           const blocking = []
           const out = html.replace(/<link rel="stylesheet" crossorigin href="([^"]+)">/g, (tag, href) => {
             blocking.push(tag)
@@ -120,27 +123,49 @@ export default defineConfig(({ isSsrBuild }) => ({
       }
     },
     rollupOptions: {
+      // The home, and the blog's pages beside it (see blog/). The SSR build
+      // names its own entry on the command line.
+      input: isSsrBuild
+        ? undefined
+        : {
+            main: 'index.html',
+            blog: 'blog/index.html',
+            deni: 'blog/deni/index.html'
+          },
       output: {
         assetFileNames: 'assets/[name]-[hash].[ext]', // Add hash for cache busting
         chunkFileNames: 'assets/[name]-[hash].js',
         entryFileNames: isSsrBuild ? '[name].js' : 'assets/[name]-[hash].js',
+        // Order matters: a chunk also takes in every module its listed ones
+        // import, unless an earlier chunk already has it.
         manualChunks: isSsrBuild ? undefined : {
-          vendor: ['react', 'react-dom'],
-          animations: ['framer-motion', 'gsap'],
+          vendor: ['react', 'react-dom', 'react-dom/client'],
+          animations: ['framer-motion'],
+          gsap: ['gsap'],
           gpu: ['vgpu'],
           icons: ['lucide-react'],
           analytics: ['posthog-js'], // loaded after boot, see src/posthog.js
+          // What the home and the blog's pages share. Listed before `ui`, so
+          // a blog page never downloads the home's hero to get its nav.
+          shared: [
+            './src/components/SiteNav',
+            './src/components/GradualBlur',
+            './src/components/FilmPlayer',
+            './src/hooks/useTheme',
+            './src/hooks/useGlassSheen',
+            './src/hooks/useScrollState',
+            './src/data/deni',
+            './src/posthog'
+          ],
           // The sections below the hero (src/components/BelowFold) are a lazy
           // chunk of their own; listing them here would pull them back in.
           ui: [
-            './src/components/SiteNav',
             './src/components/HeroBento',
             './src/components/AboutTile',
             './src/components/SocialTile',
             './src/components/SetupTile',
             './src/components/HobbyScenes',
-            './src/components/ShapeWaves',
-            './src/components/GradualBlur'
+            './src/components/ShapeWaves'
           ]
         }
       },

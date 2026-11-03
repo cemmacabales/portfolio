@@ -51,11 +51,11 @@ function App({ belowFold }) {
   const [raceOpen, setRaceOpen] = useState(false)
   const [raceWanted, setRaceWanted] = useState(false)
 
-  const [belowWanted, wantBelow] = useBelowFold()
+  const [belowWanted] = useBelowFold()
   const [belowMounted, setBelowMounted] = useState(false)
-  // Where to scroll once the sections below the hero are in: a project opened
-  // from the hero, or a link into the page followed before they arrived
-  // (it scrolled to a stand-in, and the real section can be a different height).
+  // Where to scroll once the sections below the hero are in: a link into the
+  // page followed before they arrived (it scrolled to a stand-in, and the real
+  // section can be a different height).
   const pendingScroll = useRef(null)
 
   useGlassSheen()
@@ -80,24 +80,6 @@ function App({ belowFold }) {
   const toggleProject = useCallback((slug) => {
     setOpenSlug((current) => (current === slug ? null : slug))
   }, [])
-
-  // From a hero tile: open that project's row and bring it into view, once
-  // the work list is in.
-  const openProject = useCallback(
-    (slug) => {
-      setOpenSlug(slug)
-      if (!belowMounted) {
-        pendingScroll.current = `work-${slug}`
-        wantBelow()
-        return
-      }
-      layOutSections()
-      requestAnimationFrame(() => {
-        document.getElementById(`work-${slug}`)?.scrollIntoView({ block: 'start' })
-      })
-    },
-    [belowMounted, wantBelow],
-  )
 
   const onBelowMount = useCallback(() => {
     setBelowMounted(true)
@@ -163,7 +145,6 @@ function App({ belowFold }) {
         <HeroBento
           theme={theme}
           showField={!isMobile}
-          onOpenProject={openProject}
           onAskAssistant={openAssistant}
         />
         <Suspense fallback={<SectionShells />}>

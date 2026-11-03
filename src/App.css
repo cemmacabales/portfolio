@@ -400,13 +400,15 @@
   }
 
   /* ── Theme switch: circular reveal from the toggle ───────────── */
-  ::view-transition-old(root),
-  ::view-transition-new(root) {
+  /* useTheme sets .is-theming for the length of the reveal, so it never
+     applies to the page-to-page transitions below. */
+  :root.is-theming::view-transition-old(root),
+  :root.is-theming::view-transition-new(root) {
     animation: none;
     mix-blend-mode: normal;
   }
 
-  ::view-transition-new(root) {
+  :root.is-theming::view-transition-new(root) {
     animation: theme-reveal 0.7s var(--ease-out);
   }
 
@@ -438,5 +440,68 @@
     .btn:active {
       transform: none;
     }
+  }
+}
+
+/*
+ * ── Page to page: the home and the blog ─────────────────────────
+ * Both kinds of page opt in, so following a link between them morphs
+ * instead of flashing (Chrome, Edge, Safari 18.2+; elsewhere it's a normal
+ * load). The nav and tab bar are named on every page, so they hold still
+ * while the page under them cross-fades. Deni's sky and phone carry the
+ * names `deni-sky` and `deni-phone` on the post's hero and its cover in
+ * /blog, and on the home's featured tile only once "Read the story" is
+ * clicked there (HeroBento), so they fly between the three.
+ */
+@view-transition {
+  navigation: auto;
+}
+
+.site-nav {
+  view-transition-name: site-nav;
+}
+
+.tab-bar {
+  view-transition-name: tab-bar;
+}
+
+.vt-deni .featured-visual {
+  view-transition-name: deni-sky;
+}
+
+.vt-deni .reel-phone {
+  view-transition-name: deni-phone;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.35s;
+}
+
+::view-transition-group(*) {
+  animation-duration: 0.5s;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* The theme reveal uncovers the whole page at once. */
+:root.is-theming .site-nav,
+:root.is-theming .tab-bar,
+:root.is-theming [data-vt],
+:root.is-theming .vt-deni :is(.featured-visual, .reel-phone) {
+  view-transition-name: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Only the plain cross-fade, and a quick one. */
+  .site-nav,
+  .tab-bar,
+  [data-vt],
+  .vt-deni :is(.featured-visual, .reel-phone) {
+    view-transition-name: none !important;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.2s;
   }
 }

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
 
 // v2 key: the old site wrote 'theme' on every visit, so reusing it would pin
@@ -36,13 +36,22 @@ function steer({ animation, target, want }) {
   animation?.updatePlaybackRate(want === target ? 1 : -1)
 }
 
-export function useTheme() {
-  const [theme, setTheme] = useState(readInitialTheme)
+// The blog's pages hydrate prerendered markup, which was rendered with the
+// light theme. With `hydrate`, the first render matches it, and the saved
+// theme (already on <html>, set by the page's head script) is adopted before
+// the first paint.
+export function useTheme({ hydrate = false } = {}) {
+  const [theme, setTheme] = useState(() => (hydrate ? null : readInitialTheme()))
   // The reveal in flight: `target` is the theme it uncovers, `want` is where
   // the latest click points.
   const reveal = useRef(null)
 
+  useLayoutEffect(() => {
+    if (theme === null) setTheme(readInitialTheme())
+  }, [theme])
+
   useEffect(() => {
+    if (theme === null) return
     document.documentElement.dataset.theme = theme
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', THEME_COLORS[theme])
   }, [theme])
@@ -70,9 +79,13 @@ export function useTheme() {
     }
 
     const rect = origin.getBoundingClientRect()
-    const root = document.documentElement.style
-    root.setProperty('--vt-x', `${rect.left + rect.width / 2}px`)
-    root.setProperty('--vt-y', `${rect.top + rect.height / 2}px`)
+    const html = document.documentElement
+    html.style.setProperty('--vt-x', `${rect.left + rect.width / 2}px`)
+    html.style.setProperty('--vt-y', `${rect.top + rect.height / 2}px`)
+    // Scopes the circular reveal to this transition (App.css): page-to-page
+    // view transitions cross-fade instead, and the nav's own transition name
+    // stands down so the circle uncovers it with the rest of the page.
+    html.classList.add('is-theming')
     const transition = document.startViewTransition(() => {
       flushSync(() => setTheme(next))
     })
@@ -82,6 +95,7 @@ export function useTheme() {
     const settle = () => {
       if (reveal.current !== current) return
       reveal.current = null
+      html.classList.remove('is-theming')
       if (current.want !== current.target) flushSync(() => setTheme(current.want))
     }
 
@@ -101,5 +115,5 @@ export function useTheme() {
     transition.finished.then(settle, settle)
   }, [])
 
-  return { theme, toggleTheme }
+  return { theme: theme ?? 'light', toggleTheme }
 }

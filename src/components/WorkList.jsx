@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react'
 import { motion } from 'framer-motion' // eslint-disable-line no-unused-vars
-import { ArrowUpRight, Play, Plus } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, Play, Plus } from 'lucide-react'
 import { projects } from '../data/portfolio'
 import posthog from '../posthog'
 import FilmPlayer from './FilmPlayer'
@@ -134,6 +134,16 @@ function WorkRow({ project, index, open, onToggle, onShowModels }) {
                   <Play size={14} strokeWidth={0} fill="currentColor" aria-hidden="true" />
                   Watch the film
                 </button>
+              )}
+              {project.story && (
+                <a
+                  href={project.story}
+                  className="btn btn-sm btn-line"
+                  onClick={() => posthog.capture('project_story_opened', { project_slug: project.slug, source: 'work' })}
+                >
+                  Read the story
+                  <ArrowRight size={16} strokeWidth={1.8} aria-hidden="true" />
+                </a>
               )}
               {project.models && (
                 <button

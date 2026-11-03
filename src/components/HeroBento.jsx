@@ -1,6 +1,6 @@
 import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence, useInView, useReducedMotion } from 'framer-motion' // eslint-disable-line no-unused-vars
-import { ArrowUpRight, ArrowDown, Github, Smartphone, Pause, Play } from 'lucide-react'
+import { ArrowUpRight, ArrowDown, ArrowRight, Github, Smartphone, Pause, Play } from 'lucide-react'
 import ShapeWaves from './ShapeWaves'
 import HeroDesk from './HeroDesk'
 import AssistantTile from './AssistantTile'
@@ -312,7 +312,33 @@ const FIELD = {
   dark: { backgroundColor: '#141716', color: '#3f4947', hoverColor: '#64ffda', glow: 0.35 },
 }
 
-export default function HeroBento({ theme, showField, onOpenProject, onAskAssistant }) {
+// A plain click on "Read the story" names the featured tile's sky and phone,
+// so they fly into the post's hero (App.css). A click that opens a new tab
+// leaves this page as it is.
+function openStory(event) {
+  posthog.capture('project_story_opened', { project_slug: featured.slug, source: 'featured' })
+  if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+  event.currentTarget.closest('.tile-featured')?.classList.add('vt-deni')
+}
+
+// Coming back to this page (Back restores it from memory), the names come
+// off once the transition in has played, so they never catch the theme
+// switch or a later link.
+function useClearStoryNames() {
+  useEffect(() => {
+    const clear = () => document.querySelector('.vt-deni')?.classList.remove('vt-deni')
+    const onReveal = (event) => {
+      if (event.viewTransition) event.viewTransition.finished.then(clear, clear)
+      else clear()
+    }
+    const type = 'onpagereveal' in window ? 'pagereveal' : 'pageshow'
+    const listener = type === 'pagereveal' ? onReveal : clear
+    window.addEventListener(type, listener)
+    return () => window.removeEventListener(type, listener)
+  }, [])
+}
+
+export default function HeroBento({ theme, showField, onAskAssistant }) {
   const words = HEADLINE.split(' ')
   // Without WebGPU (or if it fails), drop the field so the static dot grid shows instead.
   const [fieldOk, setFieldOk] = useState(() => typeof navigator !== 'undefined' && 'gpu' in navigator)
@@ -325,6 +351,7 @@ export default function HeroBento({ theme, showField, onOpenProject, onAskAssist
   const featuredLoad = useDeferredMedia(featuredRef)
   const [filmOpen, setFilmOpen] = useState(false)
   const closeFilm = useCallback(() => setFilmOpen(false), [])
+  useClearStoryNames()
 
   // No field to warm up (touch devices, no WebGPU): nothing for the loader to wait on.
   useEffect(() => {
@@ -518,15 +545,9 @@ export default function HeroBento({ theme, showField, onOpenProject, onAskAssist
                 <Play size={16} strokeWidth={0} fill="currentColor" aria-hidden="true" />
                 Watch the film
               </button>
-              <a
-                href={`#work-${featured.slug}`}
-                className="btn btn-line"
-                onClick={(event) => {
-                  event.preventDefault()
-                  onOpenProject(featured.slug)
-                }}
-              >
-                Read the case study
+              <a href={featured.story} className="btn btn-line" onClick={openStory}>
+                Read the story
+                <ArrowRight size={16} strokeWidth={1.8} aria-hidden="true" />
               </a>
             </div>
           </div>

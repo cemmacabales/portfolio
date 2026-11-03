@@ -1,0 +1,837 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blog boards</title>
+<style>
+:root {
+  --canvas: oklch(0.948 0.004 175);
+  --tile: oklch(0.992 0.0015 175);
+  --tile-sunk: oklch(0.962 0.004 175);
+  --line: oklch(0.905 0.005 175);
+  --line-strong: oklch(0.86 0.006 175);
+  --ink: oklch(0.2 0.008 175);
+  --ink-2: oklch(0.41 0.01 175);
+  --mint: #64ffda;
+  --mint-ink: oklch(0.3 0.06 175);
+  --glass-bg: oklch(0.995 0.002 175 / 0.72);
+  --glass-border: oklch(0.2 0.01 175 / 0.09);
+  --glass-shadow: 0 10px 30px -12px oklch(0.2 0.02 175 / 0.22), 0 1px 3px oklch(0.2 0.02 175 / 0.06);
+  --shadow-float: 0 18px 48px -18px oklch(0.2 0.02 175 / 0.28), 0 2px 6px oklch(0.2 0.02 175 / 0.06);
+
+  /* Deni's world (Foil and sky) */
+  --d-blue: #2F6BF2;
+  --d-blue-text: #1C44AE; /* 7.7:1 on pearl: AAA for links */
+  --d-rose: #E8445A;
+  --d-amber: #F2A23A;
+  --d-ink: #141B2D;
+  --d-ink-2: #4A5164;
+  --d-pearl: #F3F5FA;
+  --sky-morning: radial-gradient(120% 70% at 82% 0%, rgb(255 255 255 / .28), transparent 55%), linear-gradient(180deg, #4b56b0 0%, #8d8cc6 48%, #f2c3a6 100%);
+  --sky-afternoon: radial-gradient(110% 70% at 80% 0%, rgb(255 255 255 / .30), transparent 50%), linear-gradient(180deg, #2c5fd8 0%, #6f98e6 55%, #bcd0f3 100%);
+  --sky-evening: radial-gradient(110% 70% at 20% 0%, rgb(140 120 220 / .35), transparent 55%), linear-gradient(180deg, #1a2350 0%, #5b4c8f 50%, #ec8f78 100%);
+  --sky-night: radial-gradient(90% 60% at 80% 6%, rgb(120 140 220 / .18), transparent 55%), linear-gradient(180deg, #06070f 0%, #141c44 60%, #22306a 100%);
+  --foil: linear-gradient(140deg, #ffffff 0%, #eceff5 38%, #f9fafc 60%, #e4e8f0 100%);
+}
+
+* { box-sizing: border-box; margin: 0; }
+body {
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: -apple-system, system-ui, "Inter Variable", Inter, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-size: 16px;
+  line-height: 1.5;
+}
+img { display: block; max-width: 100%; }
+svg.i { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+/* ---------- board chrome ---------- */
+.boards { max-width: 1480px; margin: 0 auto; padding: 64px 40px 140px; }
+.intro { display: grid; grid-template-columns: 1.1fr 1fr; gap: 48px; align-items: end; padding: 0 8px 24px; }
+.intro h1 { font-size: 64px; line-height: 1; letter-spacing: -0.035em; font-weight: 650; text-wrap: balance; }
+.intro p { color: var(--ink-2); font-size: 19px; line-height: 1.5; max-width: 56ch; }
+.intro .kicker { font-size: 13px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 18px; }
+.verdict { margin-top: 18px; display: inline-flex; gap: 10px; align-items: center; padding: 10px 16px 10px 12px; border-radius: 999px; background: var(--ink); color: #fff; font-size: 15px; font-weight: 500; }
+.verdict b { background: var(--mint); color: var(--mint-ink); border-radius: 999px; padding: 2px 10px; font-size: 13px; font-weight: 600; }
+
+.board { background: var(--tile); border-radius: 40px; padding: 48px; margin-top: 28px; box-shadow: 0 1px 2px oklch(0.2 0.02 175 / 0.04); }
+.board-head { display: grid; grid-template-columns: 1fr minmax(0, 46ch); gap: 40px; align-items: end; margin-bottom: 36px; }
+.board-num { font-size: 13px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 10px; }
+.board h2 { font-size: 40px; line-height: 1.05; letter-spacing: -0.03em; font-weight: 650; text-wrap: balance; }
+.board-head p { color: var(--ink-2); font-size: 16px; line-height: 1.55; }
+.cap { font-size: 14px; color: var(--ink-2); line-height: 1.5; margin-top: 14px; max-width: 62ch; }
+.cap b { color: var(--ink); font-weight: 600; }
+.label { font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 12px; }
+.ann { position: absolute; display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--mint-ink); background: var(--mint); padding: 6px 12px; border-radius: 999px; white-space: nowrap; box-shadow: 0 6px 18px -8px oklch(0.3 0.06 175 / .6); z-index: 5; }
+.ring { position: absolute; border: 2.5px solid var(--mint); border-radius: 999px; box-shadow: 0 0 0 4px rgb(100 255 218 / .25); pointer-events: none; z-index: 4; }
+
+/* a viewport drawn at design size, then zoomed */
+.frame { border-radius: 18px; overflow: hidden; border: 1px solid var(--line); background: var(--canvas); box-shadow: var(--shadow-float); position: relative; }
+.frame .bar { height: 30px; display: flex; align-items: center; gap: 7px; padding: 0 12px; background: var(--tile-sunk); border-bottom: 1px solid var(--line); }
+.frame .bar i { width: 10px; height: 10px; border-radius: 50%; background: var(--line-strong); }
+.frame .bar span { margin-left: 10px; font-size: 12px; color: var(--ink-2); background: var(--tile); border-radius: 6px; padding: 2px 10px; }
+.vp { width: 1280px; height: 800px; overflow: hidden; position: relative; background: var(--canvas); }
+.z50 { zoom: .5; }
+.z25 { zoom: .25; }
+.z36 { zoom: .36; }
+
+/* ---------- portfolio primitives, at real size ---------- */
+.p-nav { position: absolute; inset: 0 0 auto 0; display: flex; justify-content: space-between; align-items: center; padding: 22px 40px; z-index: 3; }
+.glass { background: var(--glass-bg); backdrop-filter: blur(18px) saturate(1.6); -webkit-backdrop-filter: blur(18px) saturate(1.6); border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); }
+.p-brand { height: 48px; border-radius: 999px; display: flex; align-items: center; gap: 6px; padding: 0 22px; font-size: 13px; font-weight: 650; letter-spacing: .12em; text-transform: uppercase; }
+.p-brand span { color: var(--ink-2); font-weight: 500; }
+.p-actions { display: flex; gap: 10px; }
+.p-links { height: 48px; border-radius: 999px; display: flex; align-items: center; padding: 4px; position: relative; }
+.p-links a { position: relative; z-index: 1; height: 40px; display: flex; align-items: center; padding: 0 20px; font-size: 13px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--ink); text-decoration: none; border-radius: 999px; }
+.p-links a.on { background: #fff; box-shadow: 0 2px 10px -2px oklch(0.2 0.02 175 / 0.18); }
+.p-circle { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; font-size: 18px; }
+.p-tile { background: var(--tile); border-radius: 44px; box-shadow: 0 1px 2px oklch(0.2 0.02 175 / 0.04); position: relative; overflow: hidden; }
+.btn { height: 52px; border-radius: 999px; padding: 0 22px; display: inline-flex; align-items: center; gap: 10px; font-size: 17px; font-weight: 500; white-space: nowrap; border: 1px solid transparent; color: var(--ink); }
+.btn-mint { background: var(--mint); color: var(--mint-ink); }
+.btn-line { border-color: var(--line-strong); }
+.btn-ink { background: var(--ink); color: #fff; }
+.chip { display: inline-flex; height: 30px; align-items: center; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line-strong); font-size: 13px; color: var(--ink-2); }
+
+/* CSS iPhone, same build as the hero's PhoneReel */
+.phone { width: var(--w, 220px); container-type: inline-size; position: relative; }
+.phone .pf { padding: 3.6cqw; border-radius: 16.5cqw; background: #0b0b0d; box-shadow: 0 0 0 1.1cqw #c9ced6, 0 0 0 1.5cqw #8e949d, 0 40px 60px -24px oklch(0 0 0 / 0.55); }
+.phone .ps { position: relative; aspect-ratio: 1320 / 2868; overflow: hidden; border-radius: 13cqw; background: #0b0b0d; }
+.phone .ps img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.phone .pi { position: absolute; z-index: 1; top: 2.6%; left: 50%; width: 31%; aspect-ratio: 125/37; border-radius: 999px; background: #000; translate: -50% 0; }
+
+/* Deni pill + foil */
+.pill { width: var(--pw, 22px); aspect-ratio: 1 / 2.3; border-radius: 999px; background: linear-gradient(180deg, #4d82f7 0 50%, #ee5a6e 50% 100%); box-shadow: inset -3px -3px 6px rgb(0 0 0 / .18), inset 3px 3px 6px rgb(255 255 255 / .35); rotate: 32deg; flex: none; }
+.well { width: var(--bw, 48px); height: var(--bw, 48px); border-radius: 36%; display: grid; place-items: center; flex: none; background: linear-gradient(145deg, #ffffff, #e3e7ef); box-shadow: inset 0 0 0 1px rgb(20 27 45 / .06), 0 4px 10px -4px rgb(20 27 45 / .25), inset 0 2px 2px rgb(255 255 255 / .9); }
+.well.taken { background: linear-gradient(145deg, #e3e7ef, #f4f6fa); box-shadow: inset 0 3px 6px rgb(20 27 45 / .18), inset 0 0 0 1px rgb(20 27 45 / .08); }
+.well.taken::after { content: ""; width: 40%; height: 40%; border-radius: 50%; border: 2px solid rgb(28 68 174 / .45); border-top-color: transparent; border-left-color: transparent; rotate: 45deg; translate: 0 -12%; width: 22%; height: 40%; border-radius: 0; }
+.well.taken .pill { display: none; }
+.foil { background: var(--foil); border-radius: 26px; box-shadow: 0 1px 0 #fff inset, 0 20px 40px -22px rgb(20 27 45 / .45), 0 0 0 1px rgb(20 27 45 / .06); color: var(--d-ink); position: relative; overflow: hidden; }
+.foil.sweep > * { position: relative; z-index: 1; }
+.foil.sweep::before { z-index: 0; content: ""; position: absolute; inset: -20% -60%; background: linear-gradient(105deg, transparent 40%, rgb(255 255 255 / .95) 50%, transparent 60%); translate: 10% 0; }
+.numeral { font-weight: 200; letter-spacing: -0.04em; line-height: .9; color: var(--d-ink); }
+.numeral small { font-size: .32em; font-weight: 300; letter-spacing: 0; }
+.caps { font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: #7A8296; }
+
+/* Deni post typography */
+.post-col { font-size: 20px; line-height: 1.65; color: var(--d-ink); max-width: 64ch; }
+.post-col p + p { margin-top: 1em; }
+.post-col a { color: var(--d-blue-text); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1.5px; }
+
+/* ---------- layout helpers ---------- */
+.row { display: flex; gap: 24px; align-items: flex-start; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.card { border: 1px solid var(--line); border-radius: 28px; padding: 28px; background: var(--tile); position: relative; }
+.card.pick { border: 2px solid var(--ink); }
+.card h3 { font-size: 22px; line-height: 1.2; letter-spacing: -0.02em; font-weight: 650; margin-bottom: 4px; }
+.card .sub { color: var(--ink-2); font-size: 15px; margin-bottom: 16px; }
+.pros, .cons { list-style: none; padding: 0; font-size: 15px; line-height: 1.45; display: grid; gap: 8px; }
+.pros li, .cons li { display: grid; grid-template-columns: 18px 1fr; gap: 8px; }
+.pros li::before { content: "+"; font-weight: 700; color: oklch(0.45 0.1 178); }
+.cons li::before { content: "–"; font-weight: 700; color: oklch(0.47 0.17 27); }
+.tag { position: absolute; top: 22px; right: 22px; font-size: 12px; font-weight: 650; letter-spacing: .06em; text-transform: uppercase; background: var(--mint); color: var(--mint-ink); padding: 4px 10px; border-radius: 999px; }
+.mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 13px; }
+code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: .88em; background: var(--tile-sunk); padding: 1px 6px; border-radius: 6px; }
+
+/* flow diagram */
+.flow { display: grid; grid-template-columns: 1fr 64px 1fr 64px 1fr; align-items: start; gap: 0; }
+.flow .arrow { height: 186px; }
+.node { border: 1px solid var(--line); border-radius: 26px; padding: 18px; background: var(--canvas); }
+.node .url { font-size: 15px; font-weight: 650; letter-spacing: -0.01em; margin: 12px 4px 4px; }
+.node .what { font-size: 14px; color: var(--ink-2); margin: 0 4px; }
+.mini { height: 150px; border-radius: 16px; background: var(--tile); position: relative; overflow: hidden; border: 1px solid var(--line); }
+.arrow { display: grid; place-items: center; color: var(--ink-2); font-size: 26px; }
+.ways { margin-top: 14px; display: grid; gap: 8px; }
+.way { display: flex; gap: 10px; align-items: center; font-size: 14px; background: var(--tile); border: 1px solid var(--line); border-radius: 14px; padding: 9px 12px; }
+.way b { font-weight: 600; }
+.way .w { min-width: 0; }
+.way .k { margin-left: auto; font-size: 12px; color: var(--ink-2); }
+
+/* storyboard */
+.story { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.story .t { font-size: 13px; font-weight: 600; letter-spacing: .06em; color: var(--ink-2); margin-top: 12px; }
+.story .d { font-size: 14px; color: var(--ink); margin-top: 4px; line-height: 1.45; }
+.sb { aspect-ratio: 16/10; border-radius: 16px; border: 1px solid var(--line); background: var(--canvas); position: relative; overflow: hidden; }
+.sb .n { position: absolute; top: 8px; left: 50%; translate: -50% 0; width: 46%; height: 9%; border-radius: 999px; background: #fff; border: 1px solid var(--line); box-shadow: 0 0 0 2px rgb(100 255 218 / .0); }
+.sb .n.hold { box-shadow: 0 0 0 2.5px var(--mint); }
+.ghost { position: absolute; border-radius: 10px; background: var(--tile); border: 1px solid var(--line); }
+
+.skyband { border-radius: 22px; color: #fff; padding: 22px 26px; position: relative; overflow: hidden; }
+.skyband .caps { color: rgb(255 255 255 / .82); }
+.skyband h4 { font-size: 24px; font-weight: 650; letter-spacing: -0.02em; margin-top: 4px; }
+.sw { height: 100%; }
+
+.decide { counter-reset: q; display: grid; gap: 14px; }
+.decide li { list-style: none; counter-increment: q; display: grid; grid-template-columns: 44px 1fr; gap: 16px; padding: 22px 24px; border: 1px solid var(--line); border-radius: 24px; background: var(--tile); }
+.decide li::before { content: counter(q); width: 36px; height: 36px; border-radius: 50%; background: var(--ink); color: #fff; display: grid; place-items: center; font-weight: 650; font-size: 15px; }
+.decide h4 { font-size: 18px; font-weight: 650; letter-spacing: -0.01em; }
+.decide p { font-size: 15px; color: var(--ink-2); margin-top: 4px; }
+.opts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.opt { font-size: 14px; border: 1px solid var(--line-strong); border-radius: 999px; padding: 6px 14px; }
+.opt.rec { background: var(--ink); color: #fff; border-color: var(--ink); }
+.draft { display: inline-block; font-size: 11px; font-weight: 650; letter-spacing: .08em; text-transform: uppercase; color: #8a5a00; background: #ffe9b8; padding: 3px 8px; border-radius: 6px; vertical-align: middle; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="house" viewBox="0 0 24 24"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+  <symbol id="layers" viewBox="0 0 24 24"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></symbol>
+  <symbol id="user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></symbol>
+  <symbol id="mail" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></symbol>
+  <symbol id="book" viewBox="0 0 24 24"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></symbol>
+  <symbol id="moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
+  <symbol id="ur" viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></symbol>
+  <symbol id="right" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+  <symbol id="left" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></symbol>
+  <symbol id="play" viewBox="0 0 24 24"><polygon points="6 3 20 12 6 21 6 3" fill="currentColor"/></symbol>
+  <symbol id="apple" viewBox="0 0 24 24"><path d="M16.4 12.6c0-2.4 2-3.5 2-3.6-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9-.7 0-1.8-.8-3-.8-1.5 0-3 .9-3.8 2.3-1.6 2.8-.4 7 1.2 9.3.8 1.1 1.7 2.4 2.9 2.3 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2-1.1 2.8-2.3.9-1.3 1.2-2.5 1.3-2.6-.1 0-2.5-.9-2.5-3.7Z" fill="currentColor" stroke="none"/><path d="M14.2 5.6c.6-.8 1.1-1.8 1-2.9-.9 0-2.1.6-2.7 1.4-.6.7-1.1 1.8-1 2.8 1 .1 2.1-.5 2.7-1.3Z" fill="currentColor" stroke="none"/></symbol>
+</svg>
+
+<div class="boards">
+
+  <header class="intro">
+    <div>
+      <div class="kicker">Portfolio · Blog · boards for review · Nov 3, 2026</div>
+      <h1>A blog where every post lives in its project’s world.</h1>
+    </div>
+    <div>
+      <p>The site stays Carl’s: same nav, same type, same reading column. Each post brings its project’s own materials inside it. The first one is Deni, so it reads like a day in Deni: morning to night, one blister per chapter.</p>
+      <div class="verdict"><b>Recommended</b> Real pages at /blog and /blog/deni, joined to the home by view transitions</div>
+    </div>
+  </header>
+
+  <!-- ============ 01 HOW IT CONNECTS ============ -->
+  <section class="board">
+    <div class="board-head">
+      <div><div class="board-num">01 · How it connects</div><h2>Three pages, three ways in, one nav that never moves.</h2></div>
+      <p>The home stays one page. The blog is two new real pages beside it. Every link between them morphs instead of flashing white, so it feels like one site changing screens.</p>
+    </div>
+
+    <div class="flow">
+      <div class="node">
+        <div class="mini" style="background:var(--canvas)">
+          <div style="position:absolute;inset:10px 10px auto 10px;height:12px;display:flex;justify-content:space-between"><i style="width:34%;border-radius:9px;background:#fff"></i><i style="width:38%;border-radius:9px;background:#fff;box-shadow:inset 0 0 0 2px var(--mint)"></i></div>
+          <div style="position:absolute;left:10px;top:30px;width:60%;height:50px;border-radius:12px;background:#fff"></div>
+          <div style="position:absolute;right:10px;top:30px;width:calc(40% - 30px);height:50px;border-radius:12px;background:#c9fbee"></div>
+          <div style="position:absolute;left:10px;right:10px;top:88px;height:52px;border-radius:12px;background:#fff;overflow:hidden"><div style="position:absolute;right:0;top:0;bottom:0;width:48%;background:var(--sky-afternoon)"></div><div style="position:absolute;left:10px;top:30px;width:30%;height:10px;border-radius:9px;background:var(--mint)"></div></div>
+        </div>
+        <div class="url">cemmacabales.com/</div>
+        <div class="what">The home, untouched. Gains three links.</div>
+        <div class="ways">
+          <div class="way"><svg class="i"><use href="#book"/></svg><span class="w"><b>Blog</b> in the nav</span><span class="k">→ /blog</span></div>
+          <div class="way"><svg class="i"><use href="#right"/></svg><span class="w"><b>Read the story</b> on the Deni hero</span><span class="k">→ /blog/deni</span></div>
+          <div class="way"><svg class="i"><use href="#right"/></svg><span class="w"><b>Read the story</b> on Deni’s work row</span><span class="k">→ /blog/deni</span></div>
+        </div>
+      </div>
+      <div class="arrow"><svg class="i"><use href="#right"/></svg></div>
+      <div class="node">
+        <div class="mini">
+          <div style="position:absolute;inset:10px 10px auto 10px;height:12px;display:flex;justify-content:space-between"><i style="width:34%;border-radius:9px;background:var(--canvas)"></i><i style="width:38%;border-radius:9px;background:var(--canvas)"></i></div>
+          <div style="position:absolute;left:14px;top:34px;width:44%;height:12px;border-radius:6px;background:var(--ink)"></div>
+          <div style="position:absolute;left:10px;right:10px;top:58px;bottom:10px;border-radius:12px;overflow:hidden;display:grid;grid-template-columns:1fr 1fr"><div style="background:var(--sky-evening)"></div><div style="background:var(--canvas);padding:10px"><i style="display:block;height:8px;width:80%;background:var(--ink);border-radius:4px"></i><i style="display:block;height:6px;width:60%;background:var(--line-strong);border-radius:4px;margin-top:6px"></i></div></div>
+        </div>
+        <div class="url">/blog</div>
+        <div class="what">Every post as a cover in its own world.</div>
+        <div class="ways">
+          <div class="way"><svg class="i"><use href="#right"/></svg><span class="w"><b>A post’s cover</b></span><span class="k">→ /blog/&lt;slug&gt;</span></div>
+          <div class="way"><svg class="i"><use href="#left"/></svg><span class="w"><b>Brand or Work</b> in the nav</span><span class="k">→ / or /#work</span></div>
+        </div>
+      </div>
+      <div class="arrow"><svg class="i"><use href="#right"/></svg></div>
+      <div class="node">
+        <div class="mini" style="background:var(--d-pearl)">
+          <div style="position:absolute;left:10px;right:10px;top:10px;height:70px;border-radius:12px;background:var(--sky-morning)"></div>
+          <div style="position:absolute;inset:10px 10px auto 10px;height:12px;display:flex;justify-content:space-between;padding:4px"><i style="width:34%;border-radius:9px;background:rgb(255 255 255 / .8)"></i><i style="width:38%;border-radius:9px;background:rgb(255 255 255 / .8)"></i></div>
+          <div style="position:absolute;left:14px;top:90px;width:18%;bottom:12px;border-radius:9px;background:var(--foil);box-shadow:0 0 0 1px rgb(20 27 45 / .08)"></div>
+          <div style="position:absolute;left:30%;right:14px;top:92px;display:grid;gap:6px"><i style="height:6px;background:var(--d-ink);border-radius:4px;width:90%"></i><i style="height:6px;background:var(--line-strong);border-radius:4px"></i><i style="height:6px;background:var(--line-strong);border-radius:4px;width:80%"></i><i style="height:6px;background:var(--line-strong);border-radius:4px;width:86%"></i></div>
+        </div>
+        <div class="url">/blog/deni</div>
+        <div class="what">The post. Its own world, inside the site’s frame.</div>
+        <div class="ways">
+          <div class="way"><svg class="i"><use href="#left"/></svg><span class="w"><b>All posts</b></span><span class="k">→ /blog</span></div>
+          <div class="way"><svg class="i"><use href="#apple"/></svg><span class="w"><b>Get it on the App Store</b></span><span class="k">↗ apps.apple.com</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="label" style="margin-top:48px">How to build it: three ways, one pick</div>
+    <div class="grid3">
+      <div class="card pick">
+        <span class="tag">Pick</span>
+        <h3>Real pages + view transitions</h3>
+        <div class="sub">Vite builds <code>/blog</code> and <code>/blog/deni</code> as their own pages, prerendered like the home.</div>
+        <ul class="pros">
+          <li>A real link to share on LinkedIn, with its own preview card</li>
+          <li>Google and AI crawlers read every post in full</li>
+          <li>The home’s code doesn’t change, so its 94 speed score holds</li>
+          <li>A post loads light: no WebGPU field, no boot loader</li>
+          <li>Pages morph into each other in Chrome, Edge and Safari 18.2+</li>
+        </ul>
+        <ul class="cons" style="margin-top:10px">
+          <li>Firefox gets a normal (fast) page load instead of the morph</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Change screens in the page</h3>
+        <div class="sub">The post opens as a full-screen layer over the home.</div>
+        <ul class="pros"><li>Instant, and the morph works everywhere</li></ul>
+        <ul class="cons" style="margin-top:10px">
+          <li>No link to a post: you can’t share it or bookmark it</li>
+          <li>The Back button leaves the whole site</li>
+          <li>Crawlers never see the posts</li>
+          <li>Every post’s code ships with the home</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>A router inside the app</h3>
+        <div class="sub">One React app switches between routes.</div>
+        <ul class="pros"><li>Seamless in every browser, real URLs</li></ul>
+        <ul class="cons" style="margin-top:10px">
+          <li>Someone landing on a post from LinkedIn waits for the home’s boot</li>
+          <li>Puts a router into App.jsx, which owns the perf work</li>
+          <li>Going back home re-runs the hero field from scratch</li>
+        </ul>
+      </div>
+    </div>
+    <p class="cap"><b>Back to the home:</b> the browser’s Back button restores the home from memory, instantly. A clicked link home skips the boot loader’s hold when you arrive from a blog page, since the files are already cached.</p>
+  </section>
+
+  <!-- ============ 02 HOME ENTRY POINTS ============ -->
+  <section class="board">
+    <div class="board-head">
+      <div><div class="board-num">02 · On the home</div><h2>Blog joins the nav. Deni’s hero gets “Read the story.”</h2></div>
+      <p>Nothing else on the home changes. The nav’s lens follows sections on the home; on blog pages it rests on Blog. On phones, Blog becomes a fifth tab, the most an iOS tab bar holds.</p>
+    </div>
+
+    <div class="grid2" style="grid-template-columns: 1.35fr 1fr; align-items:start">
+      <div>
+        <div class="label">Desktop nav · before → after</div>
+        <div style="position:relative;display:grid;gap:16px">
+          <div class="frame" style="box-shadow:none"><div style="zoom:.57"><div style="width:1280px;height:92px;position:relative;background:var(--canvas)">
+            <div class="p-nav">
+              <div class="glass p-brand">Carl Macabales <span>/ AI &amp; software engineer</span></div>
+              <div class="p-actions"><nav class="glass p-links"><a>Work</a><a>About</a><a>Contact</a></nav><div class="glass p-circle"><svg class="i"><use href="#moon"/></svg></div></div>
+            </div>
+          </div></div></div>
+          <div class="frame" style="box-shadow:none;overflow:visible"><div style="zoom:.57"><div style="width:1280px;height:92px;position:relative;background:var(--canvas);border-radius:36px">
+            <div class="p-nav">
+              <div class="glass p-brand">Carl Macabales <span>/ AI &amp; software engineer</span></div>
+              <div class="p-actions"><nav class="glass p-links"><a>Work</a><a>About</a><a style="box-shadow:0 0 0 2.5px var(--mint),0 0 0 7px rgb(100 255 218 / .3)">Blog</a><a>Contact</a></nav><div class="glass p-circle"><svg class="i"><use href="#moon"/></svg></div></div>
+            </div>
+          </div></div></div>
+        </div>
+        <p class="cap"><b>Order:</b> Work, About, Blog, Contact. Contact stays last because it’s the action. The pill grows by one word, so the role text’s hide breakpoints get re-measured.</p>
+
+        <div class="label" style="margin-top:32px">Deni’s hero tile · third button</div>
+        <div class="frame" style="box-shadow:none"><div style="zoom:.57"><div style="width:1280px;height:560px;padding:20px;background:var(--canvas)">
+          <div class="p-tile" style="height:520px;display:grid;grid-template-columns:1fr 1.05fr">
+            <div style="padding:44px 48px;display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <div style="display:flex;gap:12px;align-items:center;font-size:15px;color:var(--ink-2)"><img src="../../../src/assets/deni/icon.webp" alt="" style="width:40px;border-radius:10px">Featured project</div>
+                <span class="btn btn-mint" style="height:34px;font-size:14px;padding:0 14px">Out now on iPhone</span>
+              </div>
+              <div style="font-size:84px;font-weight:650;letter-spacing:-0.04em;margin-top:28px;line-height:1">Deni</div>
+              <div style="font-size:22px;color:var(--ink-2);margin-top:10px">Every dose for today, in one pack.</div>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:auto;position:relative">
+                <span class="btn btn-mint">Get it on the App Store <svg class="i"><use href="#ur"/></svg></span>
+                <span class="btn btn-line"><svg class="i"><use href="#play"/></svg> Watch the film</span>
+                <span class="btn btn-line" style="position:relative">Read the story <svg class="i"><use href="#right"/></svg>
+                  <span class="ring" style="inset:-8px"></span>
+                </span>
+              </div>
+            </div>
+            <div style="background:var(--sky-afternoon);display:grid;place-items:center">
+              <div class="phone" style="--w:210px"><div class="pf"><div class="ps"><span class="pi"></span><img src="../../../src/assets/deni/today-480.webp" alt=""></div></div></div>
+            </div>
+          </div>
+        </div></div></div>
+        <p class="cap"><b>“Read the case study” becomes “Read the story”</b> and goes to /blog/deni. The phone and its sky carry over into the post (board 03). The work row’s button opens the same post.</p>
+      </div>
+
+      <div>
+        <div class="label">Phone tab bar · five tabs</div>
+        <div class="frame" style="box-shadow:none"><div style="zoom:.69"><div style="width:780px;height:180px;background:var(--canvas);display:grid;place-items:center">
+          <div class="glass" style="border-radius:999px;display:flex;padding:6px;gap:2px">
+            <div style="width:132px;height:84px;border-radius:999px;display:grid;place-items:center;font-size:15px;font-weight:500;color:var(--ink-2)"><div style="display:grid;place-items:center;gap:4px"><svg class="i" style="font-size:30px"><use href="#house"/></svg>Home</div></div>
+            <div style="width:132px;height:84px;border-radius:999px;display:grid;place-items:center;font-size:15px;font-weight:500;color:var(--ink-2)"><div style="display:grid;place-items:center;gap:4px"><svg class="i" style="font-size:30px"><use href="#layers"/></svg>Work</div></div>
+            <div style="width:132px;height:84px;border-radius:999px;display:grid;place-items:center;font-size:15px;font-weight:500;color:var(--ink-2)"><div style="display:grid;place-items:center;gap:4px"><svg class="i" style="font-size:30px"><use href="#user"/></svg>About</div></div>
+            <div style="width:132px;height:84px;border-radius:999px;display:grid;place-items:center;font-size:15px;font-weight:600;color:var(--ink);background:#fff;box-shadow:0 2px 10px -2px oklch(0.2 0.02 175 / 0.18)"><div style="display:grid;place-items:center;gap:4px"><svg class="i" style="font-size:30px"><use href="#book"/></svg>Blog</div></div>
+            <div style="width:132px;height:84px;border-radius:999px;display:grid;place-items:center;font-size:15px;font-weight:500;color:var(--ink-2)"><div style="display:grid;place-items:center;gap:4px"><svg class="i" style="font-size:30px"><use href="#mail"/></svg>Contact</div></div>
+          </div>
+        </div></div></div>
+        <p class="cap">Shown as it looks on /blog, with the lens on Blog.</p>
+
+        <div class="label" style="margin-top:32px">Selected work · Deni’s row, opened</div>
+        <div class="frame" style="box-shadow:none"><div style="zoom:.69"><div style="width:780px;padding:34px 38px;background:var(--tile)">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:18px">
+            <div style="font-size:40px;font-weight:650;letter-spacing:-0.03em">Deni</div>
+            <div style="font-size:16px;color:var(--ink-2)">iPhone app · Medication tracker · 2026</div>
+          </div>
+          <p style="font-size:18px;color:var(--ink-2);line-height:1.6;margin-top:18px">A medication tracker for iPhone. My dad started maintenance meds early in life, and it’s my mom who keeps him on track…</p>
+          <div style="display:flex;gap:10px;margin-top:24px;flex-wrap:wrap">
+            <span class="btn btn-mint">Get it on the App Store <svg class="i"><use href="#ur"/></svg></span>
+            <span class="btn btn-line"><svg class="i"><use href="#play"/></svg> Watch the film</span>
+            <span class="btn btn-line" style="position:relative">Read the story <svg class="i"><use href="#right"/></svg><span class="ring" style="inset:-8px"></span></span>
+          </div>
+        </div></div></div>
+        <p class="cap">Later, a project that gets a post gets this button. A project without one shows nothing extra.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 03 THE MOVE ============ -->
+  <section class="board">
+    <div class="board-head">
+      <div><div class="board-num">03 · The move between pages</div><h2>The phone and its sky fly into the post. The nav holds still.</h2></div>
+      <p>Cross-document view transitions: the browser snapshots both pages and morphs the pieces that share a name. About half a second, eased, never springy, which is Deni’s own motion rule. With reduced motion it’s a plain cross-fade. Back plays it in reverse.</p>
+    </div>
+    <div class="story">
+      <div>
+        <div class="sb">
+          <div class="n hold"></div>
+          <div class="ghost" style="left:4%;top:16%;width:58%;height:30%"></div>
+          <div class="ghost" style="left:64%;top:16%;width:32%;height:30%;background:#c9fbee"></div>
+          <div class="ghost" style="left:4%;top:50%;width:92%;height:46%;overflow:hidden"><div style="position:absolute;right:0;top:0;bottom:0;width:48%;background:var(--sky-afternoon)"></div><div style="position:absolute;left:8%;bottom:16%;width:24%;height:12%;border-radius:999px;border:1.5px solid var(--ink)"></div></div>
+          <div style="position:absolute;right:21%;top:56%;width:6%;aspect-ratio:1/2.1;border-radius:6px;background:#0b0b0d"></div>
+          <div style="position:absolute;left:18%;bottom:11%;width:14px;height:14px;border-radius:50%;background:rgb(20 27 45 / .5);box-shadow:0 0 0 6px rgb(20 27 45 / .12)"></div>
+        </div>
+        <div class="t">0 ms</div>
+        <div class="d">Tap <b>Read the story</b> on the Deni tile.</div>
+      </div>
+      <div>
+        <div class="sb">
+          <div class="n hold"></div>
+          <div class="ghost" style="left:4%;top:18%;width:58%;height:30%;opacity:.35"></div>
+          <div class="ghost" style="left:64%;top:18%;width:32%;height:30%;background:#c9fbee;opacity:.35"></div>
+          <div style="position:absolute;left:20%;top:40%;width:78%;height:56%;border-radius:12px;background:var(--sky-afternoon)"></div>
+          <div style="position:absolute;right:30%;top:46%;width:7%;aspect-ratio:1/2.1;border-radius:6px;background:#0b0b0d"></div>
+        </div>
+        <div class="t">150 ms</div>
+        <div class="d">The home fades and sinks a little. Deni’s sky starts to grow out of its tile.</div>
+      </div>
+      <div>
+        <div class="sb">
+          <div class="n hold"></div>
+          <div style="position:absolute;left:3%;top:3%;width:94%;height:70%;border-radius:12px;background:var(--sky-afternoon)"></div>
+          <div style="position:absolute;right:20%;top:16%;width:9%;aspect-ratio:1/2.1;border-radius:7px;background:#0b0b0d"></div>
+          <div class="n hold" style="z-index:2"></div>
+        </div>
+        <div class="t">350 ms</div>
+        <div class="d">The sky fills the post’s hero, under the nav. The phone settles into place.</div>
+      </div>
+      <div>
+        <div class="sb" style="background:var(--d-pearl)">
+          <div style="position:absolute;left:3%;top:3%;width:94%;height:70%;border-radius:12px;background:var(--sky-afternoon)"></div>
+          <div style="position:absolute;right:20%;top:16%;width:9%;aspect-ratio:1/2.1;border-radius:7px;background:#0b0b0d"></div>
+          <div style="position:absolute;left:9%;top:30%;width:42%;height:7%;border-radius:4px;background:#fff"></div>
+          <div style="position:absolute;left:9%;top:40%;width:34%;height:7%;border-radius:4px;background:#fff"></div>
+          <div style="position:absolute;left:9%;top:52%;width:28%;height:3%;border-radius:4px;background:rgb(255 255 255 / .7)"></div>
+          <div style="position:absolute;left:5%;top:79%;width:16%;height:18%;border-radius:8px;background:var(--foil);box-shadow:0 0 0 1px rgb(20 27 45 / .1)"></div>
+          <div style="position:absolute;left:26%;top:80%;width:60%;height:3%;border-radius:4px;background:var(--line-strong)"></div>
+          <div style="position:absolute;left:26%;top:87%;width:52%;height:3%;border-radius:4px;background:var(--line-strong)"></div>
+          <div class="n hold" style="z-index:2"></div>
+        </div>
+        <div class="t">500 ms</div>
+        <div class="d">The title fades up, then the foil pack and the first lines of the story.</div>
+      </div>
+    </div>
+    <p class="cap"><b>Shared names:</b> <code>site-nav</code> (holds still), <code>deni-sky</code>, <code>deni-phone</code>. From /blog, the post’s cover carries the same names, so the index morphs into the post the same way.</p>
+  </section>
+
+  <!-- ============ 04 BLOG INDEX ============ -->
+  <section class="board">
+    <div class="board-head">
+      <div><div class="board-num">04 · /blog</div><h2>An index of covers. Each one is already in its post’s world.</h2></div>
+      <p>Reading, not selling: one column, real dates, no fake “coming soon” posts. Deni’s cover shows the sky for your time of day, the way the app does, so the index changes from morning to night.</p>
+    </div>
+
+    <div class="row" style="gap:28px">
+      <div style="flex:1">
+        <div class="frame"><div class="bar"><i></i><i></i><i></i><span>cemmacabales.com/blog</span></div><div style="zoom:.855"><div class="vp">
+          <div class="p-nav">
+            <div class="glass p-brand">Carl Macabales <span>/ AI &amp; software engineer</span></div>
+            <div class="p-actions"><nav class="glass p-links"><a>Work</a><a>About</a><a class="on">Blog</a><a>Contact</a></nav><div class="glass p-circle"><svg class="i"><use href="#moon"/></svg></div></div>
+          </div>
+          <div style="padding:132px 40px 0">
+            <div style="display:flex;justify-content:space-between;align-items:end;padding:0 8px 28px">
+              <div>
+                <div style="font-size:13px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)">Blog</div>
+                <div style="font-size:64px;font-weight:650;letter-spacing:-0.035em;line-height:1.02;margin-top:10px">How the work got made.</div>
+              </div>
+              <div style="font-size:18px;color:var(--ink-2);max-width:40ch;text-align:right">Why each project exists, what I tried, and what shipped. <span class="draft">draft copy</span></div>
+            </div>
+            <div class="p-tile" style="height:470px;display:grid;grid-template-columns:1.15fr 1fr">
+              <div style="background:var(--sky-evening);position:relative;display:grid;place-items:center">
+                <div class="phone" style="--w:190px;rotate:-4deg;translate:-50px 40px"><div class="pf"><div class="ps"><span class="pi"></span><img src="../../../src/assets/deni/today-480.webp" alt=""></div></div></div>
+                <div class="phone" style="--w:190px;position:absolute;rotate:5deg;translate:90px 70px"><div class="pf"><div class="ps"><span class="pi"></span><img src="../../../src/assets/deni/insights-480.webp" alt=""></div></div></div>
+                <div class="glass" style="position:absolute;left:24px;top:24px;border-radius:999px;padding:8px 14px;font-size:14px;font-weight:500;display:flex;gap:8px;align-items:center;color:var(--ink)"><span style="width:8px;height:8px;border-radius:50%;background:var(--d-amber)"></span>Evening sky · it’s 7:40 PM for you</div>
+              </div>
+              <div style="padding:48px 52px;display:flex;flex-direction:column">
+                <div style="display:flex;gap:12px;align-items:center"><img src="../../../src/assets/deni/icon.webp" alt="" style="width:44px;border-radius:11px"><div style="font-size:15px;color:var(--ink-2)">Deni · iPhone app<br>Nov 3, 2026 · 9 min read</div></div>
+                <div style="font-size:44px;font-weight:650;letter-spacing:-0.03em;line-height:1.08;margin-top:30px;text-wrap:balance">Deni was supposed to be just for my dad.</div>
+                <div style="font-size:19px;color:var(--ink-2);line-height:1.55;margin-top:16px">How a reminder for one person became a free app for anyone, from a prototype to the App Store in under four weeks.</div>
+                <div style="margin-top:auto;display:flex;gap:8px"><span class="chip">Design</span><span class="chip">React Native</span><span class="chip">Shipping</span></div>
+              </div>
+            </div>
+          </div>
+        </div></div></div>
+        <p class="cap"><b>When there are more posts:</b> the newest is this big cover. The rest list below it as rows, each with a thumbnail cut from its own world.</p>
+      </div>
+
+      <div style="width:250px;flex:none">
+        <div class="frame" style="border-radius:34px"><div class="z50"><div style="width:500px;height:1060px;background:var(--canvas);position:relative;overflow:hidden">
+          <div style="position:absolute;inset:16px 16px auto;display:flex;justify-content:space-between">
+            <div class="glass p-brand" style="padding:0 18px">Carl Macabales</div>
+            <div class="glass p-circle"><svg class="i"><use href="#moon"/></svg></div>
+          </div>
+          <div style="padding:112px 20px 0">
+            <div style="font-size:13px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)">Blog</div>
+            <div style="font-size:44px;font-weight:650;letter-spacing:-0.035em;line-height:1.04;margin-top:8px">How the work got made.</div>
+            <div class="p-tile" style="margin-top:24px;border-radius:36px">
+              <div style="height:330px;background:var(--sky-evening);display:grid;place-items:center">
+                <div class="phone" style="--w:150px;translate:0 50px"><div class="pf"><div class="ps"><span class="pi"></span><img src="../../../src/assets/deni/today-480.webp" alt=""></div></div></div>
+              </div>
+              <div style="padding:26px 26px 30px">
+                <div style="font-size:15px;color:var(--ink-2)">Deni · Nov 3, 2026 · 9 min</div>
+                <div style="font-size:30px;font-weight:650;letter-spacing:-0.025em;line-height:1.12;margin-top:10px">Deni was supposed to be just for my dad.</div>
+              </div>
+            </div>
+          </div>
+          <div class="glass" style="position:absolute;left:16px;right:16px;bottom:22px;border-radius:999px;height:84px;display:flex;justify-content:space-around;align-items:center;font-size:13px;color:var(--ink-2)">
+            <svg class="i" style="font-size:26px"><use href="#house"/></svg><svg class="i" style="font-size:26px"><use href="#layers"/></svg><svg class="i" style="font-size:26px"><use href="#user"/></svg><span style="background:#fff;border-radius:999px;padding:14px 18px;color:var(--ink)"><svg class="i" style="font-size:26px"><use href="#book"/></svg></span><svg class="i" style="font-size:26px"><use href="#mail"/></svg>
+          </div>
+        </div></div></div>
+      </div>
+    </div>
+
+    <div class="label" style="margin-top:36px">The cover follows your clock (Deni’s own hours)</div>
+    <div class="grid4">
+      <div class="skyband" style="background:var(--sky-morning);height:120px"><div class="caps">5 AM – noon</div><h4>Morning</h4></div>
+      <div class="skyband" style="background:var(--sky-afternoon);height:120px"><div class="caps">Noon – 5 PM</div><h4>Afternoon</h4></div>
+      <div class="skyband" style="background:var(--sky-evening);height:120px"><div class="caps">5 – 10 PM</div><h4>Evening</h4></div>
+      <div class="skyband" style="background:var(--sky-night);height:120px"><div class="caps">10 PM – 5 AM</div><h4>Night</h4></div>
+    </div>
+  </section>
+
+  <!-- ============ 05 THE POST ============ -->
+  <section class="board">
+    <div class="board-head">
+      <div><div class="board-num">05 · /blog/deni</div><h2>The story reads as one day: morning to night, a blister per chapter.</h2></div>
+      <p>Four chapters, four skies, the same arc as the App Store shots and the film. The contents is a foil pack: each chapter you finish presses its blister in. When the last one goes, one slow sweep of light crosses the foil. No confetti.</p>
+    </div>
+
+    <div class="grid2">
+      <!-- a: arrival -->
+      <div>
+        <div class="frame"><div class="bar"><i></i><i></i><i></i><span>cemmacabales.com/blog/deni</span></div><div style="zoom:.495"><div class="vp" style="background:var(--d-pearl)">
+          <div style="position:absolute;inset:16px 16px 140px;border-radius:44px;background:var(--sky-morning);overflow:hidden">
+            <div class="phone" style="--w:250px;position:absolute;right:150px;top:118px"><div class="pf"><div class="ps"><span class="pi"></span><img src="../../../src/assets/deni/today-480.webp" alt=""></div></div></div>
+            <div style="position:absolute;left:72px;top:150px;width:600px;color:#fff">
+              <div style="display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:500;background:rgb(255 255 255 / .18);border:1px solid rgb(255 255 255 / .3);border-radius:999px;padding:7px 14px 7px 10px;backdrop-filter:blur(10px)"><svg class="i"><use href="#left"/></svg>All posts</div>
+              <div style="font-size:72px;font-weight:650;letter-spacing:-0.04em;line-height:1.02;margin-top:28px;text-wrap:balance">Deni was supposed to be just for my&nbsp;dad.</div>
+              <div style="font-size:20px;line-height:1.5;margin-top:20px;color:rgb(255 255 255 / .92);max-width:30em">How a reminder for one person became a free app for anyone, from a prototype to the App Store in under four weeks.</div>
+              <div style="display:flex;gap:16px;align-items:center;margin-top:28px;font-size:15px;color:rgb(255 255 255 / .9)"><img src="../../../src/assets/deni/icon.webp" alt="" style="width:36px;border-radius:9px">Carl Macabales · Nov 3, 2026 · 9 min read</div>
+            </div>
+          </div>
+          <div class="p-nav">
+            <div class="glass p-brand">Carl Macabales <span>/ AI &amp; software engineer</span></div>
+            <div class="p-actions"><nav class="glass p-links"><a>Work</a><a>About</a><a class="on">Blog</a><a>Contact</a></nav><div class="glass p-circle"><svg class="i"><use href="#moon"/></svg></div></div>
+          </div>
+          <div style="position:absolute;left:56px;right:56px;bottom:30px;height:84px;display:flex;align-items:center;gap:28px">
+            <div class="caps" style="color:var(--d-ink-2)">In this story</div>
+            <div style="display:flex;gap:10px">
+              <div class="well" style="--bw:44px"><div class="pill" style="--pw:14px"></div></div>
+              <div class="well" style="--bw:44px"><div class="pill" style="--pw:14px"></div></div>
+              <div class="well" style="--bw:44px"><div class="pill" style="--pw:14px"></div></div>
+              <div class="well" style="--bw:44px"><div class="pill" style="--pw:14px"></div></div>
+            </div>
+            <div style="font-size:17px;color:var(--d-ink-2)">Why it exists · Foil and sky · Everything stays on the phone · Shipping it</div>
+          </div>
+        </div></div></div>
+        <p class="cap"><b>Arrival.</b> The hero’s sky is morning, the story’s first chapter, and the same sky that flew in from the home. The App Store button waits for the end, where it’s earned.</p>
+      </div>
+
+      <!-- b: reading chapter 1 -->
+      <div>
+        <div class="frame"><div class="bar"><i></i><i></i><i></i><span>cemmacabales.com/blog/deni</span></div><div style="zoom:.495"><div class="vp" style="background:var(--d-pearl)">
+          <div class="p-nav">
+            <div class="glass p-brand">Carl Macabales <span>/ AI &amp; software engineer</span></div>
+            <div class="p-actions"><nav class="glass p-links"><a>Work</a><a>About</a><a class="on">Blog</a><a>Contact</a></nav><div class="glass p-circle"><svg class="i"><use href="#moon"/></svg></div></div>
+          </div>
+          <!-- rail -->
+          <div class="foil" style="position:absolute;left:56px;top:120px;width:250px;padding:26px 22px">
+            <div class="numeral" style="font-size:72px">1<small> of 4</small></div>
+            <div class="caps" style="margin-top:10px">Chapters read</div>
+            <div style="display:grid;gap:14px;margin-top:22px">
+              <div style="display:flex;gap:14px;align-items:center"><div class="well taken" style="--bw:46px"><div class="pill" style="--pw:15px"></div></div><div><div class="caps">Morning</div><div style="font-size:15px;color:var(--d-ink-2)">Why it exists</div></div></div>
+              <div style="display:flex;gap:14px;align-items:center"><div class="well" style="--bw:46px;box-shadow:inset 0 0 0 2px var(--d-blue),0 4px 10px -4px rgb(20 27 45 / .25)"><div class="pill" style="--pw:15px"></div></div><div><div class="caps" style="color:var(--d-blue-text)">Afternoon · now</div><div style="font-size:15px;font-weight:600">Foil and sky</div></div></div>
+              <div style="display:flex;gap:14px;align-items:center"><div class="well" style="--bw:46px"><div class="pill" style="--pw:15px"></div></div><div><div class="caps">Evening</div><div style="font-size:15px;color:var(--d-ink-2)">Everything stays on the phone</div></div></div>
+              <div style="display:flex;gap:14px;align-items:center"><div class="well" style="--bw:46px"><div class="pill" style="--pw:15px"></div></div><div><div class="caps">Night</div><div style="font-size:15px;color:var(--d-ink-2)">Shipping it</div></div></div>
+            </div>
+          </div>
+          <!-- column -->
+          <div style="position:absolute;left:372px;top:118px;width:740px">
+            <div class="skyband" style="background:var(--sky-afternoon);height:150px;padding:30px 34px"><div class="caps">02 · Afternoon</div><h4 style="font-size:40px;margin-top:8px">Foil and sky</h4></div>
+            <div class="post-col" style="margin-top:30px">
+              <p>Before drawing anything, I read Apple’s rules for health apps. Liquid Glass is for controls, never content. Rings belong to Activity. Nothing should look like the Health app.</p>
+              <p>What was left was one solid object, a pearl foil pack, under a sky that follows the time of day. A glance tells you where you are: morning, afternoon, evening or night. <a>See the full system</a>.</p>
+            </div>
+            <img src="../../../src/assets/blog/deni/foil-and-sky-800.webp" alt="" style="margin-top:30px;border-radius:22px;box-shadow:0 0 0 1px rgb(20 27 45 / .08)">
+          </div>
+        </div></div></div>
+        <p class="cap"><b>Reading.</b> The pack is the contents and the progress bar at once; tap a blister to jump there. Chapter openers are short bands of that hour’s sky. Text sits on pearl, never on the sky, so it stays at AAA contrast.</p>
+      </div>
+
+      <!-- c: chapter 3 -->
+      <div>
+        <div class="frame"><div class="bar"><i></i><i></i><i></i><span>cemmacabales.com/blog/deni</span></div><div style="zoom:.495"><div class="vp" style="background:var(--d-pearl)">
+          <div class="p-nav">
+            <div class="glass p-brand">Carl Macabales <span>/ AI &amp; software engineer</span></div>
+            <div class="p-actions"><nav class="glass p-links"><a>Work</a><a>About</a><a class="on">Blog</a><a>Contact</a></nav><div class="glass p-circle"><svg class="i"><use href="#moon"/></svg></div></div>
+          </div>
+          <div class="foil" style="position:absolute;left:56px;top:120px;width:250px;padding:26px 22px">
+            <div class="numeral" style="font-size:72px">2<small> of 4</small></div>
+            <div class="caps" style="margin-top:10px">Chapters read</div>
+            <div style="display:flex;gap:10px;margin-top:22px">
+              <div class="well taken" style="--bw:44px"><div class="pill" style="--pw:14px"></div></div>
+              <div class="well taken" style="--bw:44px"><div class="pill" style="--pw:14px"></div></div>
+              <div class="well" style="--bw:44px;box-shadow:inset 0 0 0 2px var(--d-blue),0 4px 10px -4px rgb(20 27 45 / .25)"><div class="pill" style="--pw:14px"></div></div>
+              <div class="well" style="--bw:44px"><div class="pill" style="--pw:14px"></div></div>
+            </div>
+            <div style="font-size:15px;font-weight:600;margin-top:16px">Everything stays on the phone</div>
+          </div>
+          <div style="position:absolute;left:372px;top:118px;width:740px">
+            <div class="skyband" style="background:var(--sky-evening);height:150px;padding:30px 34px"><div class="caps">03 · Evening</div><h4 style="font-size:40px;margin-top:8px">Everything stays on the phone</h4></div>
+            <div class="post-col" style="margin-top:30px">
+              <p>The real app keeps everything on the iPhone, in SQLite. It stores only facts, like “a dose was taken at 8:02,” and works out the rest with small pure functions: what’s late, what’s missed, how many pills are left.</p>
+            </div>
+            <div style="margin-top:28px;border-radius:28px;background:var(--sky-evening);padding:28px">
+              <div style="background:rgb(255 255 255 / .16);border:1px solid rgb(255 255 255 / .28);border-radius:20px;padding:24px 26px;color:#fff;backdrop-filter:blur(14px)">
+                <div class="caps" style="color:rgb(255 255 255 / .8)">Rules I wrote down before any screen</div>
+                <div style="display:grid;gap:12px;margin-top:14px;font-size:19px;line-height:1.4">
+                  <div>A dose is <b>Late</b> until midnight, then <b>Missed</b>.</div>
+                  <div>Skipping isn’t missing, and it uses no supply.</div>
+                  <div>Deleting a med stops it. Its history stays.</div>
+                </div>
+              </div>
+            </div>
+            <div style="margin-top:28px">
+              <div class="caps">47 commits · one blister a day · Oct 3 → Nov 2</div>
+              <div id="commits" style="display:grid;grid-template-columns:repeat(31,1fr);gap:5px;margin-top:12px"></div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--d-ink-2);margin-top:8px"><span>Oct 3 · prototype</span><span>Oct 11 · TestFlight</span><span>Oct 29 · App Store</span><span>Nov 2</span></div>
+            </div>
+          </div>
+        </div></div></div>
+        <p class="cap"><b>Real artifacts, in Deni’s materials.</b> The rules come from the spec, on sky glass the way the app shows supporting cards. The build log is drawn as blisters, not rings: Apple keeps rings for Activity, and Deni follows that.</p>
+      </div>
+
+      <!-- d: end -->
+      <div>
+        <div class="frame"><div class="bar"><i></i><i></i><i></i><span>cemmacabales.com/blog/deni</span></div><div style="zoom:.495"><div class="vp" style="background:var(--d-pearl)">
+          <div style="position:absolute;inset:16px;border-radius:44px;background:var(--sky-night);overflow:hidden">
+            <div style="position:absolute;inset:0;background-image:radial-gradient(1.5px 1.5px at 20% 30%, #fff8, transparent),radial-gradient(1px 1px at 60% 18%, #fff9, transparent),radial-gradient(1.5px 1.5px at 82% 40%, #fff6, transparent),radial-gradient(1px 1px at 38% 12%, #fff8, transparent),radial-gradient(1px 1px at 72% 70%, #fff5, transparent)"></div>
+            <div style="position:absolute;left:72px;top:126px;width:520px;color:#fff">
+              <div class="caps" style="color:rgb(255 255 255 / .75)">04 · Night</div>
+              <div style="font-size:52px;font-weight:650;letter-spacing:-0.035em;line-height:1.05;margin-top:10px">Shipping it</div>
+              <div style="font-size:19px;line-height:1.6;margin-top:18px;color:rgb(255 255 255 / .9)">Healthcare here in the Philippines is hard enough already, so Deni is free. No subscriptions, no paywalls, no sign up, no ads, no tracking.</div>
+              <div style="position:relative;margin-top:28px;border-radius:20px;overflow:hidden;width:420px"><img src="../../../src/assets/deni/promo-poster.webp" alt=""><div class="glass" style="position:absolute;left:16px;bottom:16px;border-radius:999px;padding:9px 16px;font-size:15px;font-weight:500;display:flex;gap:8px;align-items:center;color:var(--ink)"><svg class="i"><use href="#play"/></svg>Watch the film · 1:48</div></div>
+            </div>
+            <div class="foil sweep" style="position:absolute;right:84px;top:150px;width:410px;padding:34px 32px">
+              <div class="numeral" style="font-size:96px">4<small> of 4</small></div>
+              <div style="font-size:20px;font-weight:600;margin-top:12px">All set. Thanks for reading.</div>
+              <div style="display:flex;gap:10px;margin-top:22px">
+                <div class="well taken" style="--bw:52px"></div><div class="well taken" style="--bw:52px"></div><div class="well taken" style="--bw:52px"></div><div class="well taken" style="--bw:52px"></div>
+              </div>
+              <div style="margin-top:26px;display:inline-flex;align-items:center;gap:10px;height:52px;padding:0 22px;border-radius:999px;background:var(--d-ink);color:#fff;font-size:17px;font-weight:500"><svg class="i" style="font-size:20px"><use href="#apple"/></svg>Get Deni on the App Store</div>
+              <div style="font-size:14px;color:var(--d-ink-2);margin-top:14px">Free on iPhone. Next: Android, optional sync, family sharing.</div>
+            </div>
+          </div>
+          <div class="p-nav">
+            <div class="glass p-brand">Carl Macabales <span>/ AI &amp; software engineer</span></div>
+            <div class="p-actions"><nav class="glass p-links"><a>Work</a><a>About</a><a class="on">Blog</a><a>Contact</a></nav><div class="glass p-circle"><svg class="i"><use href="#moon"/></svg></div></div>
+          </div>
+        </div></div></div>
+        <p class="cap"><b>The end is night.</b> The last blister presses in, light sweeps the foil once, and the one call to action appears: the App Store. The film plays in the same player the home uses. Below this: “More from the blog” and back to Work.</p>
+      </div>
+    </div>
+
+    <div class="label" style="margin-top:40px">On a phone</div>
+    <div class="row" style="gap:28px;align-items:flex-start">
+      <div style="width:250px;flex:none">
+        <div class="frame" style="border-radius:34px"><div class="z50"><div style="width:500px;height:1060px;background:var(--d-pearl);position:relative;overflow:hidden">
+          <div style="position:absolute;inset:10px 10px 330px;border-radius:40px;background:var(--sky-morning);overflow:hidden">
+            <div class="phone" style="--w:190px;position:absolute;left:50%;translate:-50% 0;bottom:-120px"><div class="pf"><div class="ps"><span class="pi"></span><img src="../../../src/assets/deni/today-480.webp" alt=""></div></div></div>
+            <div style="position:absolute;left:30px;right:30px;top:118px;color:#fff">
+              <div style="font-size:15px;opacity:.9">← All posts</div>
+              <div style="font-size:42px;font-weight:650;letter-spacing:-0.035em;line-height:1.05;margin-top:14px">Deni was supposed to be just for my dad.</div>
+            </div>
+          </div>
+          <div style="position:absolute;inset:16px 16px auto;display:flex;justify-content:space-between">
+            <div class="glass p-brand" style="padding:0 18px">Carl Macabales</div>
+            <div class="glass p-circle"><svg class="i"><use href="#moon"/></svg></div>
+          </div>
+          <div style="position:absolute;left:30px;right:30px;top:756px;font-size:17px;color:var(--d-ink-2);line-height:1.55">How a reminder for one person became a free app for anyone. <br><span style="font-size:15px">Nov 3, 2026 · 9 min read</span></div>
+          <div class="glass" style="position:absolute;left:16px;right:16px;bottom:22px;border-radius:999px;height:84px;display:flex;justify-content:space-around;align-items:center;color:var(--ink-2)">
+            <svg class="i" style="font-size:26px"><use href="#house"/></svg><svg class="i" style="font-size:26px"><use href="#layers"/></svg><svg class="i" style="font-size:26px"><use href="#user"/></svg><span style="background:#fff;border-radius:999px;padding:14px 18px;color:var(--ink)"><svg class="i" style="font-size:26px"><use href="#book"/></svg></span><svg class="i" style="font-size:26px"><use href="#mail"/></svg>
+          </div>
+        </div></div></div>
+        <p class="cap">Top of the post.</p>
+      </div>
+      <div style="width:250px;flex:none">
+        <div class="frame" style="border-radius:34px"><div class="z50"><div style="width:500px;height:1060px;background:var(--d-pearl);position:relative;overflow:hidden">
+          <div style="position:absolute;inset:16px 16px auto;display:flex;justify-content:space-between;gap:10px">
+            <div class="foil" style="height:56px;border-radius:999px;display:flex;align-items:center;gap:8px;padding:0 10px 0 8px;flex:1">
+              <div class="well taken" style="--bw:38px"></div><div class="well" style="--bw:38px;box-shadow:inset 0 0 0 2px var(--d-blue)"><div class="pill" style="--pw:12px"></div></div><div class="well" style="--bw:38px"><div class="pill" style="--pw:12px"></div></div><div class="well" style="--bw:38px"><div class="pill" style="--pw:12px"></div></div>
+              <div style="font-size:15px;font-weight:600;margin-left:6px">Foil and sky</div>
+            </div>
+          </div>
+          <div style="padding:96px 30px 0">
+            <div class="skyband" style="background:var(--sky-afternoon);padding:22px 24px"><div class="caps">02 · Afternoon</div><h4 style="font-size:30px">Foil and sky</h4></div>
+            <div class="post-col" style="font-size:19px;margin-top:22px">
+              <p>Before drawing anything, I read Apple’s rules for health apps. Liquid Glass is for controls, never content. Rings belong to Activity.</p>
+              <p>What was left was one solid object, a pearl foil pack, under a sky that follows the time of day.</p>
+            </div>
+            <div style="display:flex;gap:16px;margin-top:26px;justify-content:center">
+              <div class="phone" style="--w:150px"><div class="pf"><div class="ps"><span class="pi"></span><img src="../../../src/assets/deni/add-480.webp" alt=""></div></div></div>
+              <div class="phone" style="--w:150px"><div class="pf"><div class="ps"><span class="pi"></span><img src="../../../src/assets/deni/today-480.webp" alt=""></div></div></div>
+            </div>
+          </div>
+        </div></div></div>
+        <p class="cap">Reading: the pack shrinks to a strip at the top. Tap it to open the chapters as a sheet. The tab bar hides while you scroll down, like Safari.</p>
+      </div>
+      <div style="flex:1;padding-top:8px">
+        <div class="label">Chapters (drafted from your own words and the repo; you edit)</div>
+        <div style="display:grid;gap:12px">
+          <div class="skyband" style="background:var(--sky-morning)"><div class="caps">01 · Morning</div><h4>Why it exists</h4><div style="font-size:15px;margin-top:6px;opacity:.92">Your dad, your mom, a reminder for one person, then for anyone. Free, because healthcare here is hard enough. From your launch post.</div></div>
+          <div class="skyband" style="background:var(--sky-afternoon)"><div class="caps">02 · Afternoon</div><h4>Foil and sky</h4><div style="font-size:15px;margin-top:6px;opacity:.92">Apple’s rules first, then the pack, the sky, the pill that matches the one in your hand. From the research doc and the design system.</div></div>
+          <div class="skyband" style="background:var(--sky-evening)"><div class="caps">03 · Evening</div><h4>Everything stays on the phone</h4><div style="font-size:15px;margin-top:6px;opacity:.92">Prototype first, then the real app: SQLite, only facts, pure functions, tests against a real database. From the specs.</div></div>
+          <div class="skyband" style="background:var(--sky-night)"><div class="caps">04 · Night</div><h4>Shipping it</h4><div style="font-size:15px;margin-top:6px;opacity:.92">TestFlight, review, the film, launch day, and what’s next. From the release notes and your caption.</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 06 PERSONAL SYSTEM ============ -->
+  <section class="board">
+    <div class="board-head">
+      <div><div class="board-num">06 · What stays Carl’s, what becomes the post’s</div><h2>A fixed frame, and a world each post brings inside it.</h2></div>
+      <p>The rule that keeps it one site: the frame never changes, so you always know where you are. Inside the frame, the post’s project is the designer. Mint stays the site’s; Deni blue is Deni’s.</p>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <div class="label">The frame · same on every post</div>
+        <ul class="pros" style="font-size:16px;gap:12px">
+          <li>The nav pill, tab bar, theme toggle and their mint lens</li>
+          <li>One type family (SF Pro on Apple devices, Inter elsewhere), same scale</li>
+          <li>A 64-character reading column, 20 px text, 1.65 leading</li>
+          <li>Title, date, reading time, “All posts,” “More from the blog”</li>
+          <li>AAA contrast for every line of text, in both themes</li>
+          <li>Reduced motion turns every move into a cross-fade</li>
+        </ul>
+      </div>
+      <div class="card" style="background:var(--d-pearl);border-color:#dfe3ec">
+        <div class="label" style="color:var(--d-ink-2)">Deni’s world · only on /blog/deni</div>
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:14px 18px;align-items:center;font-size:15px;color:var(--d-ink)">
+          <div style="display:flex;gap:4px"><i style="width:22px;height:30px;border-radius:7px;background:var(--sky-morning)"></i><i style="width:22px;height:30px;border-radius:7px;background:var(--sky-afternoon)"></i><i style="width:22px;height:30px;border-radius:7px;background:var(--sky-evening)"></i><i style="width:22px;height:30px;border-radius:7px;background:var(--sky-night)"></i></div><div><b>Sky</b> for the hero and chapter openers, moving morning → night</div>
+          <div style="width:100px;height:30px;border-radius:9px;background:var(--foil);box-shadow:0 0 0 1px rgb(20 27 45 / .1)"></div><div><b>Pearl foil</b> for the one solid object: the contents pack</div>
+          <div style="display:flex;gap:4px"><i style="width:30px;height:30px;border-radius:8px;background:var(--d-blue-text)"></i><i style="width:30px;height:30px;border-radius:8px;background:var(--d-rose)"></i><i style="width:30px;height:30px;border-radius:8px;background:var(--d-pearl);box-shadow:0 0 0 1px #d6dbe6"></i></div><div><b>Deni blue</b>, deepened to <code>#1C44AE</code> for links (7.7:1). Rose only on the pill.</div>
+          <div class="numeral" style="font-size:34px;width:100px">3<small> of 4</small></div><div><b>Thin numerals</b>, like the app’s “3 of 5”</div>
+          <div style="display:flex;gap:6px"><div class="well" style="--bw:30px"><div class="pill" style="--pw:10px"></div></div><div class="well taken" style="--bw:30px"></div></div><div><b>Motion from the app:</b> a blister presses in when a chapter is read; one sweep of light at the end</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="label" style="margin-top:36px">Dark theme: the paper turns to night</div>
+    <div class="grid2" style="grid-template-columns:1fr 1fr">
+      <div style="border-radius:24px;background:var(--d-pearl);padding:26px;display:grid;grid-template-columns:120px 1fr;gap:20px;align-items:center;border:1px solid #e1e5ee">
+        <div class="foil" style="padding:16px;border-radius:18px"><div class="numeral" style="font-size:34px">2<small> of 4</small></div></div>
+        <div class="post-col" style="font-size:16px">It stores only facts and works out the rest. <a>Read the spec</a>.</div>
+      </div>
+      <div style="border-radius:24px;background:#0d1124;padding:26px;display:grid;grid-template-columns:120px 1fr;gap:20px;align-items:center">
+        <div style="padding:16px;border-radius:18px;background:linear-gradient(140deg,#2a3150,#1a2038);box-shadow:inset 0 1px 0 rgb(255 255 255 / .12),0 0 0 1px rgb(255 255 255 / .06)"><div class="numeral" style="font-size:34px;color:#eef1fa">2<small> of 4</small></div></div>
+        <div style="font-size:16px;line-height:1.65;color:#e6e9f3">It stores only facts and works out the rest. <a style="color:#9db7ff;text-decoration:underline;text-underline-offset:3px">Read the spec</a>.</div>
+      </div>
+    </div>
+    <p class="cap">Deni itself has no dark mode (its sky is the theme). The post still follows the site’s toggle: pearl becomes the night sky’s ink, and the foil becomes graphite.</p>
+  </section>
+
+  <!-- ============ 07 HOW IT EXTENDS ============ -->
+  <section class="board">
+    <div class="board-head">
+      <div><div class="board-num">07 · The next posts</div><h2>Same frame, a different world each time.</h2></div>
+      <p>Just sketches, to check that the system holds before we build it. Each post picks its progress object and its materials from its own project, the way Deni’s picks the foil pack.</p>
+    </div>
+    <div class="grid3">
+      <div class="card" style="padding:0;overflow:hidden">
+        <div style="height:190px;background:var(--sky-afternoon);position:relative">
+          <div class="foil" style="position:absolute;left:20px;bottom:20px;padding:12px 14px;border-radius:16px;display:flex;gap:6px"><div class="well taken" style="--bw:26px"></div><div class="well" style="--bw:26px"><div class="pill" style="--pw:9px"></div></div><div class="well" style="--bw:26px"><div class="pill" style="--pw:9px"></div></div><div class="well" style="--bw:26px"><div class="pill" style="--pw:9px"></div></div></div>
+        </div>
+        <div style="padding:22px 24px 26px"><h3>Deni</h3><div class="sub" style="margin:0">Progress: blisters. Material: foil and sky. Opener: the hour’s sky.</div></div>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden">
+        <div style="height:190px;background:#0e1113;position:relative;overflow:hidden">
+          <div style="position:absolute;left:50%;top:50%;width:150px;height:150px;translate:-50% -50%;border-radius:50%;background:radial-gradient(circle at 45% 45%, #8a8f94, #3a3e42 55%, #15181a 72%)"></div>
+          <div style="position:absolute;left:50%;top:50%;width:46px;height:62px;translate:-6% -60%;border-radius:45%;background:rgb(100 255 218 / .45);box-shadow:0 0 0 1.5px var(--mint)"></div>
+          <div style="position:absolute;left:20px;right:20px;bottom:18px;height:6px;border-radius:9px;background:rgb(255 255 255 / .15)"><i style="display:block;width:38%;height:100%;border-radius:9px;background:var(--mint)"></i></div>
+        </div>
+        <div style="padding:22px 24px 26px"><h3>The kidney thesis</h3><div class="sub" style="margin:0">Progress: scrubbing through CT slices. Material: the dark reading room. Opener: a slice with its mask.</div></div>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden">
+        <div style="height:190px;background:linear-gradient(180deg,#f6f7f9,#eceef2);position:relative;padding:22px;font-variant-numeric:tabular-nums">
+          <div style="font-size:13px;color:var(--ink-2);letter-spacing:.08em;text-transform:uppercase;font-weight:600">Earned while reading</div>
+          <div style="font-size:54px;font-weight:300;letter-spacing:-0.03em;margin-top:4px">$0.03 <span style="font-size:18px;color:var(--ink-2)">USDC</span></div>
+          <div style="display:flex;gap:6px;margin-top:12px"><i style="flex:1;height:8px;border-radius:9px;background:#2775ca"></i><i style="flex:1;height:8px;border-radius:9px;background:#2775ca"></i><i style="flex:1;height:8px;border-radius:9px;background:#2775ca"></i><i style="flex:1;height:8px;border-radius:9px;background:#d9dde3"></i></div>
+        </div>
+        <div style="padding:22px 24px 26px"><h3>Centient</h3><div class="sub" style="margin:0">Progress: a cent per chapter, like an accepted answer. Material: a ledger. Opener: a payout receipt.</div></div>
+      </div>
+    </div>
+    <p class="cap"><b>In code:</b> each post is a folder, <code>src/blog/posts/&lt;slug&gt;/</code>, with its story, its <code>world.css</code> tokens, and its own pieces (Deni’s pack, the commit blisters). The frame lives once in <code>src/blog/</code> and reuses the site’s nav, theme and film player. Posts are written in JSX, so a chapter can hold a live piece of the app, not just pictures.</p>
+  </section>
+
+  <!-- ============ 08 DECISIONS ============ -->
+  <section class="board">
+    <div class="board-head">
+      <div><div class="board-num">08 · Before I build</div><h2>Five calls that are yours.</h2></div>
+      <p>Everything else on these boards is my call and can change. These five shape what gets built.</p>
+    </div>
+    <ol class="decide">
+      <li><div><h4>The Deni post’s title</h4><p>All three come from your own launch post or the repo’s dates.</p>
+        <div class="opts"><span class="opt rec">Deni was supposed to be just for my dad.</span><span class="opt">From a prototype to the App Store in 26 days</span><span class="opt">Building Deni</span></div></div></li>
+      <li><div><h4>What the nav calls it</h4><p>It sits between About and Contact.</p>
+        <div class="opts"><span class="opt rec">Blog</span><span class="opt">Writing</span><span class="opt">Notes</span></div></div></li>
+      <li><div><h4>Inside a post, the post’s colors replace mint</h4><p>The nav keeps mint either way. This bends DESIGN.md’s one-accent rule, but only inside a post.</p>
+        <div class="opts"><span class="opt rec">Yes, the post’s world wins inside it</span><span class="opt">No, mint everywhere</span></div></div></li>
+      <li><div><h4>“Read the case study” on the hero</h4><p>Today it opens Deni’s row in Selected work.</p>
+        <div class="opts"><span class="opt rec">Becomes “Read the story” → the post</span><span class="opt">Keep it and add a fourth button</span></div></div></li>
+      <li><div><h4>Who writes the words</h4><p>The post stays in your voice: professional but casual, nothing overstated.</p>
+        <div class="opts"><span class="opt rec">I draft from your caption, specs and commits; you edit</span><span class="opt">You write, I lay it out</span></div></div></li>
+    </ol>
+  </section>
+</div>
+
+<script>
+  // Commits per day in ~/meditrack, Oct 3 → Nov 2, 2026 (git log)
+  const counts = { 3: 1, 4: 13, 5: 6, 6: 6, 9: 8, 10: 1, 11: 5, 28: 1, 29: 4, 33: 2 }
+  const el = document.getElementById('commits')
+  for (let d = 3; d <= 33; d++) {
+    const n = counts[d] || 0
+    const w = document.createElement('div')
+    w.className = 'well' + (n ? '' : ' taken')
+    w.style.cssText = '--bw:100%;aspect-ratio:1;width:auto;height:auto;border-radius:30%'
+    if (n) {
+      const p = document.createElement('div')
+      p.className = 'pill'
+      p.style.cssText = `--pw:${Math.min(50, 28 + n * 2)}%;`
+      w.appendChild(p)
+    } else {
+      w.style.boxShadow = 'inset 0 2px 3px rgb(20 27 45 / .12), inset 0 0 0 1px rgb(20 27 45 / .06)'
+    }
+    el.appendChild(w)
+  }
+  document.querySelectorAll('#commits .well.taken').forEach((w) => w.classList.remove('taken'))
+</script>
+</body>
+</html>

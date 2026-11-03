@@ -130,11 +130,15 @@ function release() {
   listeners.forEach((listener) => listener())
 }
 
+// Arriving from a blog page, the files are cached and the visitor has seen
+// the loader already, so it lets go as soon as the hero is ready.
+const fromBlog = () => document.referrer.startsWith(`${location.origin}/blog/`)
+
 async function finish() {
   if (finishing) return
   finishing = true
 
-  const early = MIN_MS - performance.now()
+  const early = (fromBlog() ? 0 : MIN_MS) - performance.now()
   if (early > 0) await sleep(early)
 
   // Let the hero commit and lay out before it has to move.

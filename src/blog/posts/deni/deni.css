@@ -1,0 +1,961 @@
+/*
+ * The Deni post: Deni's world inside the site's frame. The nav, type and
+ * reading measure are the site's; the paper, skies, foil and motion are
+ * Deni's (see deni-tokens.css). Mint stays in the nav; inside the post,
+ * Deni blue takes its place.
+ */
+
+/* ── Paper and ink ────────────────────────────────────────────── */
+/* On <html>, so the page's overscroll is pearl too. */
+:root:has(> body.world-deni) {
+  --canvas: #f3f5fa;
+  --ink: #141b2d;
+  --ink-2: #4a5164; /* 7.3:1 on pearl */
+  --focus: #1c44ae;
+
+  --deni-text: #141b2d;
+  --deni-text-2: #4a5164;
+  --deni-link: #1c44ae; /* 7.7:1 on pearl */
+  --deni-line: rgb(20 27 45 / 0.1);
+  --deni-foil: linear-gradient(140deg, #ffffff 0%, #eceff5 38%, #f9fafc 60%, #e4e8f0 100%);
+  --deni-foil-edge: rgb(20 27 45 / 0.07);
+  --deni-foil-shine: rgb(255 255 255 / 0.9);
+  --deni-well: linear-gradient(145deg, #ffffff, #e3e7ef);
+  --deni-well-pressed: linear-gradient(145deg, #dce1ea, #f2f4f8);
+  --deni-sweep: rgb(255 255 255 / 0.9);
+  --deni-button: #141b2d;
+  --deni-button-ink: #ffffff;
+}
+
+/* Deni has no dark mode (its sky is the theme). Here the paper turns to
+   the night sky's ink, and the foil to graphite. */
+:root[data-theme='dark']:has(> body.world-deni) {
+  --canvas: #0d1124;
+  --ink: #e6e9f3;
+  --ink-2: #b4bbce;
+  --focus: #9db7ff;
+
+  --deni-text: #e6e9f3;
+  --deni-text-2: #b4bbce; /* 9.7:1 on night ink */
+  --deni-link: #9db7ff; /* 9.5:1 */
+  --deni-line: rgb(255 255 255 / 0.1);
+  --deni-foil: linear-gradient(140deg, #2f3656 0%, #1f2540 45%, #2a3150 70%, #1b2038 100%);
+  --deni-foil-edge: rgb(255 255 255 / 0.08);
+  --deni-foil-shine: rgb(255 255 255 / 0.12);
+  --deni-well: linear-gradient(145deg, #3a4266, #252b48);
+  --deni-well-pressed: linear-gradient(145deg, #171c33, #252b47);
+  --deni-sweep: rgb(255 255 255 / 0.22);
+  --deni-button: #e6e9f3;
+  --deni-button-ink: #0d1124;
+}
+
+body.world-deni ::selection {
+  background: rgb(47 107 242 / 0.24);
+  color: inherit;
+}
+
+/* The hero starts under the floating nav. */
+.world-deni .blog-main {
+  padding-top: 0;
+}
+
+/* ── Hero: the morning sky ────────────────────────────────────── */
+.deni-hero {
+  margin: 10px;
+  overflow: hidden;
+  border-radius: calc(var(--r-tile) * 1.4);
+  color: #fff;
+  /* The morning sun is low on the right, behind the phone; the copy sits
+     on the deep left side, where white text holds 7:1 or more. */
+  background:
+    radial-gradient(55% 60% at 80% 100%, rgb(255 214 186 / 0.6), transparent 70%),
+    linear-gradient(115deg, #262f78 0%, #303b92 48%, #6a69b3 69%, #c9a3c0 86%, #f3c6a8 100%);
+}
+
+.deni-hero-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 48px;
+  max-width: calc(var(--max) + var(--gutter) * 2);
+  min-height: min(860px, 94svh);
+  margin-inline: auto;
+  padding: calc(var(--nav-h) + clamp(24px, 4vw, 56px)) var(--gutter) clamp(40px, 5vw, 64px);
+}
+
+.deni-hero-copy {
+  max-width: 640px;
+}
+
+.deni-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 16px 0 12px;
+  border: 1px solid rgb(255 255 255 / 0.3);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.14);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  transition: background-color 0.25s ease;
+}
+
+.deni-back:hover {
+  background: rgb(255 255 255 / 0.24);
+}
+
+.deni-title {
+  margin-top: clamp(24px, 3vw, 36px);
+  font-size: clamp(2.6rem, 1.4rem + 4vw, 4.75rem);
+  font-weight: 650;
+  letter-spacing: -0.04em;
+  line-height: 1.02;
+}
+
+.deni-dek {
+  max-width: 32em;
+  margin-top: 22px;
+  font-size: clamp(1.125rem, 1rem + 0.45vw, 1.375rem);
+  line-height: 1.5;
+}
+
+.deni-byline {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 28px;
+  font-size: var(--text-sm);
+}
+
+.deni-nowrap {
+  white-space: nowrap;
+}
+
+.deni-byline img {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+}
+
+.deni-hero-phone {
+  --phone-w: clamp(240px, 22vw, 300px);
+  justify-self: center;
+}
+
+/* ── Body: the pack beside the story ──────────────────────────── */
+.deni-body {
+  display: grid;
+  grid-template-columns: 248px minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(40px, 5vw, 88px);
+  max-width: calc(var(--max) + var(--gutter) * 2);
+  margin-inline: auto;
+  padding: clamp(40px, 6vw, 88px) var(--gutter) 0;
+}
+
+.deni-column {
+  min-width: 0;
+  max-width: 720px;
+}
+
+/* ── The pack (Pack.jsx) ──────────────────────────────────────── */
+.pack {
+  position: relative;
+  overflow: hidden;
+  border-radius: 26px;
+  background: var(--deni-foil);
+  box-shadow:
+    inset 0 1px 0 var(--deni-foil-shine),
+    0 0 0 1px var(--deni-foil-edge),
+    0 22px 44px -26px rgb(20 27 45 / 0.45);
+  color: var(--deni-text);
+}
+
+.pack-rail {
+  position: sticky;
+  top: calc(var(--nav-h) + 16px);
+  padding: 24px 20px 20px;
+}
+
+.pack-strip {
+  display: none;
+}
+
+.pack-count {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  font-variant-numeric: tabular-nums;
+}
+
+.pack-num {
+  font-size: 4.25rem;
+  font-weight: 200;
+  letter-spacing: -0.04em;
+  line-height: 0.9;
+}
+
+.pack-of {
+  margin-left: 6px;
+  font-size: 1.375rem;
+  font-weight: 300;
+}
+
+.pack-caption {
+  flex-basis: 100%;
+  margin-top: 10px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--deni-text-2);
+}
+
+.pack-list {
+  display: grid;
+  gap: 4px;
+  margin: 18px -8px 0;
+}
+
+.pack-cell {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 6px 8px;
+  border-radius: 18px;
+  transition: background-color 0.25s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pack-cell:hover {
+    background: rgb(47 107 242 / 0.07);
+  }
+}
+
+.pack-text {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.pack-time {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--deni-text-2);
+}
+
+.pack-title {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.pack-cell.is-current .pack-time {
+  color: var(--deni-link);
+}
+
+.pack-cell.is-current .pack-title {
+  font-weight: 650;
+}
+
+.pack-now {
+  display: none;
+}
+
+/*
+ * A blister. Reading a chapter takes its dose: the well presses in and the
+ * pill drops out, the way the app's pack does, then a check settles in.
+ */
+.blister {
+  --bw: 46px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: var(--bw);
+  height: var(--bw);
+  border-radius: 36%;
+  background: var(--deni-well);
+  box-shadow:
+    inset 0 0 0 1px rgb(20 27 45 / 0.06),
+    inset 0 2px 2px var(--deni-foil-shine),
+    0 4px 10px -4px rgb(20 27 45 / 0.3);
+  transition:
+    box-shadow 0.45s var(--ease-out),
+    background 0.45s ease;
+}
+
+.blister > *,
+.blister::after {
+  grid-area: 1 / 1;
+}
+
+.blister .deni-capsule {
+  transition:
+    translate 0.45s var(--ease-out),
+    scale 0.45s var(--ease-out),
+    opacity 0.3s ease;
+}
+
+.blister::after {
+  content: '';
+  width: 22%;
+  height: 40%;
+  border: solid var(--deni-link);
+  border-width: 0 2px 2px 0;
+  rotate: 45deg;
+  translate: 0 -12%;
+  opacity: 0;
+  transition: opacity 0.3s ease 0.25s;
+}
+
+.is-read .blister,
+.blister.is-read {
+  background: var(--deni-well-pressed);
+  box-shadow:
+    inset 0 3px 7px rgb(20 27 45 / 0.22),
+    inset 0 0 0 1px rgb(20 27 45 / 0.08);
+}
+
+.is-read .blister .deni-capsule,
+.blister.is-read .deni-capsule {
+  translate: 0 55%;
+  scale: 0.8;
+  opacity: 0;
+}
+
+.is-read .blister::after,
+.blister.is-read::after {
+  opacity: 0.8;
+}
+
+.pack-cell.is-current .blister {
+  box-shadow:
+    inset 0 0 0 1px rgb(20 27 45 / 0.06),
+    inset 0 2px 2px var(--deni-foil-shine),
+    0 0 0 2px var(--deni-blue);
+}
+
+.pack-cell.is-current.is-read .blister {
+  box-shadow:
+    inset 0 3px 7px rgb(20 27 45 / 0.22),
+    0 0 0 2px var(--deni-blue);
+}
+
+/* The day is done: one slow sweep of light across the foil, once. */
+.pack.is-complete::after,
+.deni-end.is-complete .deni-end-foil::after {
+  content: '';
+  position: absolute;
+  inset: -20% -60%;
+  background: linear-gradient(105deg, transparent 42%, var(--deni-sweep) 50%, transparent 58%);
+  pointer-events: none;
+  animation: deni-sweep 1.6s var(--ease-soft) 0.3s both;
+}
+
+@keyframes deni-sweep {
+  from {
+    translate: -55% 0;
+  }
+
+  to {
+    translate: 55% 0;
+  }
+}
+
+/* ── Chapters ─────────────────────────────────────────────────── */
+.deni-chapter {
+  scroll-margin-top: calc(var(--nav-h) + 16px);
+}
+
+.deni-chapter + .deni-chapter {
+  margin-top: clamp(72px, 9vw, 120px);
+}
+
+/* A band of the chapter's hour. The title sits on the deep left side. */
+.deni-opener {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: clamp(150px, 16vw, 200px);
+  padding: clamp(22px, 3vw, 32px) clamp(22px, 3vw, 34px);
+  border-radius: 28px;
+  color: #fff;
+}
+
+.deni-opener-title {
+  max-width: 14em;
+  font-size: clamp(1.75rem, 1.2rem + 1.6vw, 2.5rem);
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+}
+
+/* The hour, as the film labels its skies. */
+.deni-opener-time {
+  align-self: flex-start;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  padding: 0 14px 0 10px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.82);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #141b2d;
+}
+
+.deni-opener-time::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--sun, #f2a23a);
+}
+
+.sky-morning {
+  --sun: #f2a23a;
+  background:
+    radial-gradient(70% 120% at 92% 100%, rgb(255 222 196 / 0.75), transparent 60%),
+    linear-gradient(100deg, #2b3588 0%, #3d4aa6 42%, #8f86c4 76%, #eebfa6 100%);
+}
+
+.sky-afternoon {
+  --sun: #2f6bf2;
+  background:
+    radial-gradient(50% 90% at 88% 0%, rgb(255 255 255 / 0.45), transparent 70%),
+    linear-gradient(100deg, #1d3c9a 0%, #2448b0 40%, #5d8ee6 76%, #b3cbf3 100%);
+}
+
+.sky-evening {
+  --sun: #e8445a;
+  background:
+    radial-gradient(60% 110% at 90% 100%, rgb(255 170 140 / 0.7), transparent 62%),
+    linear-gradient(100deg, #161d45 0%, #2d2b62 42%, #6a4f8c 72%, #e48c7a 100%);
+}
+
+.sky-night {
+  --sun: #9db7ff;
+  background:
+    radial-gradient(1.5px 1.5px at 58% 26%, rgb(255 255 255 / 0.8), transparent),
+    radial-gradient(1px 1px at 72% 62%, rgb(255 255 255 / 0.7), transparent),
+    radial-gradient(1.5px 1.5px at 84% 18%, rgb(255 255 255 / 0.6), transparent),
+    radial-gradient(1px 1px at 40% 44%, rgb(255 255 255 / 0.6), transparent),
+    radial-gradient(1px 1px at 92% 48%, rgb(255 255 255 / 0.7), transparent),
+    radial-gradient(40% 80% at 86% 20%, rgb(150 170 255 / 0.2), transparent 70%),
+    linear-gradient(100deg, #06070f 0%, #10163a 50%, #1e2a62 100%);
+}
+
+/* ── Prose ────────────────────────────────────────────────────── */
+.deni-prose {
+  margin-top: clamp(28px, 3vw, 40px);
+  font-size: 1.25rem;
+  line-height: 1.65;
+  color: var(--deni-text);
+}
+
+.deni-prose > * + * {
+  margin-top: 1.1em;
+}
+
+.deni-prose > figure,
+.deni-prose > blockquote {
+  margin-block: 2em;
+}
+
+.deni-prose p {
+  max-width: 64ch;
+}
+
+.deni-prose strong {
+  font-weight: 650;
+}
+
+.deni-prose figcaption {
+  margin-top: 12px;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--deni-text-2);
+}
+
+.deni-quote {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.deni-quote .deni-capsule {
+  --capsule-w: 22px;
+  flex: none;
+}
+
+.deni-quote p {
+  font-size: clamp(1.625rem, 1.2rem + 1.3vw, 2.25rem);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+}
+
+.deni-figure img {
+  width: 100%;
+  height: auto;
+  border-radius: 22px;
+  box-shadow: 0 0 0 1px var(--deni-line);
+}
+
+/* Two phones on the chapter's sky, captions on the paper below. */
+.deni-pair {
+  --cap-h: 60px;
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: clamp(16px, 4vw, 40px);
+  padding: clamp(28px, 4vw, 44px) clamp(16px, 4vw, 48px) 0;
+}
+
+.deni-pair::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0 0 var(--cap-h);
+  border-radius: 28px;
+  background: var(--pair-sky);
+}
+
+.deni-pair-item {
+  display: grid;
+  justify-items: center;
+}
+
+.deni-pair .phone {
+  --phone-w: clamp(132px, 22vw, 220px);
+  margin-bottom: clamp(24px, 3vw, 36px);
+}
+
+.deni-pair figcaption {
+  display: flex;
+  align-items: center;
+  min-height: var(--cap-h);
+  margin-top: 0;
+  text-align: center;
+}
+
+#foil-and-sky .deni-pair {
+  --pair-sky: var(--deni-sky-afternoon);
+}
+
+#on-the-phone .deni-pair {
+  --pair-sky: var(--deni-sky-evening);
+}
+
+/* The data rules, on sky glass over the evening. */
+.deni-rules {
+  padding: clamp(18px, 3vw, 32px);
+  border-radius: 28px;
+  background:
+    radial-gradient(40% 60% at 100% 100%, rgb(232 140 122 / 0.3), transparent 70%),
+    linear-gradient(160deg, #141b40 0%, #262555 60%, #3b3468 100%);
+}
+
+.deni-rules-glass {
+  padding: clamp(22px, 3vw, 30px);
+  border: 1px solid rgb(255 255 255 / 0.22);
+  border-radius: 20px;
+  background: rgb(255 255 255 / 0.1);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  color: #fff;
+}
+
+.deni-rules h3 {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.deni-rules ul {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+  font-size: 1.1875rem;
+  line-height: 1.45;
+}
+
+.deni-rules li {
+  position: relative;
+  padding-left: 24px;
+}
+
+.deni-rules li::before {
+  content: '';
+  position: absolute;
+  top: 0.5em;
+  left: 2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #9db7ff;
+}
+
+/* The build log (BuildLog.jsx): a blister a day. */
+.buildlog-days,
+.buildlog-marks {
+  display: grid;
+  grid-template-columns: repeat(var(--days), minmax(0, 1fr));
+}
+
+.buildlog-days {
+  gap: clamp(2px, 0.5vw, 5px);
+}
+
+.buildlog-days .blister {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  border-radius: 30%;
+}
+
+.buildlog-days .deni-capsule {
+  --capsule-w: 40%;
+}
+
+.buildlog-days li:not(.has-pill) .blister {
+  background: var(--deni-well-pressed);
+  box-shadow:
+    inset 0 2px 3px rgb(20 27 45 / 0.14),
+    inset 0 0 0 1px rgb(20 27 45 / 0.06);
+}
+
+.buildlog-days li:not(.has-pill) .deni-capsule {
+  display: none;
+}
+
+.buildlog-marks {
+  margin-top: 10px;
+}
+
+.buildlog-marks li {
+  grid-row: 1;
+  display: grid;
+  padding-left: 6px;
+  border-left: 1px solid var(--deni-line);
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  white-space: nowrap;
+}
+
+.buildlog-mark {
+  font-weight: 600;
+}
+
+.buildlog-marks time {
+  color: var(--deni-text-2);
+}
+
+/* The film: a still of its four skies, opening the player. */
+.deni-film-poster {
+  position: relative;
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 22px;
+  box-shadow:
+    0 0 0 1px var(--deni-line),
+    0 24px 48px -28px rgb(6 7 15 / 0.6);
+}
+
+.deni-film-poster img {
+  width: 100%;
+  height: auto;
+  transition: scale 0.8s var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .deni-film-poster:hover img {
+    scale: 1.02;
+  }
+}
+
+.deni-film-cue {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 16px 0 14px;
+  border-radius: 999px;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.deni-film-length {
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-2);
+}
+
+.deni-next {
+  display: grid;
+  gap: 0.6em;
+}
+
+.deni-next li {
+  position: relative;
+  padding-left: 30px;
+}
+
+.deni-next li::before {
+  content: '';
+  position: absolute;
+  top: 0.42em;
+  left: 6px;
+  width: 9px;
+  height: 20px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #4d82f7 0 50%, #ee5a6e 50% 100%);
+  rotate: 32deg;
+}
+
+/* ── The end: night, and the App Store ────────────────────────── */
+.deni-end {
+  display: grid;
+  place-items: center;
+  margin-top: clamp(64px, 8vw, 104px);
+  padding: clamp(32px, 6vw, 72px) clamp(16px, 4vw, 56px);
+  border-radius: 32px;
+  background:
+    radial-gradient(1.5px 1.5px at 18% 22%, rgb(255 255 255 / 0.7), transparent),
+    radial-gradient(1px 1px at 76% 16%, rgb(255 255 255 / 0.7), transparent),
+    radial-gradient(1.5px 1.5px at 88% 64%, rgb(255 255 255 / 0.5), transparent),
+    radial-gradient(1px 1px at 30% 80%, rgb(255 255 255 / 0.6), transparent),
+    radial-gradient(1px 1px at 52% 10%, rgb(255 255 255 / 0.6), transparent),
+    var(--deni-sky-night);
+  box-shadow: 0 0 0 1px var(--deni-line);
+}
+
+.deni-end-foil {
+  position: relative;
+  overflow: hidden;
+  width: min(100%, 420px);
+  padding: clamp(26px, 4vw, 34px) clamp(22px, 4vw, 32px);
+  border-radius: 26px;
+  background: var(--deni-foil);
+  box-shadow:
+    inset 0 1px 0 var(--deni-foil-shine),
+    0 30px 60px -30px rgb(0 0 0 / 0.7);
+  color: var(--deni-text);
+}
+
+.deni-end-count {
+  font-size: 1.5rem;
+  font-weight: 300;
+  font-variant-numeric: tabular-nums;
+}
+
+.deni-end-num {
+  font-size: 4em;
+  font-weight: 200;
+  letter-spacing: -0.04em;
+  line-height: 0.9;
+}
+
+.deni-end-title {
+  margin-top: 14px;
+  font-size: var(--text-lg);
+  font-weight: 650;
+  letter-spacing: -0.015em;
+}
+
+.deni-end-blisters {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.deni-end-blisters .blister {
+  --bw: 48px;
+}
+
+.deni-store {
+  margin-top: 26px;
+  background: var(--deni-button);
+  color: var(--deni-button-ink);
+}
+
+.deni-store:hover {
+  background: color-mix(in oklch, var(--deni-button) 86%, var(--deni-blue));
+}
+
+.deni-end-note {
+  margin-top: 14px;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--deni-text-2);
+}
+
+/* ── Narrower: the pack becomes a strip under the nav ─────────── */
+@media (max-width: 1099px) {
+  .deni-body {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .deni-column {
+    width: 100%;
+    margin-inline: auto;
+    padding-top: 32px;
+  }
+
+  .pack-rail {
+    display: none;
+  }
+
+  .pack-strip {
+    position: sticky;
+    z-index: 140; /* over the nav's blur (130), under the nav (200) */
+    top: calc(var(--nav-h) + 2px);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: min(100%, 720px);
+    margin-inline: auto;
+    padding: 6px 16px 6px 6px;
+    border-radius: 999px;
+  }
+
+  .pack-strip .pack-list {
+    display: flex;
+    gap: 6px;
+    margin: 0;
+  }
+
+  .pack-strip .pack-cell {
+    padding: 0;
+    border-radius: 14px;
+  }
+
+  .pack-strip .blister {
+    --bw: 38px;
+  }
+
+  .pack-strip .pack-text,
+  .pack-strip .pack-caption {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .pack-strip .pack-now {
+    display: block;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .pack-strip .pack-count {
+    order: 3;
+    flex: none;
+  }
+
+  .pack-strip .pack-num {
+    font-size: 1.375rem;
+    font-weight: 300;
+    letter-spacing: -0.02em;
+  }
+
+  .pack-strip .pack-of {
+    margin-left: 3px;
+    font-size: var(--text-sm);
+  }
+
+  .deni-chapter {
+    scroll-margin-top: calc(var(--nav-h) + 72px);
+  }
+}
+
+@media (max-width: 860px) {
+  .deni-hero-inner {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 40px;
+    min-height: 0;
+  }
+
+  .deni-hero {
+    background:
+      radial-gradient(80% 40% at 70% 100%, rgb(255 214 186 / 0.6), transparent 70%),
+      linear-gradient(180deg, #29337f 0%, #333e96 46%, #6e6db6 66%, #d5a9bb 84%, #f3c6a8 100%);
+  }
+
+  .deni-hero-phone {
+    --phone-w: min(220px, 58vw);
+  }
+}
+
+@media (max-width: 760px) {
+  .deni-hero {
+    margin: 8px;
+    border-radius: 32px;
+  }
+
+  .deni-prose {
+    font-size: 1.125rem;
+  }
+
+  /* The hour goes under the title, never above it. */
+  .deni-opener {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    min-height: 0;
+  }
+
+  .deni-opener-time {
+    align-self: flex-start;
+  }
+
+  .deni-rules ul {
+    font-size: 1.0625rem;
+  }
+
+  .buildlog-marks li {
+    font-size: 0.75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blister,
+  .blister .deni-capsule,
+  .blister::after,
+  .pack-cell,
+  .deni-back,
+  .deni-film-poster img {
+    transition: none;
+  }
+
+  .pack.is-complete::after,
+  .deni-end.is-complete .deni-end-foil::after {
+    animation: none;
+    display: none;
+  }
+}

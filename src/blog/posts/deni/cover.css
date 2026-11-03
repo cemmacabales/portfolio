@@ -1,0 +1,101 @@
+/* Deni's cover on /blog (DeniCover.jsx). */
+.deni-cover {
+  position: relative;
+  height: 100%;
+  min-height: 360px;
+  overflow: hidden;
+  background: var(--deni-sky-afternoon);
+}
+
+:root[data-sky='morning'] .deni-cover {
+  background: var(--deni-sky-morning);
+}
+
+:root[data-sky='evening'] .deni-cover {
+  background: var(--deni-sky-evening);
+}
+
+:root[data-sky='night'] .deni-cover {
+  background: var(--deni-sky-night);
+}
+
+.deni-cover-hour {
+  position: absolute;
+  z-index: 2;
+  top: 20px;
+  left: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 0 14px 0 12px;
+  border-radius: 999px;
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.deni-cover-hour::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--deni-blue);
+}
+
+.deni-cover-hour span {
+  display: none;
+}
+
+/* Without the head script (no JS), the sky is the afternoon's. */
+:root:not([data-sky]) .deni-cover-hour [data-for='afternoon'],
+:root[data-sky='morning'] .deni-cover-hour [data-for='morning'],
+:root[data-sky='afternoon'] .deni-cover-hour [data-for='afternoon'],
+:root[data-sky='evening'] .deni-cover-hour [data-for='evening'],
+:root[data-sky='night'] .deni-cover-hour [data-for='night'] {
+  display: inline;
+}
+
+/* Two phones, straight on, rising from the bottom edge. */
+.deni-cover .phone {
+  position: absolute;
+  --phone-w: clamp(150px, 17vw, 220px);
+}
+
+.deni-cover-front {
+  z-index: 1;
+  left: 50%;
+  top: 22%;
+  translate: -78% 0;
+}
+
+.deni-cover-back {
+  left: 50%;
+  top: 34%;
+  translate: 8% 0;
+  scale: 0.92;
+  transform-origin: top center;
+}
+
+.deni-cover-back .phone-screen img {
+  filter: brightness(0.92);
+}
+
+@media (max-width: 760px) {
+  .deni-cover {
+    min-height: 0;
+    height: 340px;
+  }
+
+  .deni-cover .phone {
+    --phone-w: 158px;
+  }
+
+  .deni-cover-front {
+    top: 74px;
+  }
+
+  .deni-cover-back {
+    top: 104px;
+  }
+}
