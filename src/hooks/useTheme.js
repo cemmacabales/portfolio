@@ -95,8 +95,15 @@ export function useTheme({ hydrate = false } = {}) {
     const settle = () => {
       if (reveal.current !== current) return
       reveal.current = null
-      html.classList.remove('is-theming')
       if (current.want !== current.target) flushSync(() => setTheme(current.want))
+    }
+    // is-theming stays until the transition is over: dropped while it's still
+    // running, the page's default cross-fade would restart and replay the
+    // old theme over the new one.
+    const done = () => {
+      settle()
+      // A click in the frame between the two may have started the next reveal.
+      if (!reveal.current) html.classList.remove('is-theming')
     }
 
     transition.ready.then(
@@ -112,7 +119,7 @@ export function useTheme({ hydrate = false } = {}) {
       // Skipped (hidden tab, say): `finished` still settles it below.
       () => {},
     )
-    transition.finished.then(settle, settle)
+    transition.finished.then(done, done)
   }, [])
 
   return { theme: theme ?? 'light', toggleTheme }

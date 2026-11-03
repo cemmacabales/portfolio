@@ -155,6 +155,33 @@ function retireHeldNav() {
     .then(remove, remove)
 }
 
+// Warm, the page arriving from the blog would otherwise rise in empty and
+// fill in under the reader. Its entrance (::view-transition-new(root))
+// waits, paused, until the page is in, and the page spinner shows meanwhile.
+const ENTRANCE_HOLD_MS = 1500
+let entrance = null
+
+function holdEntrance() {
+  if (!window.pageTransition || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return
+  entrance = window.pageTransition.then((transition) =>
+    transition?.ready.then(
+      () => {
+        const held = document
+          .getAnimations()
+          .filter((animation) => animation.effect?.pseudoElement === '::view-transition-new(root)')
+        if (!booted) held.forEach((animation) => animation.pause())
+        return held
+      },
+      () => [],
+    ),
+  )
+  setTimeout(playEntrance, ENTRANCE_HOLD_MS)
+}
+
+function playEntrance() {
+  entrance?.then((held) => held?.forEach((animation) => animation.play()))
+}
+
 function unblock() {
   document.documentElement.classList.remove('is-booting')
   document.getElementById('root')?.removeAttribute('aria-busy')
@@ -186,6 +213,7 @@ async function finish() {
   if (!root) {
     unblock()
     release()
+    playEntrance()
     retireHeldNav()
     return
   }
@@ -264,6 +292,7 @@ export function startBoot() {
   if (warm()) {
     root.remove()
     root = null
+    holdEntrance()
     setTimeout(finish, CAP_MS)
     return
   }

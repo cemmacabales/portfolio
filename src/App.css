@@ -467,6 +467,22 @@
   view-transition-name: tab-bar;
 }
 
+/* Its own layer, so it shows while the home holds its entrance (boot.js),
+   and it never fades with either page: it keeps its own state. */
+.page-spinner {
+  view-transition-name: page-spinner;
+}
+
+::view-transition-group(page-spinner),
+::view-transition-new(page-spinner) {
+  animation: none;
+}
+
+::view-transition-old(page-spinner) {
+  animation: none;
+  opacity: 0;
+}
+
 .vt-deni .featured-visual {
   view-transition-name: deni-sky;
 }
@@ -475,15 +491,17 @@
   view-transition-name: deni-phone;
 }
 
-/* Without a direction (the theme switch, or a browser that can't tell), a
-   plain cross-fade. */
-::view-transition-old(root),
-::view-transition-new(root) {
+/* Without a direction (a browser that can't tell), a plain cross-fade.
+   None of this touches the theme switch (is-theming), whose reveal sets its
+   own timing; a longer group here would outlast it. */
+:root:not(.is-theming)::view-transition-old(root),
+:root:not(.is-theming)::view-transition-new(root) {
   animation-duration: 0.35s;
 }
 
 /* The page sinks and fades out, then the next one fades in rising from
-   below: the same both ways, so Work → Blog and Blog → Work mirror. */
+   below: the same both ways, so Work → Blog and Blog → Work mirror. The new
+   page starts only once the old one is gone, so the two never overlap. */
 @keyframes vt-leave {
   to {
     opacity: 0;
@@ -510,22 +528,22 @@
      leaving for the work section, say) moves with the page around it. */
   :root:active-view-transition-type(forward, back)::view-transition-old(root),
   :root:active-view-transition-type(forward, back)::view-transition-old(*):only-child {
-    animation: vt-leave 0.26s cubic-bezier(0.4, 0, 1, 1) both;
+    animation: vt-leave 0.22s cubic-bezier(0.4, 0, 1, 1) both;
   }
 
   :root:active-view-transition-type(forward, back)::view-transition-new(root),
   :root:active-view-transition-type(forward, back)::view-transition-new(*):only-child {
-    animation: vt-enter 0.42s cubic-bezier(0.16, 1, 0.3, 1) 0.18s both;
+    animation: vt-enter 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.22s both;
   }
 
   /* The post's title and dek settle in behind the sky and phone. */
   :root:active-view-transition-type(forward, back)::view-transition-new(deni-copy):only-child {
-    animation: vt-copy-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.18s both;
+    animation: vt-copy-in 0.42s cubic-bezier(0.16, 1, 0.3, 1) 0.22s both;
   }
 }
 
-::view-transition-group(*) {
-  animation-duration: 0.55s;
+:root:not(.is-theming)::view-transition-group(*) {
+  animation-duration: 0.6s;
   animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -533,6 +551,7 @@
 :root.is-theming .site-nav,
 :root.is-theming .tab-bar,
 :root.is-theming [data-vt],
+:root.is-theming .page-spinner,
 :root.is-theming .vt-deni :is(.featured-visual, .reel-phone) {
   view-transition-name: none !important;
 }
@@ -541,6 +560,7 @@
   /* Only the plain cross-fade, and a quick one. */
   .site-nav,
   .tab-bar,
+  .page-spinner,
   [data-vt],
   .vt-deni :is(.featured-visual, .reel-phone) {
     view-transition-name: none !important;
@@ -549,5 +569,21 @@
   ::view-transition-old(root),
   ::view-transition-new(root) {
     animation-duration: 0.2s;
+  }
+}
+
+/*
+ * Without page-to-page view transitions (Firefox, and browsers built on it
+ * like Zen), src/pageReveal.js plays the same motion by hand: the page sinks
+ * out before the link is followed (is-leaving), and the next one rises in as
+ * it renders (is-entering). The nav stays put.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  html.is-leaving #root > :not(.site-nav, .tab-bar, .page-spinner) {
+    animation: vt-leave 0.22s cubic-bezier(0.4, 0, 1, 1) both;
+  }
+
+  html.is-entering #root > :not(.site-nav, .tab-bar, .page-spinner) {
+    animation: vt-enter 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 }

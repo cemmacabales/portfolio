@@ -22,13 +22,13 @@
       try {
         if (sessionStorage.getItem('boot-seen')) document.documentElement.classList.add('is-warm');
       } catch (e) {}
-      // Warm, the prerendered nav and tab bar are what a page arriving from
-      // the blog morphs into. They step out of #root before the first frame,
+      // Warm, the prerendered nav, tab bar and spinner are what a page
+      // arriving from the blog morphs into. They step out of #root before the first frame,
       // so React's first commit (which clears #root) can land mid-transition
       // without cutting it short; src/boot.js retires them once it's over.
       if (document.documentElement.classList.contains('is-warm')) {
         addEventListener('pagereveal', function () {
-          document.querySelectorAll('[data-ssr] > :is(.site-nav, .tab-bar)').forEach(function (el) {
+          document.querySelectorAll('[data-ssr] > :is(.site-nav, .tab-bar, .page-spinner)').forEach(function (el) {
             el.setAttribute('data-held', '');
             document.body.append(el);
           });
@@ -69,8 +69,8 @@
         display: none;
       }
 
-      /* React's own nav waits underneath until the held one retires. */
-      html:has([data-held]) #root :is(.site-nav, .tab-bar) {
+      /* React's own wait underneath until the held ones retire. */
+      html:has([data-held]) #root :is(.site-nav, .tab-bar, .page-spinner) {
         visibility: hidden;
         view-transition-name: none;
       }
