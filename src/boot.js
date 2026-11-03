@@ -143,6 +143,18 @@ function release() {
   listeners.forEach((listener) => listener())
 }
 
+// The prerendered nav that a warm page arrived on (index.html) gives way to
+// React's once the transition has played. pageTransition comes from
+// src/pageReveal.js.
+function retireHeldNav() {
+  const held = document.querySelectorAll('[data-held]')
+  if (!held.length) return
+  const remove = () => held.forEach((el) => el.remove())
+  Promise.resolve(window.pageTransition)
+    .then((transition) => transition?.finished)
+    .then(remove, remove)
+}
+
 function unblock() {
   document.documentElement.classList.remove('is-booting')
   document.getElementById('root')?.removeAttribute('aria-busy')
@@ -174,6 +186,7 @@ async function finish() {
   if (!root) {
     unblock()
     release()
+    retireHeldNav()
     return
   }
 

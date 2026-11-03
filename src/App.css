@@ -448,9 +448,9 @@
  * Both kinds of page opt in, so following a link between them moves instead
  * of flashing (Chrome, Edge, Safari 18.2+; elsewhere it's a normal load). The
  * nav and tab bar are named on every page, so they hold still while the page
- * under them slides: going deeper (home → blog → post) it rises in from
- * below, going back out it comes down from above. src/pageReveal.js picks the
- * way as each page is revealed. Deni's sky and phone carry the names
+ * under them changes: the old one sinks and fades, then the new one rises in.
+ * src/pageReveal.js tags each page change as it's revealed, which keeps this
+ * motion off the theme switch. Deni's sky and phone carry the names
  * `deni-sky` and `deni-phone` on the post's hero and its cover in /blog, and
  * on the home's featured tile only once "Read the story" is clicked there
  * (HeroBento), so they fly between the three. Opacity and transform only.
@@ -482,72 +482,50 @@
   animation-duration: 0.35s;
 }
 
-@keyframes vt-leave-up {
+/* The page sinks and fades out, then the next one fades in rising from
+   below: the same both ways, so Work → Blog and Blog → Work mirror. */
+@keyframes vt-leave {
   to {
     opacity: 0;
-    transform: translateY(-12px);
+    transform: translateY(40px);
   }
 }
 
-@keyframes vt-enter-up {
+@keyframes vt-enter {
   from {
     opacity: 0;
-    transform: translateY(16px);
-  }
-}
-
-@keyframes vt-leave-down {
-  to {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-}
-
-@keyframes vt-enter-down {
-  from {
-    opacity: 0;
-    transform: translateY(-16px);
+    transform: translateY(48px);
   }
 }
 
 @keyframes vt-copy-in {
   from {
     opacity: 0;
-    transform: translateY(10px) scale(0.96);
+    transform: translateY(24px) scale(0.96);
   }
 }
 
 @media (prefers-reduced-motion: no-preference) {
   /* A named piece with no partner on the other page (the post's hero
      leaving for the work section, say) moves with the page around it. */
-  :root:active-view-transition-type(forward)::view-transition-old(root),
-  :root:active-view-transition-type(forward)::view-transition-old(*):only-child {
-    animation: vt-leave-up 0.25s cubic-bezier(0.4, 0, 1, 1) both;
+  :root:active-view-transition-type(forward, back)::view-transition-old(root),
+  :root:active-view-transition-type(forward, back)::view-transition-old(*):only-child {
+    animation: vt-leave 0.26s cubic-bezier(0.4, 0, 1, 1) both;
   }
 
-  :root:active-view-transition-type(forward)::view-transition-new(root),
-  :root:active-view-transition-type(forward)::view-transition-new(*):only-child {
-    animation: vt-enter-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
-  }
-
-  :root:active-view-transition-type(back)::view-transition-old(root),
-  :root:active-view-transition-type(back)::view-transition-old(*):only-child {
-    animation: vt-leave-down 0.25s cubic-bezier(0.4, 0, 1, 1) both;
-  }
-
-  :root:active-view-transition-type(back)::view-transition-new(root),
-  :root:active-view-transition-type(back)::view-transition-new(*):only-child {
-    animation: vt-enter-down 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
+  :root:active-view-transition-type(forward, back)::view-transition-new(root),
+  :root:active-view-transition-type(forward, back)::view-transition-new(*):only-child {
+    animation: vt-enter 0.42s cubic-bezier(0.16, 1, 0.3, 1) 0.18s both;
   }
 
   /* The post's title and dek settle in behind the sky and phone. */
   :root:active-view-transition-type(forward, back)::view-transition-new(deni-copy):only-child {
-    animation: vt-copy-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
+    animation: vt-copy-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.18s both;
   }
 }
 
 ::view-transition-group(*) {
-  animation-duration: 0.5s;
+  animation-duration: 0.55s;
   animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
 }
 

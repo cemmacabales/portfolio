@@ -167,6 +167,13 @@ export default function SiteNav({ theme, onToggleTheme, page = 'home' }) {
           )
         })}
       </nav>
+
+      {/* Shown while a page change takes a moment; see .page-spinner. */}
+      <div className="glass page-spinner" aria-hidden="true">
+        {Array.from({ length: 8 }, (_, i) => (
+          <i key={i} />
+        ))}
+      </div>
     </>
   )
 }

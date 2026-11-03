@@ -34,19 +34,10 @@ function stylesReady() {
   return Promise.race([Promise.all(applied), new Promise((resolve) => setTimeout(resolve, 3000))])
 }
 
-// Without the boot loader (a warm visit, see boot.js), a page arriving from
-// the blog morphs into the prerendered nav (App.css). React swapping that nav
-// out mid-flight would cut the morph short, so the first render waits for it.
-function arrived() {
-  if (!document.documentElement.classList.contains('is-warm') || !window.pageTransition) return null
-  const done = window.pageTransition.then((transition) => transition?.finished)
-  return Promise.race([done, new Promise((resolve) => setTimeout(resolve, 1000))])
-}
-
 // The first render is a transition, so React builds the page in short slices
 // (the boot loader keeps animating between them) and only the commit runs in
 // one go.
-Promise.all([stylesReady(), arrived()]).then(() => {
+stylesReady().then(() => {
   const root = createRoot(document.getElementById('root'))
   startTransition(() => {
     root.render(

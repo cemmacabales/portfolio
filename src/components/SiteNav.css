@@ -205,8 +205,95 @@
   }
 }
 
+/*
+ * The page spinner, an iOS activity indicator: eight spokes, each fading as
+ * the next lights. It only shows when a page change is taking a moment (a
+ * link followed, html.is-navigating, from src/pageReveal.js; or the home
+ * opening warm, before React's first commit), and only after a beat, so a
+ * quick change never flashes it. It sits on a glass disc so it reads over
+ * any page, light or dark.
+ */
+.page-spinner {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: var(--z-nav);
+  width: 52px;
+  height: 52px;
+  margin: -26px 0 0 -26px;
+  border-radius: 50%;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.2s ease,
+    visibility 0s linear 0.2s;
+}
+
+html.is-navigating .page-spinner {
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity 0.3s var(--ease-out) 0.3s,
+    visibility 0s linear 0.3s;
+}
+
+/* Opening warm, it's there from the first frame, so it fades in by
+   animation rather than transition. The home usually lands while the page
+   change plays out (about 0.6s), so it waits until that's over. */
+html.is-warm.is-booting .page-spinner {
+  visibility: visible;
+  animation: page-spinner-in 0.3s var(--ease-out) 0.7s both;
+}
+
+@keyframes page-spinner-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.page-spinner i {
+  position: absolute;
+  top: calc(50% - 14px);
+  left: calc(50% - 1.5px);
+  width: 3px;
+  height: 8px;
+  border-radius: 1.5px;
+  background: var(--ink);
+  transform-origin: 1.5px 14px;
+  animation: page-spinner 0.8s linear infinite;
+}
+
+.page-spinner i:nth-child(1) { transform: rotate(0deg); animation-delay: -0.8s; }
+.page-spinner i:nth-child(2) { transform: rotate(45deg); animation-delay: -0.7s; }
+.page-spinner i:nth-child(3) { transform: rotate(90deg); animation-delay: -0.6s; }
+.page-spinner i:nth-child(4) { transform: rotate(135deg); animation-delay: -0.5s; }
+.page-spinner i:nth-child(5) { transform: rotate(180deg); animation-delay: -0.4s; }
+.page-spinner i:nth-child(6) { transform: rotate(225deg); animation-delay: -0.3s; }
+.page-spinner i:nth-child(7) { transform: rotate(270deg); animation-delay: -0.2s; }
+.page-spinner i:nth-child(8) { transform: rotate(315deg); animation-delay: -0.1s; }
+
+@keyframes page-spinner {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0.15;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .nav-circle:active {
     transform: none;
+  }
+
+  /* Still says "working", at a calmer pace. */
+  .page-spinner i {
+    animation-duration: 1.6s;
   }
 }
