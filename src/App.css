@@ -481,6 +481,62 @@
   view-transition-name: deni-phone;
 }
 
+/* Everything named inside the sky (the phones, the post's title, the
+   cover's hour) flies inside it, clipped to it the way its card clips them
+   (the cover's phone runs off the card's bottom edge) and stacked as on the
+   page. Where groups can't nest (Safari), they fly on their own. */
+[data-vt] [data-vt],
+.vt-deni .reel-phone {
+  view-transition-group: nearest;
+}
+
+::view-transition-group(deni-sky) {
+  overflow: clip;
+}
+
+/* The two skies are different shapes, so each fills the sky as it grows or
+   shrinks, cropped rather than stretched, and the new one fades in over the
+   old, which stays solid: a fade of both showed the page through. */
+::view-transition-old(deni-sky),
+::view-transition-new(deni-sky) {
+  height: 100%;
+  object-fit: cover;
+}
+
+::view-transition-old(deni-sky) {
+  animation: none;
+}
+
+/* Only the fade: the browser's own also blends the two skies additively. */
+::view-transition-new(deni-sky) {
+  animation-name: vt-sky-in;
+}
+
+/* The cover's hour is glass: its blur is copied onto its group, which is
+   square, as with the tab bar. */
+::view-transition-group(deni-hour) {
+  border-radius: 999px;
+}
+
+/* Not nested, the cover's hour and back phone would be lifted out of the
+   card too, so they stay part of its sky, which then shows only near its
+   own size: it gives way at once opening the post, and comes in as the sky
+   lands going back. */
+@supports not (view-transition-group: nearest) {
+  .deni-cover-hour,
+  .deni-cover-back {
+    view-transition-name: none !important;
+  }
+
+  :root:active-view-transition-type(forward)::view-transition-new(deni-sky) {
+    animation: vt-sky-in 0.1s ease-out both;
+  }
+
+  :root:active-view-transition-type(back)::view-transition-new(deni-sky) {
+    animation: vt-sky-in 0.24s ease-out 0.3s both;
+  }
+}
+
 /* Without a direction (a browser that can't tell), a plain cross-fade.
    None of this touches the theme switch (is-theming), whose reveal sets its
    own timing; a longer group here would outlast it. */
@@ -506,6 +562,12 @@
   }
 }
 
+@keyframes vt-sky-in {
+  from {
+    opacity: 0;
+  }
+}
+
 @keyframes vt-copy-in {
   from {
     opacity: 0;
@@ -526,9 +588,17 @@
     animation: vt-enter 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.22s both;
   }
 
-  /* The post's title and dek settle in behind the sky and phone. */
+  /* The post's title and dek settle in behind the sky and phone. Leaving,
+     they and the cover's hour and back phone go quickly, before the sky
+     changing shape around them can cut them off or slide them about. */
   :root:active-view-transition-type(forward, back)::view-transition-new(deni-copy):only-child {
     animation: vt-copy-in 0.42s cubic-bezier(0.16, 1, 0.3, 1) 0.22s both;
+  }
+
+  :root:active-view-transition-type(forward, back)::view-transition-old(deni-copy):only-child,
+  :root:active-view-transition-type(forward, back)::view-transition-old(deni-hour):only-child,
+  :root:active-view-transition-type(forward, back)::view-transition-old(deni-phone-back):only-child {
+    animation: vt-leave 0.12s cubic-bezier(0.4, 0, 1, 1) both;
   }
 }
 
