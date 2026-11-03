@@ -576,14 +576,16 @@
  * Without page-to-page view transitions (Firefox, and browsers built on it
  * like Zen), src/pageReveal.js plays the same motion by hand: the page sinks
  * out before the link is followed (is-leaving), and the next one rises in as
- * it renders (is-entering). The nav stays put.
+ * it renders (is-entering). Only the page itself moves: the nav and the
+ * other fixed pieces (the skip link hides by transform, so moving it would
+ * show it) stay put.
  */
 @media (prefers-reduced-motion: no-preference) {
-  html.is-leaving #root > :not(.site-nav, .tab-bar, .page-spinner) {
+  html.is-leaving #root > :is(main, footer) {
     animation: vt-leave 0.22s cubic-bezier(0.4, 0, 1, 1) both;
   }
 
-  html.is-entering #root > :not(.site-nav, .tab-bar, .page-spinner) {
+  html.is-entering #root > :is(main, footer) {
     animation: vt-enter 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 }

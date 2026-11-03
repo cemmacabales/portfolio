@@ -4,7 +4,7 @@ import '@fontsource-variable/inter/opsz.css'
 import './index.css'
 import App from './App.jsx'
 import { loadPostHog } from './posthog.js'
-import { startBoot } from './boot'
+import { defersBelowFold, startBoot } from './boot'
 import { afterEntrance, whenSettled } from './hooks/useSettled'
 
 startBoot()
@@ -37,12 +37,21 @@ function stylesReady() {
 // The first render is a transition, so React builds the page in short slices
 // (the boot loader keeps animating between them) and only the commit runs in
 // one go.
-stylesReady().then(() => {
+// A warm visit opening on a section (/#work from the blog, say) waits for the
+// sections below the hero before its page change plays (boot.js). Loaded
+// here first, they render in the first pass; lazily, React would hold them
+// back behind its stand-ins for its minimum of about 300ms.
+function belowFold() {
+  if (!document.documentElement.classList.contains('is-warm') || defersBelowFold()) return null
+  return import('./components/BelowFold').then((module) => module.default, () => null)
+}
+
+Promise.all([stylesReady(), belowFold()]).then(([, BelowFold]) => {
   const root = createRoot(document.getElementById('root'))
   startTransition(() => {
     root.render(
       <StrictMode>
-        <App />
+        <App belowFold={BelowFold ?? undefined} />
       </StrictMode>,
     )
   })

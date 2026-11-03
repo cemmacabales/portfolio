@@ -1,3 +1,4 @@
+import { MotionGlobalConfig } from 'framer-motion'
 import ResumePage from './assets/resume-page.webp'
 import { featured } from './data/portfolio'
 import { barongPhoto, PORTRAIT_SIZES, REEL_SIZES } from './data/photos'
@@ -156,30 +157,62 @@ function retireHeldNav() {
 }
 
 // Warm, the page arriving from the blog would otherwise rise in empty and
-// fill in under the reader. Its entrance (::view-transition-new(root))
-// waits, paused, until the page is in, and the page spinner shows meanwhile.
+// fill in under the reader, then play its own entrances on top. Instead the
+// whole page change (the old page sinking out, then this one rising in)
+// waits, paused on the old page, until this one is in, and everything that
+// animates in meanwhile (the hero, a section's reveal) lands at once, so the
+// page rises in whole. The spinner shows if the wait runs long. Without
+// view transitions (Firefox, Zen) the page rises in by CSS (is-entering,
+// from src/pageReveal.js) and its entrances land the same way.
 const ENTRANCE_HOLD_MS = 1500
+// Without a view transition to wait on, how long entrances keep landing at
+// once after the page lets go (the CSS rise takes 0.4s).
+const INSTANT_MS = 500
 let entrance = null
 
 function holdEntrance() {
-  if (!window.pageTransition || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return
-  entrance = window.pageTransition.then((transition) =>
-    transition?.ready.then(
-      () => {
-        const held = document
-          .getAnimations()
-          .filter((animation) => animation.effect?.pseudoElement === '::view-transition-new(root)')
-        if (!booted) held.forEach((animation) => animation.pause())
-        return held
-      },
-      () => [],
-    ),
-  )
+  if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return
+  if (document.documentElement.classList.contains('is-entering')) {
+    MotionGlobalConfig.instantAnimations = true
+    entrance = Promise.resolve({ held: [], transition: null })
+  } else if (window.pageTransition) {
+    entrance = window.pageTransition.then((transition) => {
+      if (!transition || booted) return null
+      MotionGlobalConfig.instantAnimations = true
+      return transition.ready.then(
+        () => {
+          const held = document
+            .getAnimations()
+            .filter((animation) => ['vt-leave', 'vt-enter'].includes(animation.animationName))
+          if (!booted) held.forEach((animation) => animation.pause())
+          return { held, transition }
+        },
+        () => ({ held: [], transition: null }),
+      )
+    })
+  }
   setTimeout(playEntrance, ENTRANCE_HOLD_MS)
 }
 
+// A frame after the page lets go, so the entrances it starts land first.
+// They keep landing at once until the page change is over: the jump to a
+// section can bring one into view a moment later.
 function playEntrance() {
-  entrance?.then((held) => held?.forEach((animation) => animation.play()))
+  entrance?.then((hold) => {
+    const instant = () => {
+      MotionGlobalConfig.instantAnimations = false
+    }
+    if (!hold) {
+      instant()
+      return
+    }
+    requestAnimationFrame(() => {
+      hold.held.forEach((animation) => animation.play())
+      if (hold.transition) hold.transition.finished.then(instant, instant)
+      else setTimeout(instant, INSTANT_MS)
+    })
+  })
+  entrance = null
 }
 
 function unblock() {
