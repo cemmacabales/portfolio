@@ -319,6 +319,12 @@ function openStory(event) {
   posthog.capture('project_story_opened', { project_slug: featured.slug, source: 'featured' })
   if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
   event.currentTarget.closest('.tile-featured')?.classList.add('vt-deni')
+  // Tells the post its hero has a partner to fly from (src/pageReveal.js).
+  try {
+    sessionStorage.setItem('vt-story', '1')
+  } catch {
+    // Without storage, the post rises in with the page instead.
+  }
 }
 
 // Coming back to this page (Back restores it from memory), the names come

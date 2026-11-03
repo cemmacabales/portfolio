@@ -43,11 +43,12 @@
 
     <!-- Hovering a link renders the blog page it leads to ahead (Chrome,
          Edge), so it's ready to morph into when the click lands. The home is
-         only fetched: rendering it ahead would start its WebGPU field. -->
+         only fetched, and at once (one small document): rendering it ahead
+         would start its WebGPU field. -->
     <script type="speculationrules">
       {
         "prerender": [{ "where": { "href_matches": "/blog/*" }, "eagerness": "moderate" }],
-        "prefetch": [{ "where": { "href_matches": "/" }, "eagerness": "moderate" }]
+        "prefetch": [{ "where": { "href_matches": "/" }, "eagerness": "eager" }]
       }
     </script>
 

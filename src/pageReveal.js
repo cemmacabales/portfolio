@@ -15,9 +15,29 @@
   var LEAVE_MS = 220 // keep in step with vt-leave in App.css
   var ENTER_MS = 1200 // long enough for the home, which renders after its first frame
 
-  function depth(url) {
-    return new URL(url, location.href).pathname.split('/').filter(Boolean).length
+  function path(url) {
+    return new URL(url, location.href).pathname
   }
+
+  function depth(url) {
+    return path(url).split('/').filter(Boolean).length
+  }
+
+  // Deni's sky and phone ([data-vt] on the blog's pages, App.css) fly only
+  // between pages that both show them: the blog's two pages, and the post and
+  // the home's featured tile ("Read the story", and Back from the post).
+  // Anywhere else, naming them would lift them out of their card, and its
+  // clipping, for nothing, so vt-flat keeps them part of the page.
+  function blogPage(p) {
+    return p.indexOf('/blog/') === 0
+  }
+
+  addEventListener('pageswap', function (event) {
+    if (!event.viewTransition || !event.activation || !blogPage(location.pathname)) return
+    var to = path(event.activation.entry.url)
+    var backToTile = location.pathname !== '/blog/' && to === '/' && event.activation.navigationType === 'traverse'
+    if (!blogPage(to) && !backToTile) html.classList.add('vt-flat')
+  })
 
   // The transition that brought this page in, or null once the page shows
   // without one. The home's prerendered nav stays until it's done (boot.js).
@@ -37,6 +57,21 @@
     var from = activation ? activation.from && activation.from.url : document.referrer
     if (!from) return
     transition.types.add(depth(location.href) < depth(from) ? 'back' : 'forward')
+    // HeroBento flags a "Read the story" click, the one way in from the home
+    // whose tile is named.
+    var story = false
+    try {
+      story = sessionStorage.getItem('vt-story') === '1'
+      sessionStorage.removeItem('vt-story')
+    } catch {
+      // Storage is off: the post rises in with the page instead.
+    }
+    if (blogPage(location.pathname) && !blogPage(path(from)) && !story) {
+      html.classList.add('vt-flat')
+      transition.finished.then(function () {
+        html.classList.remove('vt-flat')
+      })
+    }
   })
 
   document.addEventListener('click', function (event) {
@@ -56,7 +91,7 @@
 
   // Back/forward brings a page back from memory exactly as it was left.
   addEventListener('pageshow', function () {
-    html.classList.remove('is-navigating', 'is-leaving')
+    html.classList.remove('is-navigating', 'is-leaving', 'vt-flat')
   })
 
   // By hand, the page rises in when it arrives from another page of the site.

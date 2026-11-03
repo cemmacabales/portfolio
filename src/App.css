@@ -547,6 +547,11 @@
   animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Deni's pieces with nowhere to fly on the other page (src/pageReveal.js). */
+.vt-flat [data-vt] {
+  view-transition-name: none !important;
+}
+
 /* The theme reveal uncovers the whole page at once. */
 :root.is-theming .site-nav,
 :root.is-theming .tab-bar,

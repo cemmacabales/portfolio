@@ -286,16 +286,18 @@
     <meta name="msapplication-TileImage" content="/favicon.png" />
     <meta name="application-name" content="Carl Macabales Portfolio" />
     
-    <!-- Structured Data -->
-    <!-- Hovering a link to the blog renders that page ahead (Chrome, Edge),
-         so it's ready to morph into when the click lands. The blog never
-         starts anything heavy; the home isn't prerendered for that reason. -->
+    <!-- The blog's pages are fetched at once, and a hovered one is rendered
+         ahead (Chrome, Edge), so it's ready to morph into when the click
+         lands. The blog never starts anything heavy; the home isn't
+         prerendered for that reason. -->
     <script type="speculationrules">
       {
-        "prerender": [{ "where": { "href_matches": "/blog/*" }, "eagerness": "moderate" }]
+        "prerender": [{ "where": { "href_matches": "/blog/*" }, "eagerness": "moderate" }],
+        "prefetch": [{ "where": { "href_matches": "/blog/*" }, "eagerness": "eager" }]
       }
     </script>
 
+    <!-- Structured Data -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
