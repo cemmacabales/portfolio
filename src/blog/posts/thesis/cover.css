@@ -1,0 +1,44 @@
+/* The thesis post's cover on /blog (ThesisCover.jsx): two films on a lit box. */
+.lb-cover {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 100%;
+  min-height: 360px;
+  overflow: hidden;
+  background:
+    radial-gradient(60% 70% at 50% 45%, var(--lb-glow), transparent 72%),
+    var(--lb-box);
+}
+
+.lb-cover .lb-plate {
+  grid-area: 1 / 1;
+}
+
+.lb-cover-front {
+  z-index: 1;
+  width: clamp(190px, 21vw, 270px);
+  rotate: -3deg;
+  translate: -14% 2%;
+}
+
+.lb-cover-back {
+  width: clamp(160px, 17vw, 220px);
+  rotate: 5deg;
+  translate: 44% 10%;
+}
+
+@media (max-width: 760px) {
+  .lb-cover {
+    min-height: 0;
+    height: 340px;
+  }
+
+  .lb-cover-front {
+    width: 200px;
+  }
+
+  .lb-cover-back {
+    width: 160px;
+  }
+}

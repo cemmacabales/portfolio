@@ -1,4 +1,4 @@
-import { thesis } from '../data/portfolio'
+import { thesis } from '../data/thesis'
 import { fmtDice } from './thesisClasses'
 
 /*

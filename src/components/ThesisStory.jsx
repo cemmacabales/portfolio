@@ -9,7 +9,7 @@ import {
   useTransform,
 } from 'framer-motion'
 import { ArrowUpRight, Check, X } from 'lucide-react'
-import { thesis } from '../data/portfolio'
+import { thesis } from '../data/thesis'
 import ThesisScan from './ThesisScan'
 import DiceBars from './ThesisDice'
 import { CLASS_NAMES, SLICE_CLASSES, fmtDice } from './thesisClasses'

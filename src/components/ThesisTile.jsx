@@ -2,7 +2,7 @@ import { useCallback, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence, useInView, useReducedMotion } from 'framer-motion' // eslint-disable-line no-unused-vars
 import { Plus } from 'lucide-react'
-import { thesis } from '../data/portfolio'
+import { thesis } from '../data/thesis'
 import { useBooted } from '../hooks/useBooted'
 import posthog from '../posthog'
 import { canPortal } from '../utils/canPortal'

@@ -1,0 +1,164 @@
+/*
+ * The thesis post's world: a lightbox. A radiologist reads CT film hung on a
+ * lit panel; in the light theme the box is on, and in the dark theme the
+ * room's lights are down and only the film glows. Shared by the post and its
+ * cover on /blog.
+ *
+ * Text colors, on the box (canvas) and on the panel: ink 16.5:1 and 17.7:1,
+ * ink-2 8.7:1 and 9.3:1, accent 8.1:1 and 8.8:1. Dark: ink 16.2:1 and 15:1,
+ * ink-2 9.3:1 and 8.5:1, accent 9.9:1 and 9.1:1. On film: 17.2:1 and 9.5:1.
+ */
+:root {
+  --lb-box: #eef2f6;
+  --lb-panel: #f8fafc;
+  --lb-glow: rgb(255 255 255 / 1);
+  --lb-ink: #0e141b;
+  --lb-ink-2: #3a4553;
+  --lb-accent: #3a37a8;
+  --lb-line: rgb(14 20 27 / 0.1);
+  --lb-clip: linear-gradient(#cfd4db, #9aa2ad);
+  --lb-shadow: 0 30px 60px -30px rgb(14 20 27 / 0.45);
+
+  --film: #05070a;
+  --film-ink: #e9edf2;
+  --film-ink-2: #a9b3bf;
+
+  /* What the model marks. On film the kidney is an outline, so color is
+     left for what's in it. */
+  --scan-kidney: #ffffff;
+  --scan-tumor: #ff7a6e;
+
+  /* The same three findings in the charts: the home tile's validated
+     palette, in its order (stone, cyst, tumor). Stone's gold is under 3:1
+     on the box, so every stone mark carries a printed value. */
+  --lb-stone: #eda100;
+  --lb-cyst: #2a78d6;
+  --lb-tumor: #e34948;
+  --lb-multi: color-mix(in oklch, var(--lb-ink) 28%, var(--lb-box));
+}
+
+:root[data-theme='dark'] {
+  --lb-box: #0a0d12;
+  --lb-panel: #121722;
+  --lb-glow: rgb(120 130 160 / 0.14);
+  --lb-ink: #e6ebf1;
+  --lb-ink-2: #aab4c1;
+  --lb-accent: #b3b1ff;
+  --lb-line: rgb(255 255 255 / 0.1);
+  --lb-clip: linear-gradient(#3a414d, #252b35);
+  --lb-shadow: 0 30px 60px -30px rgb(0 0 0 / 0.8);
+
+  --lb-stone: #c98500;
+  --lb-cyst: #3987e5;
+  --lb-tumor: #e66767;
+  --lb-multi: color-mix(in oklch, var(--lb-ink) 36%, var(--lb-box));
+}
+
+/* ── A sheet of film, hung from a clip ────────────────────────── */
+.lb-plate {
+  position: relative;
+  padding: clamp(10px, 1.2vw, 14px);
+  border-radius: clamp(14px, 1.6vw, 20px);
+  background: var(--film);
+  box-shadow:
+    var(--lb-shadow),
+    inset 0 0 0 1px rgb(255 255 255 / 0.06);
+}
+
+.lb-plate::before {
+  content: '';
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  width: 64px;
+  height: 16px;
+  translate: -50% 0;
+  border-radius: 6px;
+  background: var(--lb-clip);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 0.3);
+}
+
+.lb-plate > img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: clamp(8px, 1vw, 12px);
+}
+
+/* ── The slice and the model's outlines (Film.jsx) ────────────── */
+.lb-scan {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: clamp(8px, 1vw, 12px);
+  background: #000;
+  isolation: isolate;
+}
+
+.lb-scan > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.lb-ov {
+  position: absolute;
+  inset: 0;
+}
+
+.lb-ov[data-cls='kidney'] {
+  --sc: var(--scan-kidney);
+  --fill: 0.12;
+}
+
+.lb-ov[data-cls='tumor'] {
+  --sc: var(--scan-tumor);
+  --fill: 0.45;
+}
+
+.lb-ov-fill,
+.lb-ov-edge {
+  position: absolute;
+  inset: 0;
+  background: var(--sc);
+  -webkit-mask: var(--m) center / 100% 100% no-repeat;
+  mask: var(--m) center / 100% 100% no-repeat;
+}
+
+.lb-ov-fill {
+  --m: var(--mask);
+  opacity: var(--fill);
+}
+
+.lb-ov-edge {
+  --m: var(--edge);
+}
+
+/* The viewer's labels in the film's corners. */
+.lb-anno {
+  position: absolute;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  color: var(--film-ink-2);
+}
+
+.lb-anno b {
+  font-weight: 600;
+  color: var(--film-ink);
+}
+
+.lb-anno-tl {
+  top: 6%;
+  left: 6%;
+}
+
+.lb-anno-br {
+  right: 6%;
+  bottom: 5%;
+  text-align: right;
+}

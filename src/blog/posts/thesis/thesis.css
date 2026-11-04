@@ -1,0 +1,972 @@
+/*
+ * The thesis post: the lightbox inside the site's frame. The nav, type and
+ * reading measure are the site's; the box, the film and the reading room are
+ * the post's (see thesis-tokens.css). Mint stays in the nav; inside the post,
+ * the accent is an indigo, and the kidney is a white outline on the film.
+ */
+
+/* ── Paper and ink ────────────────────────────────────────────── */
+/* On <html>, so the page's overscroll is the box too. */
+:root:has(> body.world-thesis) {
+  --canvas: var(--lb-box);
+  --ink: var(--lb-ink);
+  --ink-2: var(--lb-ink-2);
+  --focus: var(--lb-accent);
+}
+
+body.world-thesis ::selection {
+  background: color-mix(in oklch, var(--lb-accent) 22%, transparent);
+  color: inherit;
+}
+
+/* The hero starts under the floating nav. */
+.world-thesis .blog-main {
+  padding-top: 0;
+}
+
+.lb-post {
+  color: var(--lb-ink);
+}
+
+/* ── Hero: the box, lit ───────────────────────────────────────── */
+.lb-hero {
+  margin: 10px;
+  overflow: hidden;
+  border-radius: calc(var(--r-tile) * 1.4);
+  background:
+    radial-gradient(60% 75% at 74% 46%, var(--lb-glow), transparent 72%),
+    var(--lb-panel);
+  box-shadow: inset 0 0 0 1px var(--lb-line);
+}
+
+.lb-hero-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(40px, 5vw, 72px);
+  max-width: calc(var(--max) + var(--gutter) * 2);
+  min-height: min(820px, 92svh);
+  margin-inline: auto;
+  padding: calc(var(--nav-h) + clamp(32px, 4vw, 56px)) var(--gutter) clamp(40px, 5vw, 64px);
+}
+
+.lb-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 16px 0 12px;
+  border: 1px solid var(--lb-line);
+  border-radius: 999px;
+  background: var(--lb-box);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--lb-ink-2);
+  transition:
+    color 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.lb-back:hover {
+  border-color: var(--lb-accent);
+  color: var(--lb-ink);
+}
+
+.lb-title {
+  margin-top: clamp(24px, 3vw, 36px);
+  max-width: 13em;
+  font-size: clamp(2.5rem, 1.3rem + 3.9vw, 4.5rem);
+  font-weight: 680;
+  letter-spacing: -0.04em;
+  line-height: 1.02;
+}
+
+.lb-dek {
+  max-width: 32em;
+  margin-top: 22px;
+  font-size: clamp(1.125rem, 1rem + 0.4vw, 1.3125rem);
+  line-height: 1.5;
+  color: var(--lb-ink-2);
+}
+
+.lb-byline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin-top: 28px;
+  font-size: var(--text-sm);
+  color: var(--lb-ink-2);
+}
+
+.lb-byline b {
+  font-weight: 600;
+  color: var(--lb-ink);
+}
+
+.lb-nowrap {
+  white-space: nowrap;
+}
+
+.lb-hero-film {
+  justify-self: center;
+  width: min(100%, 520px);
+}
+
+/* The outlines draw in once, top to bottom, the way the app's overlay
+   comes up over the plain scan. */
+@media (prefers-reduced-motion: no-preference) {
+  .lb-hero-film .lb-ov {
+    animation: lb-trace 1.4s cubic-bezier(0.55, 0.05, 0.25, 1) 0.5s both;
+  }
+}
+
+@keyframes lb-trace {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+
+  to {
+    clip-path: inset(0);
+  }
+}
+
+/* ── Body: the stack beside the story ─────────────────────────── */
+.lb-body {
+  display: grid;
+  grid-template-columns: 248px minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(40px, 5vw, 88px);
+  max-width: calc(var(--max) + var(--gutter) * 2);
+  margin-inline: auto;
+  padding: clamp(40px, 6vw, 88px) var(--gutter) 0;
+}
+
+.lb-column {
+  min-width: 0;
+  max-width: 720px;
+}
+
+/* ── The slice stack (SliceStack.jsx) ─────────────────────────── */
+.lb-stack {
+  border-radius: 26px;
+  background: var(--lb-panel);
+  box-shadow:
+    inset 0 0 0 1px var(--lb-line),
+    0 22px 44px -30px rgb(14 20 27 / 0.4);
+  color: var(--lb-ink);
+}
+
+.lb-stack-rail {
+  position: sticky;
+  top: calc(var(--nav-h) + 16px);
+  padding: 24px 20px 20px;
+}
+
+.lb-stack-strip {
+  display: none;
+}
+
+.lb-stack-count {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  font-variant-numeric: tabular-nums;
+}
+
+.lb-stack-caption {
+  flex-basis: 100%;
+  margin-bottom: 6px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--lb-ink-2);
+}
+
+.lb-stack-num {
+  font-size: 4.25rem;
+  font-weight: 200;
+  letter-spacing: -0.04em;
+  line-height: 0.9;
+}
+
+.lb-stack-of {
+  margin-left: 6px;
+  font-size: 1.375rem;
+  font-weight: 300;
+}
+
+.lb-stack-list {
+  display: grid;
+  gap: 2px;
+  margin: 18px -8px 0;
+}
+
+.lb-stack-cell {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 7px 8px;
+  border-radius: 16px;
+  transition: background-color 0.25s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .lb-stack-cell:hover {
+    background: color-mix(in oklch, var(--lb-accent) 8%, transparent);
+  }
+}
+
+/*
+ * A slice, seen at an angle in the stack. The one under the reading line is
+ * lit in the accent; a finished one gets an outline inside it, the way the
+ * model outlines what it finds.
+ */
+.lb-slice {
+  position: relative;
+  flex: none;
+  width: 46px;
+  height: 22px;
+  border-radius: 50%;
+  background: color-mix(in oklch, var(--lb-ink) 10%, var(--lb-panel));
+  box-shadow: inset 0 0 0 1px var(--lb-line);
+  transform: perspective(140px) rotateX(40deg);
+  transition:
+    background-color 0.35s ease,
+    box-shadow 0.35s ease;
+}
+
+.lb-slice::after {
+  content: '';
+  position: absolute;
+  inset: 5px 9px;
+  border: 1.5px solid var(--lb-ink-2);
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.is-read .lb-slice::after {
+  opacity: 1;
+}
+
+.is-current .lb-slice {
+  background: var(--lb-accent);
+  box-shadow: 0 6px 14px -6px var(--lb-accent);
+}
+
+.is-current .lb-slice::after {
+  border-color: var(--lb-panel);
+}
+
+.lb-stack-text {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.lb-stack-n {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  color: var(--lb-ink-2);
+}
+
+.lb-stack-title {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.lb-stack-cell.is-current .lb-stack-n {
+  color: var(--lb-accent);
+}
+
+.lb-stack-cell.is-current .lb-stack-title {
+  font-weight: 650;
+}
+
+.lb-stack-now {
+  display: none;
+}
+
+/* ── Chapters and prose ───────────────────────────────────────── */
+.lb-chapter {
+  scroll-margin-top: calc(var(--nav-h) + 16px);
+}
+
+.lb-chapter + .lb-chapter {
+  margin-top: clamp(72px, 9vw, 120px);
+}
+
+.lb-chapter-n {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  color: var(--lb-ink-2);
+}
+
+.lb-chapter-n::before {
+  content: '';
+  width: 22px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1.5px solid currentcolor;
+}
+
+.lb-chapter-title {
+  margin-top: 14px;
+  max-width: 16em;
+  font-size: clamp(1.875rem, 1.3rem + 1.6vw, 2.625rem);
+  font-weight: 660;
+  letter-spacing: -0.035em;
+  line-height: 1.06;
+}
+
+.lb-prose {
+  margin-top: clamp(24px, 3vw, 36px);
+  font-size: 1.25rem;
+  line-height: 1.65;
+  color: var(--lb-ink);
+}
+
+.lb-prose > * + * {
+  margin-top: 1.1em;
+}
+
+.lb-prose > figure,
+.lb-prose > .lb-cases {
+  margin-block: 2em;
+}
+
+.lb-prose p {
+  max-width: 64ch;
+}
+
+.lb-prose strong {
+  font-weight: 650;
+}
+
+.lb-prose sup {
+  font-size: 0.65em;
+  line-height: 0;
+}
+
+.lb-prose figcaption {
+  margin-top: 14px;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--lb-ink-2);
+}
+
+/* A figure on the box: a lit panel. */
+.lb-dataset,
+.lb-dice,
+.lb-subs,
+.lb-race,
+.lb-epochs {
+  padding: clamp(20px, 2.6vw, 28px);
+  border-radius: 24px;
+  background: var(--lb-panel);
+  box-shadow: inset 0 0 0 1px var(--lb-line);
+}
+
+[data-cls='stone'] {
+  --c: var(--lb-stone);
+}
+
+[data-cls='cyst'] {
+  --c: var(--lb-cyst);
+}
+
+[data-cls='tumor'] {
+  --c: var(--lb-tumor);
+}
+
+[data-cls='multi'] {
+  --c: var(--lb-multi);
+}
+
+/* ── The dataset, one bar ─────────────────────────────────────── */
+.lb-dataset-bar {
+  display: flex;
+  gap: 4px;
+  height: 18px;
+}
+
+.lb-dataset-bar span {
+  flex-basis: 0;
+  border-radius: 6px;
+  background: var(--c);
+}
+
+.lb-dataset-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  margin-top: 16px;
+  font-size: var(--text-sm);
+  color: var(--lb-ink-2);
+}
+
+.lb-dataset-key li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lb-dataset-key li::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  background: var(--c);
+}
+
+.lb-dataset-key b {
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  color: var(--lb-ink);
+}
+
+/* ── Alone vs together ────────────────────────────────────────── */
+.lb-dice table,
+.lb-race table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+.lb-dice thead th,
+.lb-race thead th {
+  padding-bottom: 10px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-align: left;
+  text-transform: uppercase;
+  color: var(--lb-ink-2);
+  border-bottom: 1px solid var(--lb-line);
+}
+
+.lb-dice tbody th,
+.lb-dice td,
+.lb-race tbody th,
+.lb-race td {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--lb-line);
+  vertical-align: middle;
+}
+
+.lb-dice tbody tr:last-child > *,
+.lb-race tbody tr:last-child > * {
+  border-bottom: 0;
+}
+
+.lb-dice tbody th {
+  width: 22%;
+  font-size: var(--text-base);
+  font-weight: 650;
+  text-align: left;
+}
+
+.lb-dice td {
+  width: 39%;
+  padding-right: 16px;
+}
+
+.lb-dice td,
+.lb-race td {
+  font-variant-numeric: tabular-nums;
+}
+
+.lb-dice td b {
+  display: block;
+  margin-top: 6px;
+  font-size: var(--text-base);
+  font-weight: 650;
+}
+
+.lb-dice-bar {
+  display: block;
+  height: 10px;
+  border-radius: 5px;
+  background: color-mix(in oklch, var(--lb-ink) 8%, transparent);
+  overflow: hidden;
+}
+
+.lb-dice-bar i {
+  display: block;
+  height: 100%;
+  min-width: 2px;
+  border-radius: 5px;
+  background: var(--c);
+}
+
+.lb-dice-bar.is-alone i {
+  background: color-mix(in oklch, var(--lb-ink) 30%, transparent);
+}
+
+/* ── The budget ───────────────────────────────────────────────── */
+.lb-subs-cards {
+  display: grid;
+  grid-template-columns: repeat(15, minmax(0, 1fr));
+  gap: clamp(4px, 0.7vw, 8px);
+}
+
+.lb-subs-cards li {
+  aspect-ratio: 3 / 4;
+  border: 1.5px dashed color-mix(in oklch, var(--lb-ink) 32%, transparent);
+  border-radius: 8px;
+}
+
+.lb-subs-cards li.is-paid {
+  border: 0;
+  background: var(--lb-accent);
+  box-shadow: 0 10px 18px -12px var(--lb-accent);
+}
+
+.lb-subs-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 40px;
+  margin-top: 20px;
+  font-size: var(--text-sm);
+  color: var(--lb-ink-2);
+}
+
+.lb-subs-legend b {
+  display: block;
+  font-size: 2.25rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+  color: var(--lb-ink);
+}
+
+.lb-subs-legend p:first-child b {
+  color: var(--lb-accent);
+}
+
+.lb-race tbody th {
+  width: 26%;
+  font-size: 1.375rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-align: left;
+}
+
+.lb-race tbody th small {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--lb-ink-2);
+}
+
+.lb-race td:nth-child(2) {
+  width: 34%;
+  padding-right: 18px;
+}
+
+.lb-race td b {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.lb-race tr[data-batch='2'] b {
+  color: var(--lb-accent);
+}
+
+.lb-race-bar {
+  display: block;
+  height: 10px;
+  margin-bottom: 8px;
+  border-radius: 5px;
+  background: color-mix(in oklch, var(--lb-ink) 8%, transparent);
+  overflow: hidden;
+}
+
+.lb-race-bar i {
+  display: block;
+  height: 100%;
+  border-radius: 5px;
+  background: var(--lb-ink);
+}
+
+.lb-race tr[data-batch='2'] .lb-race-bar i {
+  background: var(--lb-accent);
+}
+
+.lb-epochs-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(16px, 2.4vw, 28px);
+}
+
+.lb-epoch-title {
+  font-size: var(--text-base);
+  font-weight: 650;
+}
+
+.lb-epoch-sum {
+  margin-top: 2px;
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--lb-ink-2);
+}
+
+.lb-epoch-grid {
+  display: grid;
+  grid-template-columns: repeat(25, minmax(0, 1fr));
+  align-items: end;
+  gap: 2px;
+  height: 64px;
+  margin-top: 14px;
+}
+
+.lb-epoch-grid span {
+  display: grid;
+  gap: 1px;
+}
+
+.lb-epoch-grid i {
+  height: 3px;
+  border-radius: 1px;
+  background: var(--lb-ink);
+  opacity: 0.7;
+}
+
+.lb-epoch[data-batch='2'] .lb-epoch-grid i {
+  background: var(--lb-accent);
+  opacity: 1;
+}
+
+/* ── The doctors' read ────────────────────────────────────────── */
+.lb-cases {
+  display: grid;
+  gap: 20px;
+}
+
+.lb-case {
+  overflow: hidden;
+  border-radius: 24px;
+  background: var(--lb-panel);
+  box-shadow: inset 0 0 0 1px var(--lb-line);
+}
+
+.lb-case-film {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.lb-case-film::before {
+  display: none;
+}
+
+.lb-case-body {
+  padding: clamp(20px, 2.6vw, 28px);
+}
+
+.lb-case-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 16px;
+}
+
+.lb-case-head h3 {
+  font-size: var(--text-lg);
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.lb-case-head h3 span {
+  font-weight: 450;
+  color: var(--lb-ink-2);
+}
+
+.lb-case-verdict {
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: color-mix(in oklch, var(--lb-accent) 12%, var(--lb-panel));
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--lb-accent);
+}
+
+.lb-case-scores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+  margin-top: 14px;
+  font-size: var(--text-sm);
+}
+
+.lb-case-scores div {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.lb-case-scores dt {
+  color: var(--lb-ink-2);
+}
+
+.lb-case-scores dd {
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.lb-case-reads {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 28px;
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--lb-line);
+}
+
+.lb-case-reads blockquote {
+  margin: 0;
+  font-size: var(--text-base);
+  line-height: 1.5;
+}
+
+.lb-case-reads p {
+  margin-top: 6px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--lb-ink-2);
+}
+
+.lb-case-slice {
+  margin-top: 16px;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  color: var(--lb-ink-2);
+}
+
+/* ── The end ──────────────────────────────────────────────────── */
+.lb-end {
+  margin-top: clamp(56px, 7vw, 88px);
+  padding: clamp(24px, 3.4vw, 40px);
+  border-radius: 28px;
+  background:
+    radial-gradient(70% 90% at 90% 0%, var(--lb-glow), transparent 70%),
+    var(--lb-panel);
+  box-shadow: inset 0 0 0 1px var(--lb-line);
+}
+
+.lb-end-title {
+  max-width: 24em;
+  font-size: clamp(1.25rem, 1.05rem + 0.6vw, 1.5rem);
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.lb-end-meta {
+  margin-top: 12px;
+  font-size: var(--text-sm);
+  line-height: 1.55;
+  color: var(--lb-ink-2);
+}
+
+.lb-end-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.lb-btn {
+  background: var(--lb-ink);
+  color: var(--lb-box);
+}
+
+.lb-btn:hover {
+  background: color-mix(in oklch, var(--lb-ink) 86%, var(--lb-accent));
+}
+
+.lb-btn-quiet {
+  background: transparent;
+  color: var(--lb-ink);
+  box-shadow: inset 0 0 0 1.5px var(--lb-line);
+}
+
+.lb-btn-quiet:hover {
+  background: color-mix(in oklch, var(--lb-accent) 8%, transparent);
+  box-shadow: inset 0 0 0 1.5px var(--lb-accent);
+}
+
+.lb-end-note {
+  margin-top: 16px;
+  font-size: var(--text-sm);
+  color: var(--lb-ink-2);
+}
+
+/* ── Narrower: the stack becomes a strip under the nav ────────── */
+@media (max-width: 1099px) {
+  .lb-body {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .lb-column {
+    width: 100%;
+    margin-inline: auto;
+    padding-top: 32px;
+  }
+
+  .lb-stack-rail {
+    display: none;
+  }
+
+  .lb-stack-strip {
+    position: sticky;
+    z-index: 140; /* over the nav's blur (130), under the nav (200) */
+    top: calc(var(--nav-h) + 2px);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: min(100%, 720px);
+    margin-inline: auto;
+    padding: 8px 18px 8px 10px;
+    border-radius: 999px;
+  }
+
+  .lb-stack-strip .lb-stack-list {
+    display: flex;
+    gap: 4px;
+    margin: 0;
+  }
+
+  .lb-stack-strip .lb-stack-cell {
+    padding: 6px 2px;
+    border-radius: 12px;
+  }
+
+  .lb-stack-strip .lb-slice {
+    width: 30px;
+    height: 16px;
+  }
+
+  .lb-stack-strip .lb-slice::after {
+    inset: 4px 6px;
+  }
+
+  .lb-stack-strip .lb-stack-text,
+  .lb-stack-strip .lb-stack-caption {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .lb-stack-strip .lb-stack-now {
+    display: block;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .lb-stack-strip .lb-stack-count {
+    order: 3;
+    flex: none;
+  }
+
+  .lb-stack-strip .lb-stack-num {
+    font-size: 1.375rem;
+    font-weight: 300;
+    letter-spacing: -0.02em;
+  }
+
+  .lb-stack-strip .lb-stack-of {
+    margin-left: 3px;
+    font-size: var(--text-sm);
+  }
+
+  .lb-chapter {
+    scroll-margin-top: calc(var(--nav-h) + 72px);
+  }
+}
+
+@media (max-width: 860px) {
+  .lb-hero-inner {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 48px;
+    min-height: 0;
+  }
+
+  .lb-hero-film {
+    width: min(100%, 420px);
+  }
+}
+
+@media (max-width: 760px) {
+  .lb-hero {
+    margin: 8px;
+    border-radius: 32px;
+  }
+
+  .lb-prose {
+    font-size: 1.125rem;
+  }
+
+  .lb-epochs-pair,
+  .lb-case-reads {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .lb-race thead th:nth-child(3),
+  .lb-race td:nth-child(3) {
+    display: none;
+  }
+
+  .lb-race tbody th {
+    font-size: 1.125rem;
+  }
+
+  .lb-race td b {
+    font-size: 1.0625rem;
+  }
+
+  .lb-subs-cards {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+
+  .lb-stack-strip .lb-stack-list {
+    gap: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lb-slice,
+  .lb-slice::after,
+  .lb-stack-cell,
+  .lb-back {
+    transition: none;
+  }
+}
