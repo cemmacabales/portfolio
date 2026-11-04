@@ -6,7 +6,7 @@ export const thesisPost = {
   href: '/blog/thesis/',
   title: 'One model for every kidney finding, on a student budget.',
   dek: 'How we trained nnU-Net to outline kidney stones, cysts and tumors together in 290 CT scans, and fit four models, five folds each, into five Colab Pro+ subscriptions.',
-  date: '2026-11-04',
+  date: '2026-07-11',
   // Words in the post over 230 a minute, rounded up.
   readMinutes: 6,
   project: 'Thesis · nnU-Net v2',

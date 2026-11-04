@@ -5,8 +5,8 @@ import ThesisCover from './posts/thesis/ThesisCover'
 
 // Newest first. Each post brings its own cover, drawn in its own world.
 export const posts = [
-  { ...thesisPost, Cover: ThesisCover },
   { ...deniPost, Cover: DeniCover },
+  { ...thesisPost, Cover: ThesisCover },
 ]
 
 // "Nov 3, 2026". UTC, so the prerender and the browser agree.
