@@ -145,7 +145,8 @@ export default defineConfig(({ isSsrBuild }) => ({
             main: 'index.html',
             blog: 'blog/index.html',
             deni: 'blog/deni/index.html',
-            thesis: 'blog/thesis/index.html'
+            thesis: 'blog/thesis/index.html',
+            centient: 'blog/centient/index.html'
           },
       output: {
         assetFileNames: 'assets/[name]-[hash].[ext]', // Add hash for cache busting
@@ -169,6 +170,7 @@ export default defineConfig(({ isSsrBuild }) => ({
             './src/hooks/useTheme',
             './src/hooks/useGlassSheen',
             './src/hooks/useScrollState',
+            './src/data/centient',
             './src/data/deni',
             './src/data/thesis',
             './src/posthog'

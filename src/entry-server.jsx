@@ -4,6 +4,7 @@ import BelowFold from './components/BelowFold.jsx'
 import BlogIndex from './blog/pages/BlogIndex.jsx'
 import DeniPost from './blog/posts/deni/DeniPost.jsx'
 import ThesisPost from './blog/posts/thesis/ThesisPost.jsx'
+import CentientPost from './blog/posts/centient/CentientPost.jsx'
 
 /*
  * Build-time render for scripts/prerender.js. The HTML it returns goes into
@@ -26,4 +27,5 @@ export const blogPages = {
   'blog/index.html': () => renderToString(<BlogIndex />),
   'blog/deni/index.html': () => renderToString(<DeniPost />),
   'blog/thesis/index.html': () => renderToString(<ThesisPost />),
+  'blog/centient/index.html': () => renderToString(<CentientPost />),
 }

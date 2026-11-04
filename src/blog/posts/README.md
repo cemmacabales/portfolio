@@ -96,7 +96,7 @@ Then wire it in, in four places:
   them in the preview.
 - `npm run lint` must not add problems.
 
-## The two posts so far
+## The posts so far
 
 - **Deni** (`deni/`): a foil pill pack under a sky that follows the hour.
   Chapters are hours of one day; the contents are a blister pack.
@@ -106,3 +106,9 @@ Then wire it in, in four places:
   Its facts live in `src/data/thesis.js`, shared with the home's thesis tile
   (and listed in the `shared` chunk); the budget numbers and reviewed cases
   are in `thesis/budget.js` and `thesis/cases.js`, with their sources.
+- **Centient** (`centient/`): a payslip, from Centient's own receipt design
+  language: stubs torn at both ends, dotted leaders, dashed rules. The hero
+  is the sprint's receipt, the contents are its line items (stamped green
+  once read), and gold is kept for money, as in the app. Its numbers are in
+  `centient/ledger.js`, with their sources; the owl is shared with the home
+  through `src/data/centient.js`, in the `shared` chunk.

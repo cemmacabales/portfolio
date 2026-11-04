@@ -2,10 +2,13 @@ import { deniPost } from './posts/deni/meta'
 import DeniCover from './posts/deni/DeniCover'
 import { thesisPost } from './posts/thesis/meta'
 import ThesisCover from './posts/thesis/ThesisCover'
+import { centientPost } from './posts/centient/meta'
+import CentientCover from './posts/centient/CentientCover'
 
 // Newest first. Each post brings its own cover, drawn in its own world.
 export const posts = [
   { ...deniPost, Cover: DeniCover },
+  { ...centientPost, Cover: CentientCover },
   { ...thesisPost, Cover: ThesisCover },
 ]
 

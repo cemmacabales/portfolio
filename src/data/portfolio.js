@@ -1,5 +1,4 @@
 import CentientHome from '../assets/centient/home.webp'
-import CentientOwl from '../assets/centient-owl.webp'
 import BlocklabsLogo from '../assets/blocklabs.png'
 import PinkRaftLogo from '../assets/pinkraft.svg'
 import PoseEstimationImage from '../assets/Pose Estimation.webp'
@@ -30,6 +29,7 @@ import SpiderMan2Cover from '../assets/games/spiderman-2.webp'
 import Gt7Cover from '../assets/games/gt7.webp'
 import RagnarokCover from '../assets/games/ragnarok.webp'
 import { barongPhoto, gradPhoto } from './photos'
+import { centientOwl as CentientOwl } from './centient'
 import { deniAppStore, deniFilm, deniIcon, deniShots, deniStory } from './deni'
 
 import pythonIcon from 'devicon/icons/python/python-plain.svg'

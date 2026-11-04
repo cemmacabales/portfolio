@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <script>
+      // Apply the saved theme before first paint so there is no flash.
+      try {
+        var t = localStorage.getItem('theme-v2');
+        document.documentElement.dataset.theme = t === 'dark' ? 'dark' : 'light';
+      } catch (e) {
+        document.documentElement.dataset.theme = 'light';
+      }
+    </script>
+
+    <title>Thirty days, two keys on every payout, and no Withdraw button · Carl Macabales</title>
+    <meta name="description" content="How I rebuilt Centient’s payouts for a Stellar Instawards grant, so every accepted answer pays the labeler’s wallet in USDC within seconds, signed by two keys, with no XLM of their own." />
+    <meta name="author" content="Carl Emmanuel Macabales" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://cemmacabales.com/blog/centient/" />
+
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="Thirty days, two keys on every payout, and no Withdraw button." />
+    <meta property="og:description" content="How I rebuilt Centient’s payouts for a Stellar Instawards grant, so every accepted answer pays the labeler’s wallet in USDC within seconds, signed by two keys, with no XLM of their own." />
+    <meta property="og:url" content="https://cemmacabales.com/blog/centient/" />
+    <meta property="og:site_name" content="Carl Macabales" />
+    <meta property="og:image" content="https://cemmacabales.com/blog/centient/og.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="A torn paper receipt for Centient’s sprint: 114.85 USDC paid on Stellar testnet to 61 wallets, 225 payouts, each signed by 2 of 3 keys" />
+    <meta property="article:published_time" content="2026-10-03" />
+    <meta property="article:author" content="https://cemmacabales.com/" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Thirty days, two keys on every payout, and no Withdraw button." />
+    <meta name="twitter:description" content="How I rebuilt Centient’s payouts for a Stellar Instawards grant, so every accepted answer pays the labeler’s wallet in USDC within seconds, signed by two keys, with no XLM of their own." />
+    <meta name="twitter:image" content="https://cemmacabales.com/blog/centient/og.jpg" />
+    <meta name="theme-color" content="#e8ebe9" />
+
+    <!-- Hovering a link renders the blog page it leads to ahead (Chrome,
+         Edge), so it's ready to rise in when the click lands. The home is
+         only fetched, and at once (one small document): rendering it ahead
+         would start its WebGPU field. -->
+    <script type="speculationrules">
+      {
+        "prerender": [{ "where": { "href_matches": "/blog/*" }, "eagerness": "moderate" }],
+        "prefetch": [{ "where": { "href_matches": "/" }, "eagerness": "eager" }]
+      }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "BlogPosting",
+          "@id": "https://cemmacabales.com/blog/centient/#post",
+          "url": "https://cemmacabales.com/blog/centient/",
+          "mainEntityOfPage": "https://cemmacabales.com/blog/centient/",
+          "headline": "Thirty days, two keys on every payout, and no Withdraw button.",
+          "description": "How I rebuilt Centient’s payouts for a Stellar Instawards grant, so every accepted answer pays the labeler’s wallet in USDC within seconds, signed by two keys, with no XLM of their own.",
+          "datePublished": "2026-10-03",
+          "dateModified": "2026-10-03",
+          "inLanguage": "en",
+          "image": "https://cemmacabales.com/blog/centient/og.jpg",
+          "author": { "@id": "https://cemmacabales.com/#carl" },
+          "isPartOf": { "@id": "https://cemmacabales.com/blog/#blog" },
+          "about": { "@id": "https://cemmacabales.com/blog/centient/#centient" }
+        },
+        {
+          "@type": "SoftwareApplication",
+          "@id": "https://cemmacabales.com/blog/centient/#centient",
+          "name": "Centient",
+          "applicationCategory": "BusinessApplication",
+          "operatingSystem": "Web",
+          "url": "https://beta.centient.work",
+          "author": { "@id": "https://cemmacabales.com/#carl" }
+        },
+        {
+          "@type": "Person",
+          "@id": "https://cemmacabales.com/#carl",
+          "name": "Carl Emmanuel Macabales",
+          "url": "https://cemmacabales.com/"
+        }
+      ]
+    }
+    </script>
+  </head>
+  <body class="world-centient">
+    <div id="root"></div>
+    <script type="module" src="/src/blog/posts/centient/main.jsx"></script>
+  </body>
+</html>
