@@ -23,7 +23,7 @@
   inset: 0;
   overflow: hidden;
   isolation: isolate;
-  container-type: inline-size;
+  container-type: size;
   background: var(--lg-base);
   pointer-events: none;
 }
@@ -32,7 +32,8 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 160cqi;
+  /* 1.5x the longer side always covers the corners as it turns. */
+  width: calc(max(100cqw, 100cqh) * 1.5);
   aspect-ratio: 1;
   background: var(--lg-base);
   translate: -50% -50%;

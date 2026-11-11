@@ -581,22 +581,52 @@
 /* ── Welcome color: the Ask tile's living gradient ──────────────
    Washes the top of the sheet and fades into it before the questions, so
    opening the chat from the tile feels like stepping into the same light.
-   It lets go once a conversation starts. */
+   In a conversation it draws back to a soft wash at the top; while a
+   reply is on its way it pours down over the sheet, breathes, and races (the 9x
+   tempo is set from AiChatbot.jsx), then settles when the reply lands. */
 .chat-aurora {
   position: absolute;
-  inset: 0 0 auto;
-  height: 66%;
-  -webkit-mask-image: linear-gradient(#000 34%, transparent 96%);
-  mask-image: linear-gradient(#000 34%, transparent 96%);
-  transition: opacity 0.5s var(--ease-out);
+  inset: 0;
+  /* A fade that runs most of the sheet's height, so it never ends on a
+     line. It slides rather than squashes: up to clear the thread, down to
+     fill the sheet while it thinks. */
+  -webkit-mask-image: linear-gradient(#000 30%, transparent);
+  mask-image: linear-gradient(#000 30%, transparent);
+  transform: translateY(-30%);
+  transition:
+    transform 1.2s var(--ease-sheet),
+    opacity 0.6s var(--ease-out);
 }
 
+/* In a conversation, a softer wash over the top of the thread. */
 .chat-aurora[data-thread='true'] {
-  opacity: 0;
+  transform: translateY(-42%);
+  opacity: 0.75;
 }
 
-.chat-aurora[data-thread='true'] .lg * {
-  animation-play-state: paused;
+/* Thinking: it pours down to fill the sheet. */
+.chat-aurora[data-thinking='true'] {
+  transform: none;
+  opacity: 1;
+  transition-duration: 1s, 0.4s;
+}
+
+.chat-aurora[data-thinking='true'] .lg {
+  animation: chat-aurora-breathe 1.4s ease-in-out infinite alternate;
+}
+
+@keyframes chat-aurora-breathe {
+  to {
+    opacity: 0.72;
+  }
+}
+
+/* Over the color, the header's glass is mostly blur, with a long fade, so
+   it doesn't leave a pale strip with an edge. */
+.chat-head[data-thread='true']::before {
+  background: color-mix(in oklch, var(--tile) 22%, transparent);
+  -webkit-mask-image: linear-gradient(#000 calc(100% - 56px), transparent);
+  mask-image: linear-gradient(#000 calc(100% - 56px), transparent);
 }
 
 /* Dark: the recipe's own night version, deep teal with glows screened in as
@@ -1246,6 +1276,14 @@
   }
 
   .chat-field[data-busy='true'] .chat-rim::before {
+    animation: none;
+  }
+
+  .chat-aurora {
+    transition: opacity 0.3s linear;
+  }
+
+  .chat-aurora[data-thinking='true'] .lg {
     animation: none;
   }
 

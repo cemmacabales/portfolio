@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from 'framer-motion' // eslint-disable-line n
 import { X, ArrowUp, SquarePen, CircleAlert, Coins, BriefcaseBusiness, Microscope, Layers } from 'lucide-react'
 import { ASSISTANT_OPEN_EVENT } from '../utils/assistant'
 import { useBooted } from '../hooks/useBooted'
+import { useAnimationTempo } from '../hooks/useAnimationTempo'
 import posthog from '../posthog'
 import { portfolioLogger } from '../posthog-logger'
 import memoji from '../assets/memoji-assistant.webp'
@@ -232,6 +233,7 @@ export default function AiChatbot() {
   const [greeting, setGreeting] = useState('Hi there!')
 
   const frameRef = useRef(null)
+  const auroraRef = useRef(null)
   const sheetRef = useRef(null)
   const scrollRef = useRef(null)
   const composeRef = useRef(null)
@@ -243,6 +245,9 @@ export default function AiChatbot() {
   const conversationIdRef = useRef(createConversationId())
 
   const hasThread = messages.length > 0
+  // While a reply is on its way the gradient races, as if it's thinking.
+  const thinking = Boolean(pending)
+  useAnimationTempo(auroraRef, thinking ? 9 : 1, thinking ? 900 : 1400, 'lg-')
   const last = messages[messages.length - 1]
   const asked = new Set(
     messages.filter((m) => m.role === 'user').map((m) => m.content.toLowerCase()),
@@ -555,9 +560,16 @@ export default function AiChatbot() {
           tabIndex={-1}
         >
           <div className="chat-body">
-            {/* The Ask tile's living gradient, carried into the welcome. It
-                lets go once a conversation starts. */}
-            <div className="chat-aurora" data-thread={hasThread} data-still={!isOpen || undefined}>
+            {/* The Ask tile's living gradient, carried into the welcome. In a
+                conversation it draws back to a soft wash at the top, and
+                while a reply is on its way it pours down and races. */}
+            <div
+              ref={auroraRef}
+              className="chat-aurora"
+              data-thread={hasThread}
+              data-thinking={thinking}
+              data-still={!isOpen || undefined}
+            >
               <LivingGradient />
             </div>
             <header className="chat-head" data-thread={hasThread}>
