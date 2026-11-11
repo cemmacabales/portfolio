@@ -6,6 +6,7 @@
  * posthog-js is only ever imported dynamically from loadPostHog, which runs
  * in the browser: the prerender's server build never touches it.
  */
+import { emit } from './events'
 
 const posthogKey = import.meta.env.VITE_POSTHOG_KEY
 const posthogHost = import.meta.env.VITE_POSTHOG_HOST
@@ -94,7 +95,10 @@ export function loadPostHog() {
 }
 
 const posthog = {
-  capture: (...args) => call((c, ...a) => c.capture(...a), args),
+  capture: (...args) => {
+    emit(args[0], args[1])
+    return call((c, ...a) => c.capture(...a), args)
+  },
   get_distinct_id: () => client?.get_distinct_id(),
   logger: {
     info: (...args) => call((c, ...a) => c.logger.info(...a), args),

@@ -26,6 +26,9 @@ import {
 } from '../utils/validation'
 import { profile } from '../data/portfolio'
 import posthog from '../posthog'
+import { emit } from '../events'
+import { openTrophies, useFoundCount } from '../achievements/hooks'
+import { ACHIEVEMENTS } from '../achievements/core'
 import './ContactPanel.css'
 
 const EASE = [0.16, 1, 0.3, 1]
@@ -103,6 +106,19 @@ function Row({ id, label, error, children }) {
 }
 
 export default function ContactPanel() {
+  const found = useFoundCount()
+  const taps = useRef({ n: 0, at: 0 })
+  const countTap = () => {
+    const now = Date.now()
+    const t = taps.current
+    t.n = now - t.at < 1200 ? t.n + 1 : 1
+    t.at = now
+    if (t.n >= 7) {
+      t.n = 0
+      posthog.capture('dev_settings_opened')
+      emit('open_dev_settings')
+    }
+  }
   const reduce = useReducedMotion()
   const tileRef = useRef(null)
   const seen = useInView(tileRef, { once: true, amount: 0.25 })
@@ -547,9 +563,17 @@ export default function ContactPanel() {
 
         <footer className="contact-foot">
           <p>
-            © {new Date().getFullYear()} {profile.name}
+            {/* Seven taps open the hidden Developer menu (src/devmode/). */}
+            <button type="button" className="contact-foot-quiet" onClick={countTap}>
+              © {new Date().getFullYear()} {profile.name}
+            </button>
           </p>
-          <p className="contact-cookie">If you made it this far, you deserve a cookie.</p>
+          <p className="contact-cookie">
+            <button type="button" className="contact-foot-quiet" onClick={openTrophies}>
+              If you made it this far, you deserve a cookie.
+              {found > 0 && <span className="contact-cookie-count"> {found} of {ACHIEVEMENTS.length} found</span>}
+            </button>
+          </p>
           <a href="#home" className="back-top">
             Back to top
             <ArrowUp size={15} strokeWidth={1.8} aria-hidden="true" />

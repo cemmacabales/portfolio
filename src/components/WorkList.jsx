@@ -1,9 +1,10 @@
 import { useCallback, useState } from 'react'
 import { motion } from 'framer-motion' // eslint-disable-line no-unused-vars
-import { ArrowRight, ArrowUpRight, Play, Plus } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, ChevronDown, Play, Plus } from 'lucide-react'
 import { projects } from '../data/portfolio'
 import posthog from '../posthog'
 import FilmPlayer from './FilmPlayer'
+import RagReplay from './RagReplay'
 import './WorkList.css'
 
 const EASE = [0.16, 1, 0.3, 1]
@@ -24,6 +25,8 @@ function WorkRow({ project, index, open, onToggle, onShowModels }) {
   const { film } = project
   const [filmOpen, setFilmOpen] = useState(false)
   const closeFilm = useCallback(() => setFilmOpen(false), [])
+  const [replayOpen, setReplayOpen] = useState(false)
+  const replayId = `work-replay-${project.slug}`
 
   const playFilm = () => {
     posthog.capture('project_film_played', { project_slug: project.slug })
@@ -155,6 +158,21 @@ function WorkRow({ project, index, open, onToggle, onShowModels }) {
                   <ArrowUpRight size={16} strokeWidth={1.8} aria-hidden="true" />
                 </button>
               )}
+              {project.replay && (
+                <button
+                  type="button"
+                  className="btn btn-sm btn-line work-replay-toggle"
+                  aria-expanded={replayOpen}
+                  aria-controls={replayId}
+                  onClick={() => {
+                    if (!replayOpen) posthog.capture('project_replay_opened', { project_slug: project.slug })
+                    setReplayOpen((v) => !v)
+                  }}
+                >
+                  See how it answers
+                  <ChevronDown size={16} strokeWidth={1.8} aria-hidden="true" />
+                </button>
+              )}
               {paper && (
                 <ExternalButton href={paper} variant="btn-line">
                   Read the paper
@@ -169,6 +187,11 @@ function WorkRow({ project, index, open, onToggle, onShowModels }) {
             </div>
           </div>
         </div>
+        {project.replay && replayOpen && (
+          <div id={replayId} className="work-replay">
+            <RagReplay />
+          </div>
+        )}
       </motion.div>
 
       {film && <FilmPlayer film={film} open={filmOpen} onClose={closeFilm} />}

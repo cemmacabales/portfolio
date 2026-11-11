@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { useReducedMotion } from 'framer-motion'
 import './PetYard.css'
+import { emit } from '../events'
 
 /*
  * Three pixel pets that live under the shipped list.
@@ -687,7 +688,10 @@ export default function PetYard() {
           <span className="hint-touch">Tap</span> a pet to say hi
         </p>
         {!reduce && (
-          <button type="button" className="yard-toss" onClick={() => api.current?.toss()}>
+          <button type="button" className="yard-toss" onClick={() => {
+            api.current?.toss()
+            emit('pet_treat_tossed')
+          }}>
             <PixelArt rows={BONE} scale={2} className="yard-toss-icon" />
             Toss a treat
           </button>

@@ -6,6 +6,8 @@ import GradualBlur from './components/GradualBlur'
 import ModelSelectionModal from './components/ModelSelectionModal'
 import AiChatbot from './components/AiChatbot'
 import TypeRaceHint from './components/TypeRaceHint'
+import Achievements from './achievements/Achievements'
+import { onEvent } from './events'
 import { useTheme } from './hooks/useTheme'
 import { useGlassSheen } from './hooks/useGlassSheen'
 import { useOffscreenPause } from './hooks/useOffscreenPause'
@@ -25,6 +27,8 @@ const LazyBelowFold = lazy(loadBelowFold)
 // the ⌘K hint fetches it early).
 const loadTypeRace = () => import('./components/TypeRace')
 const LazyTypeRace = lazy(loadTypeRace)
+// The hidden Developer menu, fetched the first time someone finds it.
+const LazyDevSettings = lazy(() => import('./devmode/DevSettings'))
 // When they're wanted from the start (a desktop, or a link into the page),
 // fetch them alongside the first render instead of after it.
 if (typeof window !== 'undefined' && !defersBelowFold()) loadBelowFold()
@@ -50,6 +54,18 @@ function App({ belowFold }) {
   const [isModelModalOpen, setIsModelModalOpen] = useState(false)
   const [raceOpen, setRaceOpen] = useState(false)
   const [raceWanted, setRaceWanted] = useState(false)
+  const [devOpen, setDevOpen] = useState(false)
+  const [devWanted, setDevWanted] = useState(false)
+
+  useEffect(
+    () =>
+      onEvent((name) => {
+        if (name !== 'open_dev_settings') return
+        setDevWanted(true)
+        setDevOpen(true)
+      }),
+    [],
+  )
 
   const [belowWanted] = useBelowFold()
   const [belowMounted, setBelowMounted] = useState(false)
@@ -168,6 +184,12 @@ function App({ belowFold }) {
       />
       <TypeRaceHint onOpen={() => openRace('hint')} onIntent={loadTypeRace} />
       <AiChatbot />
+      <Achievements />
+      {devWanted && (
+        <Suspense fallback={null}>
+          <LazyDevSettings open={devOpen} onOpen={() => setDevOpen(true)} onClose={() => setDevOpen(false)} />
+        </Suspense>
+      )}
       {raceWanted && (
         <Suspense fallback={null}>
           <LazyTypeRace open={raceOpen} onClose={closeRace} />

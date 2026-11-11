@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { X } from 'lucide-react'
 import './FilmPlayer.css'
+import { emit } from '../events'
 
 const CLOSE_MS = 220
 
@@ -78,6 +79,7 @@ export default function FilmPlayer({ film, open, onClose }) {
               controls
               playsInline
               preload="auto"
+              onEnded={() => emit('film_finished', { src: film.src })}
             />
           )}
         </div>

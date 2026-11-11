@@ -715,6 +715,35 @@
   text-align: center;
 }
 
+/* The footer's two easter eggs look like plain text until you find them. */
+.contact-foot-quiet {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.contact-foot-quiet:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.contact-cookie .contact-foot-quiet:hover {
+  color: var(--ink);
+}
+
+.contact-cookie-count {
+  color: var(--mint);
+  font-variant-numeric: tabular-nums;
+}
+
 .back-top {
   display: inline-flex;
   align-items: center;

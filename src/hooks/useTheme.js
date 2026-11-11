@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
+import { emit } from '../events'
 
 // v2 key: the old site wrote 'theme' on every visit, so reusing it would pin
 // returning visitors to whatever the previous design last saved.
@@ -71,6 +72,7 @@ export function useTheme({ hydrate = false } = {}) {
 
     const next = flip(document.documentElement.dataset.theme)
     saveTheme(next)
+    emit('theme_switched', { theme: next })
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     if (!document.startViewTransition || reduceMotion || !origin) {

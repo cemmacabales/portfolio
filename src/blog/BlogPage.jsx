@@ -4,6 +4,7 @@ import GradualBlur from '../components/GradualBlur'
 import { useTheme } from '../hooks/useTheme'
 import { useGlassSheen } from '../hooks/useGlassSheen'
 import BlogFooter from './BlogFooter'
+import Achievements from '../achievements/Achievements'
 import '../App.css'
 import './blog.css'
 
@@ -39,6 +40,7 @@ export default function BlogPage({ children }) {
       </main>
 
       <BlogFooter />
+      <Achievements />
     </MotionConfig>
   )
 }

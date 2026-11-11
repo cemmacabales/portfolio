@@ -173,7 +173,10 @@ export default defineConfig(({ isSsrBuild }) => ({
             './src/data/centient',
             './src/data/deni',
             './src/data/thesis',
-            './src/posthog'
+            './src/posthog',
+            './src/events',
+            './src/achievements/core',
+            './src/achievements/hooks'
           ],
           // The sections below the hero (src/components/BelowFold) are a lazy
           // chunk of their own; listing them here would pull them back in.

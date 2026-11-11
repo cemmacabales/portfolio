@@ -314,6 +314,8 @@ export const projects = [
       code: 'https://github.com/cemmacabales/AFIB.git',
       paper: 'https://ieeexplore.ieee.org/document/11517831',
     },
+    // A real run of the Llama 3 Space, replayed in the row (src/data/afReplay.js).
+    replay: true,
     models: [
       { name: 'Llama3', url: 'https://huggingface.co/spaces/johnnydang88/Llama3' },
       { name: 'Qwen3', url: 'https://huggingface.co/spaces/johnnydang88/Qwen3' },

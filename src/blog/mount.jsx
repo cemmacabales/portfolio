@@ -1,6 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot, hydrateRoot } from 'react-dom/client'
 import { loadPostHog } from '../posthog.js'
+import { startAchievements } from '../achievements/core'
 
 /*
  * Starts a blog page. The build prerenders each one into #root
@@ -9,6 +10,7 @@ import { loadPostHog } from '../posthog.js'
  * it renders from scratch.
  */
 export function mountBlogPage(element) {
+  startAchievements()
   const container = document.getElementById('root')
   const app = <StrictMode>{element}</StrictMode>
   if (container.hasChildNodes()) hydrateRoot(container, app)

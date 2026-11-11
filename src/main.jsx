@@ -6,8 +6,10 @@ import App from './App.jsx'
 import { loadPostHog } from './posthog.js'
 import { defersBelowFold, startBoot } from './boot'
 import { afterEntrance, whenSettled } from './hooks/useSettled'
+import { startAchievements } from './achievements/core'
 
 startBoot()
+startAchievements()
 
 // Analytics waits until the hero's entrance has played and the page has
 // settled (see useSettled), then for a quiet moment after the sections below

@@ -1,0 +1,194 @@
+/*
+ * The Developer menu: a small grouped list in the bottom-left corner, in
+ * the iOS Settings idiom. Kept out of the way of the chat (bottom-right).
+ */
+.dev-host {
+  position: fixed;
+  left: max(20px, env(safe-area-inset-left));
+  bottom: max(20px, env(safe-area-inset-bottom));
+  z-index: var(--z-modal);
+  display: grid;
+  justify-items: start;
+  gap: 8px;
+}
+
+@media (max-width: 760px) {
+  .dev-host {
+    left: 16px;
+    bottom: calc(max(16px, env(safe-area-inset-bottom)) + 70px);
+  }
+}
+
+.dev-panel {
+  width: min(310px, calc(100vw - 32px));
+  padding: 14px 12px 14px;
+  border-radius: 24px;
+  background: var(--tile-sunk);
+  color: var(--ink);
+  box-shadow: var(--shadow-float), inset 0 0 0 0.5px var(--glass-border);
+  animation: dev-in 0.3s var(--ease-out);
+}
+
+@keyframes dev-in {
+  from {
+    opacity: 0;
+    translate: 0 8px;
+  }
+}
+
+.dev-head {
+  display: flex;
+  align-items: center;
+  padding: 0 4px 4px 8px;
+}
+
+.dev-head h2 {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.dev-x {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  margin-left: auto;
+  border: 0;
+  border-radius: 50%;
+  background: var(--tile);
+  color: var(--ink-2);
+  cursor: pointer;
+}
+
+.dev-group-label {
+  padding: 10px 12px 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+.dev-group {
+  border-radius: 14px;
+  background: var(--tile);
+  overflow: hidden;
+}
+
+.dev-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 44px;
+  padding: 0 10px 0 14px;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: var(--text-sm);
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dev-row + .dev-row::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 14px;
+  right: 0;
+  border-top: 0.5px solid var(--line-strong);
+}
+
+.dev-row:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
+  border-radius: 14px;
+}
+
+.dev-switch {
+  position: relative;
+  flex: none;
+  width: 46px;
+  height: 28px;
+  border-radius: 999px;
+  background: var(--line-strong);
+  transition: background-color 0.2s ease;
+}
+
+.dev-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 5px oklch(0 0 0 / 0.2);
+  transition: translate 0.25s var(--ease-out);
+}
+
+.dev-switch.is-on {
+  background: var(--accent);
+}
+
+.dev-switch.is-on::after {
+  translate: 18px 0;
+}
+
+.dev-note {
+  padding: 6px 12px 0;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--ink-2);
+}
+
+.dev-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  color: var(--ink-2);
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.dev-chip-solo {
+  cursor: default;
+}
+
+.dev-fps {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+/* Show layout bounds: every box outlined, as Android and Xcode draw them. */
+:root.dev-bounds *:not(.dev-host, .dev-host *) {
+  outline: 1px solid oklch(0.6 0.2 330 / 0.55) !important;
+  outline-offset: -1px !important;
+}
+
+/* The achievement note steps up over the Developer chip, and stays out of
+   the way while the menu itself is open (the menu is its own reward). */
+:root:has(.dev-chip) .achievement-note-slot {
+  bottom: calc(max(20px, env(safe-area-inset-bottom)) + 42px);
+}
+
+:root:has(.dev-panel) .achievement-note-slot {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  :root:has(.dev-chip) .achievement-note-slot {
+    bottom: calc(max(16px, env(safe-area-inset-bottom)) + 112px);
+  }
+}
