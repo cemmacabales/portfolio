@@ -17,7 +17,12 @@
   /* Screen only ever lightens, so a glow set to it melts in as light. */
   --lg-blend-1: screen;
   --lg-blend: normal;
-  --lg-grain: 0.26;
+  /* Overlay barely moves colors near white, so on a light gradient the
+     grain multiplies (dark specks, like film on paper). Dark versions set
+     overlay back, where it lightens and darkens both ways. */
+  --lg-grain-blend: multiply;
+  --lg-grain: 0.2;
+  --lg-delay: 0s;
 
   position: absolute;
   inset: 0;
@@ -38,6 +43,7 @@
   background: var(--lg-base);
   translate: -50% -50%;
   animation: lg-swirl 22s linear infinite;
+  animation-delay: var(--lg-delay, 0s);
   will-change: transform;
 }
 
@@ -56,6 +62,9 @@
   background: radial-gradient(closest-side, var(--c), var(--c) 28%, transparent);
   mix-blend-mode: var(--lg-blend);
   animation: var(--drift) var(--t) ease-in-out infinite;
+  /* A negative delay starts each instance mid-flight, so tiles side by
+     side never move in step. */
+  animation-delay: var(--lg-delay, 0s);
   will-change: transform;
 }
 
@@ -143,7 +152,7 @@
   inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2.4' intercept='-0.7'/%3E%3CfeFuncG type='linear' slope='2.4' intercept='-0.7'/%3E%3CfeFuncB type='linear' slope='2.4' intercept='-0.7'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 160px;
-  mix-blend-mode: overlay;
+  mix-blend-mode: var(--lg-grain-blend);
   opacity: var(--lg-grain);
 }
 

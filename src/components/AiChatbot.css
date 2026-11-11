@@ -639,6 +639,7 @@
   --lg-4: oklch(0.32 0.06 175);
   --lg-5: oklch(0.46 0.1 178);
   --lg-blend: screen;
+  --lg-grain-blend: overlay;
   --lg-grain: 0.34;
 }
 

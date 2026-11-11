@@ -4,6 +4,7 @@ import { ArrowUpRight, ArrowDown, ArrowRight, Github, Smartphone, Pause, Play } 
 import ShapeWaves from './ShapeWaves'
 import HeroDesk from './HeroDesk'
 import AssistantTile from './AssistantTile'
+import LivingGradient from './LivingGradient'
 import FilmPlayer from './FilmPlayer'
 import ResumePage from '../assets/resume-page.webp'
 import { profile, featured } from '../data/portfolio'
@@ -420,6 +421,7 @@ export default function HeroBento({ theme, showField, onAskAssistant }) {
               className="tile tile-resume"
               onClick={() => posthog.capture('resume_downloaded')}
             >
+              <LivingGradient className="duo-sky" />
               <span className="resume-stack" aria-hidden="true">
                 <span className="resume-under" />
                 <img
@@ -447,6 +449,7 @@ export default function HeroBento({ theme, showField, onAskAssistant }) {
               rel="noopener noreferrer"
               className="tile tile-gh"
             >
+              <LivingGradient className="duo-sky" />
               <span className="gh-top">
                 <Github size={30} strokeWidth={1.6} aria-hidden="true" />
                 <span className="gh-arrow" aria-hidden="true">

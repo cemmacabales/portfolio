@@ -321,6 +321,89 @@
   padding: 18px;
 }
 
+/* ── Duo skies: each tile gets its own LivingGradient ──────────
+   The Ask tile's light in two other moods, so the side column reads as
+   three: the résumé is paper at sunrise, peach, apricot and rose; GitHub is
+   night, indigo and violet with glows screened in. Each starts mid-flight
+   (--lg-delay) so the three never move in step. */
+.duo-sky {
+  z-index: -2;
+}
+
+.tile-resume,
+.tile-gh {
+  isolation: isolate;
+}
+
+.tile-resume .duo-sky {
+  --lg-base: linear-gradient(150deg, oklch(0.96 0.03 75), oklch(0.92 0.06 45) 60%, oklch(0.94 0.045 10));
+  --lg-1: oklch(0.99 0.02 85);
+  --lg-2: oklch(0.88 0.08 30);
+  --lg-3: oklch(0.93 0.08 85);
+  --lg-4: oklch(0.87 0.07 0);
+  --lg-5: oklch(0.95 0.05 60);
+  --lg-delay: -4.3s;
+}
+
+/* Upside down, so its glows gather at the bottom, under the words. */
+.tile-gh .duo-sky {
+  --lg-base: linear-gradient(140deg, oklch(0.27 0.07 278), oklch(0.2 0.055 262) 60%, oklch(0.19 0.06 300));
+  --lg-1: oklch(0.44 0.15 285);
+  --lg-2: oklch(0.38 0.13 252);
+  --lg-3: oklch(0.42 0.15 315);
+  --lg-4: oklch(0.29 0.08 265);
+  --lg-5: oklch(0.46 0.14 295);
+  --lg-blend: screen;
+  --lg-grain-blend: overlay;
+  --lg-grain: 0.36;
+  --lg-delay: -9.7s;
+  scale: -1 -1;
+}
+
+.tile-gh .duo-sky .lg-glow {
+  opacity: 0.6;
+}
+
+:root[data-theme='dark'] .tile-resume .duo-sky {
+  --lg-base: linear-gradient(150deg, oklch(0.27 0.045 45), oklch(0.23 0.04 20) 60%, oklch(0.21 0.035 350));
+  --lg-1: oklch(0.4 0.08 55);
+  --lg-2: oklch(0.36 0.08 25);
+  --lg-3: oklch(0.38 0.07 75);
+  --lg-4: oklch(0.3 0.06 0);
+  --lg-5: oklch(0.4 0.08 35);
+  --lg-blend: screen;
+  --lg-grain-blend: overlay;
+  --lg-grain: 0.34;
+}
+
+:root[data-theme='dark'] .tile-resume .duo-sky .lg-glow {
+  opacity: 0.55;
+}
+
+/* On the color, the secondary line darkens a step to keep 7:1. */
+.tile-resume .resume-sub {
+  color: color-mix(in oklch, var(--ink) 82%, var(--tile));
+}
+
+/* GitHub's night is dark in both themes, so its ink is set here. */
+.tile-gh {
+  --gh-ink: oklch(0.97 0.01 280);
+  border-color: oklch(0.33 0.06 278);
+  color: var(--gh-ink);
+}
+
+.tile-gh .gh-top {
+  color: var(--gh-ink);
+}
+
+.tile-gh .gh-sub {
+  color: oklch(0.9 0.03 280);
+}
+
+.tile-gh .gh-arrow {
+  border-color: oklch(1 0 0 / 0.3);
+}
+
 /* ── Résumé: the real first page, pinned at a slight angle ──── */
 .tile-resume {
   justify-content: flex-end;
@@ -459,9 +542,9 @@
 @media (hover: hover) and (pointer: fine) {
   .tile-gh:hover .gh-arrow {
     transform: rotate(45deg);
-    background: var(--ink);
-    border-color: var(--ink);
-    color: var(--tile);
+    background: var(--gh-ink);
+    border-color: var(--gh-ink);
+    color: oklch(0.22 0.06 278);
   }
 }
 
