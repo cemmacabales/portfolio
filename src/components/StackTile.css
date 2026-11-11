@@ -1,366 +1,520 @@
 /*
- * Tools I reach for: the lens (StackTile.jsx). A night sky in both themes,
- * like the GitHub tile, so its ink is set here. --t is the tool under the
- * lens; registered as a color, it eases, and the sky's glows follow it.
+ * Tools I reach for: the kiss-cut sticker sheet (StackTile.jsx). The tile is
+ * the backing sheet, in the site's own tile colors, so it follows the theme.
+ * Stickers keep white die-cut borders in both themes.
  */
-@property --t {
-  syntax: '<color>';
-  inherits: true;
-  initial-value: #64ffda;
-}
-
-/* Registered so StackTile.jsx reads the lens radius back in pixels. */
-@property --r {
-  syntax: '<length>';
-  inherits: true;
-  initial-value: 92px;
-}
 
 .tile-stack {
-  --t: #64ffda;
-  --lens-ink: oklch(0.97 0.006 265);
+  --sheet-liner: var(--tile-sunk);
+  --sheet-print: var(--ink-2);
+  --sheet-mark: var(--line-strong);
+  --sticker-shadow: oklch(0.25 0.02 175 / 0.3);
+  --sticker-lift: oklch(0.25 0.02 175 / 0.5);
+  --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   position: relative;
   isolation: isolate;
-  /* Everything inside is positioned, so containing its size costs nothing
-     and lets the type grow with whatever height the row gives the tile. */
-  container: lens / size;
-  min-height: 440px;
-  background: oklch(0.15 0.015 265);
-  border-color: oklch(0.3 0.03 265);
-  color: var(--lens-ink);
+  container: sheet / inline-size;
+  min-height: 460px;
   user-select: none;
   -webkit-user-select: none;
-  transition: --t 0.9s var(--ease-out);
+  -webkit-touch-callout: none;
 }
 
-/* The night, tinted by the tool under the lens. Glows stay dark (screened in
-   at 0.55) so the white ink keeps 7:1 wherever it sits. The tool's color is
-   mixed only with grayless darks, so the hue stays the tool's own. */
-.lens-sky {
-  --lg-base: linear-gradient(
-    140deg,
-    color-mix(in oklch, var(--t) 22%, oklch(0.16 0 0)),
-    oklch(0.14 0.012 265) 60%,
-    color-mix(in oklch, var(--t) 12%, oklch(0.13 0 0))
-  );
-  --lg-1: color-mix(in oklch, var(--t) 55%, oklch(0.1 0 0));
-  --lg-2: color-mix(in oklch, var(--t) 45%, oklch(0.12 0 0));
-  --lg-3: color-mix(in oklch, var(--t) 30%, oklch(0.1 0 0));
-  --lg-4: color-mix(in oklch, var(--t) 40%, oklch(0.12 0 0));
-  --lg-5: color-mix(in oklch, var(--t) 38%, oklch(0.12 0 0));
-  --lg-blend: screen;
-  --lg-grain-blend: overlay;
-  --lg-grain: 0.34;
-  --lg-delay: -2.9s;
-  z-index: -1;
+:root[data-theme='dark'] .tile-stack {
+  --sticker-shadow: oklch(0 0 0 / 0.55);
+  --sticker-lift: oklch(0 0 0 / 0.7);
 }
 
-/* Where relative colors work, two glows lean to the tool's neighboring hues,
-   at a fixed dark lightness, so the sky has depth without a second color. */
-@supports (color: oklch(from red l c h)) {
-  .lens-sky {
-    --lg-2: oklch(from var(--t) 0.42 calc(c * 0.8) calc(h + 38));
-    --lg-4: oklch(from var(--t) 0.38 calc(c * 0.8) calc(h - 34));
-    --lg-5: oklch(from var(--t) 0.34 calc(c * 0.7) h);
-  }
-}
-
-.lens-sky .lg-glow {
-  opacity: 0.55;
-}
-
-.lens-defs {
+/* A soft lamp over the paper that follows a mouse (set from StackTile.jsx). */
+.tile-stack::before {
+  content: '';
   position: absolute;
-  width: 0;
-  height: 0;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(55% 45% at var(--lx, 30%) var(--ly, -10%), oklch(1 0 0 / 0.7), transparent 70%);
+  pointer-events: none;
+}
+
+:root[data-theme='dark'] .tile-stack::before {
+  background: radial-gradient(55% 45% at var(--lx, 30%) var(--ly, -10%), oklch(1 0 0 / 0.06), transparent 70%);
+}
+
+/* Printer's crop marks in the corners: the tile reads as a printed sheet. */
+.sheet-crop {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 0 solid var(--sheet-mark);
+  pointer-events: none;
+}
+
+.sheet-crop.is-tl { top: 12px; left: 12px; border-top-width: 1px; border-left-width: 1px; }
+.sheet-crop.is-tr { top: 12px; right: 12px; border-top-width: 1px; border-right-width: 1px; }
+.sheet-crop.is-bl { bottom: 12px; left: 12px; border-bottom-width: 1px; border-left-width: 1px; }
+.sheet-crop.is-br { bottom: 12px; right: 12px; border-bottom-width: 1px; border-right-width: 1px; }
+
+.sheet-micro {
+  position: absolute;
+  right: 30px;
+  bottom: 9px;
+  font-size: 0.55rem;
+  font-weight: 650;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--sheet-print);
+  pointer-events: none;
 }
 
 /* Same line as the head of the tile beside it. */
-.lens-title {
+.sheet-head {
   position: absolute;
   top: 18px;
   left: var(--pad-tile);
+  right: var(--pad-tile);
   z-index: 3;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  pointer-events: none;
+}
+
+.sheet-title {
   margin: 0;
   font-size: var(--text-sm);
   font-weight: 600;
   line-height: 1.3;
-  color: var(--lens-ink);
-  pointer-events: none;
-}
-
-/* ── The two copies ─────────────────────────────────────────── */
-.lens-stage {
-  --fs: clamp(1.28rem, min(5.6cqi, 8.4cqb), 2.9rem);
-  --r: calc(var(--fs) * 2.6 + 12px);
-  --blob: calc(var(--fs) * 1.8 + 18px);
-  position: absolute;
-  inset: 0;
-}
-
-.lens-field {
-  position: absolute;
-  inset: 50px 18px 58px;
-  display: flex;
-  flex-wrap: wrap;
-  align-content: center;
-  justify-content: center;
-  gap: 2px calc(var(--fs) * 0.6);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  font-size: var(--fs);
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 1.32;
-}
-
-.lens-item {
-  display: block;
-}
-
-.lens-word {
-  position: relative;
-  display: inline-block;
-  vertical-align: top;
   white-space: nowrap;
 }
 
-/* The faint copy is the real list: buttons a keyboard can step through. */
-.lens-field.is-dim {
-  color: oklch(1 0 0 / 0.2);
-}
-
-.is-dim .lens-word {
+.sheet-cap {
   margin: 0;
-  padding: 0;
-  border: 0;
-  background: none;
-  color: inherit;
-  font: inherit;
-  letter-spacing: inherit;
-  line-height: inherit;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: opacity 0.3s;
-}
-
-.is-dim .lens-word:focus-visible {
-  outline: none;
-}
-
-.is-dim .lens-word.is-gone {
-  opacity: 0;
-}
-
-/* The bright copy only shows inside the lens. JS moves the circle. */
-.lens-field.is-lit {
-  z-index: 2;
-  clip-path: circle(var(--r) at 50% 50%);
-  pointer-events: none;
-}
-
-.lens-goo {
-  display: inline-block;
-}
-
-.lens-l {
-  display: inline-block;
-  transition:
-    transform 0.5s cubic-bezier(0.7, 0, 0.25, 1),
-    color 0.4s;
-  transition-delay: var(--ld, 0s);
-}
-
-/* ── The morph: letters melt into a blob, and the logo surfaces ── */
-.is-lit .lens-word {
-  transition: opacity 0.4s;
-}
-
-.is-lit.has-morph .lens-word:not(.is-morph) {
-  opacity: 0.28;
-}
-
-.lens-word.is-goo .lens-goo {
-  filter: url(#lens-goo);
-}
-
-.lens-word.is-morph {
-  z-index: 2;
-}
-
-.lens-blob {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: var(--blob);
-  height: var(--blob);
-  margin: calc(var(--blob) / -2);
-  border-radius: 50%;
-  background: var(--c);
-  scale: 0;
-  transition: scale 0.5s cubic-bezier(0.3, 0, 0.2, 1);
-}
-
-.lens-icon {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: calc(var(--blob) * 0.5);
-  height: calc(var(--blob) * 0.5);
-  margin: calc(var(--blob) * -0.25);
-  background: #fff;
-  -webkit-mask: var(--src) center / contain no-repeat;
-  mask: var(--src) center / contain no-repeat;
-  opacity: 0;
-  scale: 0.3;
-  transition:
-    opacity 0.2s,
-    scale 0.4s var(--ease-out);
-}
-
-.lens-word.is-morph .lens-l {
-  transform: translateX(var(--dx, 0)) scale(0.15);
-  color: var(--c);
-}
-
-.lens-word.is-morph .lens-blob {
-  scale: 1;
-  transition-delay: 0.14s;
-}
-
-.lens-word.is-morph .lens-icon {
-  opacity: 1;
-  scale: 1;
-  transition-delay: 0.38s;
-  transition-duration: 0.3s, 0.55s;
-}
-
-/* ── The ring ───────────────────────────────────────────────── */
-.lens-ring {
-  position: absolute;
-  top: calc(50% - var(--r));
-  left: calc(50% - var(--r));
-  z-index: 4;
-  width: calc(var(--r) * 2);
-  height: calc(var(--r) * 2);
-  border-radius: 50%;
-  box-shadow:
-    inset 0 0 0 1px oklch(1 0 0 / 0.45),
-    0 0 50px -8px color-mix(in oklch, var(--t) 85%, transparent);
-  pointer-events: none;
-  will-change: translate;
-}
-
-/* With a finger, the ring is the handle. Only it takes the drag. */
-@media (hover: none), (pointer: coarse) {
-  .lens-ring {
-    cursor: grab;
-    pointer-events: auto;
-    touch-action: none;
-  }
-
-  .lens-ring:active {
-    cursor: grabbing;
-  }
-}
-
-/* A word with keyboard focus: the ring draws thicker around it. */
-.tile-stack:has(.is-dim .lens-word:focus-visible) .lens-ring {
-  box-shadow:
-    inset 0 0 0 2px var(--lens-ink),
-    0 0 0 3px color-mix(in oklch, var(--t) 70%, transparent),
-    0 0 50px -8px color-mix(in oklch, var(--t) 85%, transparent);
-}
-
-/* ── Caption and hint ───────────────────────────────────────── */
-.lens-cap {
-  position: absolute;
-  right: var(--pad-tile);
-  bottom: 16px;
-  left: var(--pad-tile);
-  z-index: 3;
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-  margin: 0;
-  font-size: var(--text-sm);
+  font-size: 0.84rem;
   line-height: 1.35;
-  pointer-events: none;
-}
-
-.lens-name {
-  flex-shrink: 0;
-  font-size: 1.05rem;
-  font-weight: 650;
-}
-
-.lens-where {
-  min-width: 0;
-  color: oklch(0.9 0.012 265);
+  color: var(--sheet-print);
   text-align: right;
-  text-wrap: balance;
 }
 
-.lens-hint-touch,
-.lens-pill {
+.sheet-cap b {
+  font-weight: 650;
+  color: var(--ink);
+}
+
+.sheet-hint-touch {
   display: none;
 }
 
-.lens-pill {
-  position: absolute;
-  bottom: 52px;
-  left: 50%;
-  z-index: 3;
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: oklch(1 0 0 / 0.12);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  font-size: var(--text-xs);
-  font-weight: 600;
-  translate: -50% 0;
-  pointer-events: none;
-  transition: opacity 0.5s;
-}
-
-.tile-stack.is-touched .lens-pill {
-  opacity: 0;
-}
-
-@media (hover: none), (pointer: coarse) {
-  .lens-hint-mouse {
+@media (hover: none) {
+  .sheet-hint-mouse {
     display: none;
   }
 
-  .lens-hint-touch,
-  .lens-pill {
+  .sheet-hint-touch {
     display: inline;
   }
 }
 
-/* ── Phone ──────────────────────────────────────────────────── */
-@container lens (max-width: 540px) {
-  .lens-field {
-    inset: 50px 14px 62px;
+.sheet-reset {
+  position: absolute;
+  top: 46px;
+  right: var(--pad-tile);
+  z-index: 4;
+  height: 28px;
+  padding: 0 11px;
+  border: 0;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 0.74rem;
+  font-weight: 650;
+  background: var(--ink);
+  color: var(--tile);
+  cursor: pointer;
+  opacity: 0;
+  translate: 0 -4px;
+  pointer-events: none;
+  transition: opacity 0.3s, translate 0.3s var(--ease-out);
+}
+
+.sheet-reset.is-on {
+  opacity: 1;
+  translate: 0 0;
+  pointer-events: auto;
+}
+
+/* ── The sheet's stickers ────────────────────────────────────── */
+.sheet-area {
+  position: absolute;
+  top: var(--head);
+  bottom: var(--foot);
+  left: var(--pad-tile);
+  right: var(--pad-tile);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Before the tile is measured (and in the prerendered page), a plain wrap. */
+.tile-stack:not(.is-packed) .sheet-area {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+  gap: 14px 12px;
+}
+
+.tile-stack:not(.is-packed) .sticker {
+  --s: 0.72;
+  position: relative;
+  translate: none;
+}
+
+.sheet-item {
+  display: contents;
+}
+
+/* The die-cut slot on the backing, printed with where the tool shipped. */
+.sheet-slot {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: var(--h);
+  translate: -50% -50%;
+  rotate: var(--r);
+  display: grid;
+  place-content: center;
+  gap: 1px;
+  padding: 6px;
+  overflow: hidden;
+  text-align: center;
+  background: var(--sheet-liner);
+  box-shadow: inset 0 0 0 1px var(--line-strong), inset 0 1px 3px oklch(0.2 0.02 175 / 0.12);
+  color: var(--sheet-print);
+  font-size: max(9px, calc(10px * var(--s)));
+  line-height: 1.2;
+}
+
+.sheet-slot b {
+  font-size: max(9.5px, calc(10.5px * var(--s)));
+  font-weight: 750;
+  color: var(--ink);
+}
+
+.sheet-slot i {
+  display: block;
+  font-style: normal;
+}
+
+.sheet-slot.is-round { border-radius: 50%; }
+.sheet-slot.is-sq { border-radius: calc(22px * var(--s)); }
+.sheet-slot.is-pill { border-radius: 999px; padding: 0 12px; }
+.sheet-slot.is-pill i { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; color: var(--ink); }
+
+/* A sticker. Position, drag and peel are separate offsets, so they compose. */
+.sticker {
+  --sx: 0px;
+  --sy: 2px;
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w, auto);
+  height: var(--h, calc(46px * var(--s)));
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: #fff;
+  cursor: pointer;
+  translate: calc(-50% + var(--dx, 0px) + var(--lift-x, 0px)) calc(-50% + var(--dy, 0px) + var(--lift-y, 0px));
+  rotate: var(--r);
+  touch-action: pan-y;
+  -webkit-tap-highlight-color: transparent;
+  z-index: 1;
+  transition:
+    translate 0.55s var(--ease-out),
+    rotate 0.55s var(--ease-out),
+    scale 0.45s var(--ease-out),
+    filter 0.35s;
+}
+
+.sticker.is-round { width: var(--w, calc(100px * var(--s))); height: var(--h, calc(100px * var(--s))); }
+.sticker.is-sq { width: var(--w, calc(92px * var(--s))); height: var(--h, calc(92px * var(--s))); }
+.sticker.is-dark-ink { color: oklch(0.2 0.01 90); }
+
+.sticker-face {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(7px * var(--s));
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border: calc(4px * var(--s)) solid #fff;
+  background: var(--c);
+  box-shadow: 0 1px 1px oklch(0 0 0 / 0.16), var(--sx) var(--sy) calc(7px * var(--s)) -2px var(--sticker-shadow);
+  font-size: calc(16px * var(--s));
+  font-weight: 750;
+  letter-spacing: -0.015em;
+  white-space: nowrap;
+  transition: box-shadow 0.45s var(--ease-out);
+}
+
+.sticker.is-round .sticker-face { border-radius: 50%; }
+.sticker.is-sq .sticker-face { border-radius: calc(22px * var(--s)); }
+.sticker.is-pill .sticker-face { border-radius: 999px; padding: 0 calc(16px * var(--s)); }
+
+.sticker-mark {
+  flex: none;
+  width: 1em;
+  height: 1em;
+  background: currentColor;
+  -webkit-mask: var(--src) center / contain no-repeat;
+  mask: var(--src) center / contain no-repeat;
+}
+
+.sticker.is-round .sticker-mark,
+.sticker.is-sq .sticker-mark {
+  font-size: calc(var(--w, calc(100px * var(--s))) * 0.46);
+}
+
+.sticker.is-pill .sticker-mark {
+  font-size: calc(19px * var(--s));
+}
+
+/* Foil: the tools that shipped are holographic; the sheen moves with the light. */
+.sticker-foil,
+.sticker-glare {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.sticker-foil {
+  display: none;
+  background:
+    linear-gradient(
+        115deg,
+        transparent 38%,
+        oklch(0.9 0.12 350 / 0.8) 45%,
+        oklch(0.97 0.1 95 / 0.8) 49%,
+        oklch(0.93 0.1 175 / 0.8) 53%,
+        oklch(0.85 0.12 255 / 0.8) 57%,
+        transparent 64%
+      )
+      var(--hx, 78%) var(--hy, 78%) / 320% 320% no-repeat,
+    repeating-linear-gradient(60deg, oklch(1 0 0 / 0.1) 0 1px, transparent 1px 3px);
+  mix-blend-mode: overlay;
+  opacity: 0.85;
+}
+
+.sticker.is-foil .sticker-foil {
+  display: block;
+}
+
+.sticker-glare {
+  background: radial-gradient(circle at var(--gx, 30%) var(--gy, 20%), oklch(1 0 0 / 0.4), transparent 55%);
+  mix-blend-mode: soft-light;
+}
+
+/* Grayed-out stickers wear a veil of paper, so their slots don't show through. */
+.sticker-face::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: inherit;
+  background: var(--tile);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s;
+}
+
+.tile-stack.is-filtering .sticker:not(.is-match) {
+  filter: grayscale(1);
+}
+
+.tile-stack.is-filtering .sticker:not(.is-match) .sticker-face::after {
+  opacity: 0.72;
+}
+
+.tile-stack.is-filtering .sticker.is-match {
+  scale: 1.04;
+}
+
+/* Corner lift: on hover a sticker rises, and the square ones curl a corner. */
+.sticker-curl {
+  position: absolute;
+  right: calc(4px * var(--s));
+  bottom: calc(4px * var(--s));
+  width: 0;
+  height: 0;
+  border-radius: 0 0 calc(18px * var(--s)) 0;
+  background: linear-gradient(135deg, oklch(0.97 0.004 90) 0%, oklch(0.84 0.008 90) 46%, oklch(0.5 0.01 80 / 0.45) 50%, var(--sheet-liner) 51%);
+  pointer-events: none;
+  transition: width 0.35s var(--ease-out), height 0.35s var(--ease-out);
+}
+
+@media (hover: hover) {
+  .tile-stack.is-packed .sticker:hover:not(.is-peeled, .is-dragging, .is-moved) {
+    --sy: 5px;
+    scale: 1.035;
+  }
+
+  .tile-stack.is-packed .sticker.is-sq:hover:not(.is-peeled, .is-dragging, .is-moved) .sticker-curl {
+    width: calc(26px * var(--s));
+    height: calc(26px * var(--s));
+  }
+}
+
+.tile-stack.is-packed .sticker.is-sq:focus-visible .sticker-curl {
+  width: calc(26px * var(--s));
+  height: calc(26px * var(--s));
+}
+
+.sticker:focus-visible {
+  outline: none;
+}
+
+.sticker:focus-visible .sticker-face {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+/* Peeled: held up and off its slot. Dragged: picked up, straight. */
+.sticker.is-peeled {
+  rotate: calc(var(--r) * 0.3 + 6deg);
+  scale: 1.08;
+  z-index: 30;
+}
+
+.sticker.is-peeled .sticker-face,
+.sticker.is-dragging .sticker-face {
+  box-shadow: 0 2px 3px oklch(0 0 0 / 0.18), 0 22px 30px -12px var(--sticker-lift);
+}
+
+.sticker.is-dragging {
+  rotate: 0deg;
+  scale: 1.1;
+  z-index: 40;
+  cursor: grabbing;
+  transition: rotate 0.3s var(--ease-out), scale 0.3s var(--ease-out);
+}
+
+.sticker.is-moved {
+  z-index: 20;
+}
+
+/* Stuck back down: a small squish. Two names, so it replays every time. */
+.sticker.is-slap-0 { animation: sticker-slap-a 0.42s var(--spring); }
+.sticker.is-slap-1 { animation: sticker-slap-b 0.42s var(--spring); }
+
+@keyframes sticker-slap-a {
+  0% { scale: 1.1; }
+  45% { scale: 0.95; }
+  100% { scale: 1; }
+}
+
+@keyframes sticker-slap-b {
+  0% { scale: 1.1; }
+  45% { scale: 0.95; }
+  100% { scale: 1; }
+}
+
+/* ── Projects along the bottom, to filter the sheet ─────────── */
+.sheet-chips {
+  position: absolute;
+  left: var(--pad-tile);
+  right: var(--pad-tile);
+  bottom: 26px;
+  z-index: 2;
+  display: flex;
+  gap: 5px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  mask: linear-gradient(90deg, #000 calc(100% - 24px), transparent);
+}
+
+.sheet-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.sheet-chips button {
+  flex: none;
+  height: 28px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--ink);
+  background: none;
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.25s, color 0.25s, box-shadow 0.25s;
+}
+
+.sheet-chips button:last-child {
+  margin-right: 24px;
+}
+
+.sheet-chips button.is-lit {
+  box-shadow: inset 0 0 0 1.5px var(--ink);
+}
+
+.sheet-chips button[aria-pressed='true'] {
+  background: var(--ink);
+  color: var(--tile);
+  box-shadow: none;
+}
+
+.sheet-chips button:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* ── Narrow tiles (phones) ───────────────────────────────────── */
+@container sheet (max-width: 520px) {
+  .sheet-head {
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .sheet-cap {
+    min-height: 2.7em;
+    font-size: 0.76rem;
+    text-align: left;
+  }
+
+  .sheet-area {
+    top: calc(var(--head) + 30px);
+  }
+
+  .sheet-reset {
+    top: auto;
+    bottom: 62px;
   }
 }
 
 @media (max-width: 760px) {
   .tile-stack {
-    min-height: 430px;
+    min-height: 680px;
   }
 }
 
-/* No tour and no drift (StackTile.jsx); the morph is an instant swap. The
-   sky still retints, since that's a color change, not motion. */
 @media (prefers-reduced-motion: reduce) {
-  .lens-l,
-  .lens-blob,
-  .lens-icon,
-  .lens-word {
-    transition-duration: 0.01s !important;
-    transition-delay: 0s !important;
+  .sticker,
+  .sticker-face,
+  .sticker-curl,
+  .sticker-face::after,
+  .sheet-reset {
+    transition: none;
+  }
+
+  .sticker.is-slap-0,
+  .sticker.is-slap-1 {
+    animation: none;
   }
 }
