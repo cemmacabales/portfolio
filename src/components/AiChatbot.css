@@ -578,6 +578,124 @@
   color: var(--ink-2);
 }
 
+/* ── Welcome color: the Ask tile's living gradient ──────────────
+   Washes the top of the sheet and fades into it before the questions, so
+   opening the chat from the tile feels like stepping into the same light.
+   It lets go once a conversation starts. */
+.chat-aurora {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 66%;
+  -webkit-mask-image: linear-gradient(#000 34%, transparent 96%);
+  mask-image: linear-gradient(#000 34%, transparent 96%);
+  transition: opacity 0.5s var(--ease-out);
+}
+
+.chat-aurora[data-thread='true'] {
+  opacity: 0;
+}
+
+.chat-aurora[data-thread='true'] .lg * {
+  animation-play-state: paused;
+}
+
+/* Dark: the recipe's own night version, deep teal with glows screened in as
+   light, kept dim enough that light ink holds its contrast. */
+:root[data-theme='dark'] .chat-aurora .lg {
+  --lg-base: linear-gradient(140deg, oklch(0.3 0.06 165), oklch(0.25 0.05 178) 55%, oklch(0.23 0.045 200));
+  --lg-1: oklch(0.44 0.09 165);
+  --lg-2: oklch(0.42 0.08 205);
+  --lg-3: oklch(0.42 0.1 148);
+  --lg-4: oklch(0.32 0.06 175);
+  --lg-5: oklch(0.46 0.1 178);
+  --lg-blend: screen;
+  --lg-grain: 0.34;
+}
+
+:root[data-theme='dark'] .chat-aurora .lg-glow {
+  opacity: 0.6;
+}
+
+/* The Memoji sits on a white plate over the color, like the tile's. */
+.chat-card .chat-avatar.is-lg {
+  background: oklch(1 0 0);
+  box-shadow:
+    0 0 0 4px color-mix(in oklch, oklch(1 0 0) 45%, transparent),
+    0 14px 30px -12px oklch(0.3 0.06 175 / 0.55);
+}
+
+:root[data-theme='dark'] .chat-card .chat-avatar.is-lg {
+  background: oklch(0.93 0.04 175);
+  box-shadow:
+    0 0 0 4px oklch(1 0 0 / 0.12),
+    0 14px 30px -12px oklch(0 0 0 / 0.6);
+}
+
+.chat-card-sub {
+  color: color-mix(in oklch, var(--ink) 86%, var(--tile));
+}
+
+/* Each question takes its tint from a different part of the gradient:
+   green, mint, aqua, teal. */
+.chat-suggest li {
+  --h: 172;
+}
+
+.chat-suggest li[data-tint='0'] {
+  --h: 150;
+}
+
+.chat-suggest li[data-tint='2'] {
+  --h: 205;
+}
+
+.chat-suggest li[data-tint='3'] {
+  --h: 186;
+}
+
+.chat-suggest button {
+  --tint-bg: oklch(0.94 0.06 var(--h));
+  --tint-bg-hover: oklch(0.9 0.09 var(--h));
+  --tint-ink: oklch(0.29 0.06 var(--h));
+  --tint-mark: oklch(0.44 0.11 var(--h));
+
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 12px;
+  background: var(--tint-bg);
+  color: var(--tint-ink);
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.3s var(--ease-out),
+    translate 0.3s var(--ease-out),
+    scale 0.2s var(--ease-out);
+}
+
+:root[data-theme='dark'] .chat-suggest button {
+  --tint-bg: oklch(0.3 0.05 var(--h));
+  --tint-bg-hover: oklch(0.36 0.07 var(--h));
+  --tint-ink: var(--ink);
+  --tint-mark: oklch(0.84 0.12 var(--h));
+}
+
+.chat-suggest button svg {
+  flex: none;
+  color: var(--tint-mark);
+  transition: rotate 0.4s var(--ease-out), scale 0.4s var(--ease-out);
+}
+
+.chat-suggest button:hover {
+  background: var(--tint-bg-hover);
+  box-shadow: 0 8px 18px -10px oklch(0.4 0.1 var(--h) / 0.6);
+  translate: -3px 0;
+}
+
+.chat-suggest button:hover svg {
+  rotate: -10deg;
+  scale: 1.12;
+}
+
 /* ── Thread ───────────────────────────────────────────────────── */
 .chat-thread {
   display: flex;
@@ -1107,6 +1225,18 @@
   .chat-send:active:not(:disabled),
   .chat-suggest button:active,
   .chat-followups button:active {
+    scale: none;
+  }
+
+  .chat-suggest button,
+  .chat-suggest button svg {
+    transition: background-color 0.2s ease;
+  }
+
+  .chat-suggest button:hover,
+  .chat-suggest button:hover svg {
+    translate: none;
+    rotate: none;
     scale: none;
   }
 

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { motion, useInView, useReducedMotion } from 'framer-motion' // eslint-disable-line no-unused-vars
 import { AudioLines } from 'lucide-react'
 import memoji from '../assets/memoji-assistant.webp'
+import LivingGradient from './LivingGradient'
 import { usePageVisible } from '../hooks/useCycle'
 import { useBooted } from '../hooks/useBooted'
 import './AssistantTile.css'
@@ -29,10 +30,6 @@ const GREETINGS = [
 const HOLD = 2600
 // The first one waits for the tile to rise in.
 const FIRST = 1400
-
-// Light that drifts under the grain. Each glow wanders its own path at its own
-// pace (see AssistantTile.css), so the mix never quite repeats.
-const GLOWS = ['g1', 'g2', 'g3', 'g4', 'g5']
 
 export default function AssistantTile({ variants, onClick }) {
   const ref = useRef(null)
@@ -76,13 +73,9 @@ export default function AssistantTile({ variants, onClick }) {
       onClick={onClick}
       onPointerMove={onPointerMove}
     >
-      <span className="as-sky" aria-hidden="true">
-        {GLOWS.map((g) => (
-          <span key={g} className={`as-glow is-${g}`} />
-        ))}
-        <span className="as-glow is-cursor" />
-        <span className="as-grain" />
-      </span>
+      <LivingGradient className="as-sky">
+        <span className="as-cursor" />
+      </LivingGradient>
 
       <span className="as-avatar" aria-hidden="true">
         <img src={memoji} alt="" width="288" height="288" draggable="false" />

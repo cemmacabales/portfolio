@@ -8,7 +8,7 @@ import {
   memo,
 } from 'react'
 import { motion, AnimatePresence } from 'framer-motion' // eslint-disable-line no-unused-vars
-import { X, ArrowUp, SquarePen, CircleAlert } from 'lucide-react'
+import { X, ArrowUp, SquarePen, CircleAlert, Coins, BriefcaseBusiness, Microscope, Layers } from 'lucide-react'
 import { ASSISTANT_OPEN_EVENT } from '../utils/assistant'
 import { useBooted } from '../hooks/useBooted'
 import posthog from '../posthog'
@@ -16,6 +16,7 @@ import { portfolioLogger } from '../posthog-logger'
 import memoji from '../assets/memoji-assistant.webp'
 import { TAIL_PATH } from './messageTail'
 import ChatReply from './ChatReply'
+import LivingGradient from './LivingGradient'
 import './AiChatbot.css'
 
 const WINDOW_SIZE = 10
@@ -37,6 +38,10 @@ const SUGGESTIONS = [
   'What does he build with?',
   'Why should I hire Carl?',
 ]
+
+// The welcome's questions each carry a mark for what they're about, and a
+// tint from a different part of the gradient above them.
+const SUGGESTION_ICONS = [Coins, BriefcaseBusiness, Microscope, Layers]
 
 // Critically damped: quick, settled, no overshoot.
 const settle = { type: 'spring', stiffness: 520, damping: 42, mass: 0.8 }
@@ -550,6 +555,11 @@ export default function AiChatbot() {
           tabIndex={-1}
         >
           <div className="chat-body">
+            {/* The Ask tile's living gradient, carried into the welcome. It
+                lets go once a conversation starts. */}
+            <div className="chat-aurora" data-thread={hasThread} data-still={!isOpen || undefined}>
+              <LivingGradient />
+            </div>
             <header className="chat-head" data-thread={hasThread}>
               <button
                 type="button"
@@ -622,13 +632,17 @@ export default function AiChatbot() {
                     Try asking
                   </p>
                   <ul className="chat-suggest" aria-labelledby="chat-suggest-label">
-                    {SUGGESTIONS.slice(0, 4).map((q, i) => (
-                      <li key={q} style={{ '--i': i }}>
-                        <button type="button" onClick={() => send(q, 'suggestion')}>
-                          {q}
-                        </button>
-                      </li>
-                    ))}
+                    {SUGGESTIONS.slice(0, 4).map((q, i) => {
+                      const Icon = SUGGESTION_ICONS[i]
+                      return (
+                        <li key={q} style={{ '--i': i }} data-tint={i}>
+                          <button type="button" onClick={() => send(q, 'suggestion')}>
+                            <Icon size={15} strokeWidth={2.1} aria-hidden="true" />
+                            {q}
+                          </button>
+                        </li>
+                      )
+                    })}
                   </ul>
                   <p className="chat-note">Replies are AI-generated from Carl&rsquo;s portfolio.</p>
                 </div>

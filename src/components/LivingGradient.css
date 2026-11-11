@@ -1,0 +1,159 @@
+/*
+ * A living grainy gradient, after the grainy-gradient recipe: a base
+ * gradient, five big soft glows melting together, film grain on top. The
+ * glows ride a slowly turning square, big enough that its corners never show,
+ * so the colors keep travelling while each glow wanders on its own path.
+ *
+ * The defaults are the light mint of the Ask tile, never darker than L 0.8 so
+ * dark ink holds 7:1 anywhere on it. Override the --lg-* properties to retint.
+ */
+.lg {
+  --lg-base: linear-gradient(140deg, oklch(0.92 0.13 160), oklch(0.86 0.15 174) 50%, oklch(0.84 0.12 192));
+  --lg-1: oklch(0.98 0.05 165);
+  --lg-2: oklch(0.82 0.12 200);
+  --lg-3: oklch(0.91 0.19 145);
+  --lg-4: oklch(0.8 0.15 168);
+  --lg-5: oklch(0.9 0.16 178);
+  /* Screen only ever lightens, so a glow set to it melts in as light. */
+  --lg-blend-1: screen;
+  --lg-blend: normal;
+  --lg-grain: 0.26;
+
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  isolation: isolate;
+  container-type: inline-size;
+  background: var(--lg-base);
+  pointer-events: none;
+}
+
+.lg-swirl {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 160cqi;
+  aspect-ratio: 1;
+  background: var(--lg-base);
+  translate: -50% -50%;
+  animation: lg-swirl 22s linear infinite;
+  will-change: transform;
+}
+
+@keyframes lg-swirl {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+.lg-glow {
+  --c: var(--lg-5);
+  position: absolute;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  /* A solid core with a long soft edge, as in the recipe. */
+  background: radial-gradient(closest-side, var(--c), var(--c) 28%, transparent);
+  mix-blend-mode: var(--lg-blend);
+  animation: var(--drift) var(--t) ease-in-out infinite;
+  will-change: transform;
+}
+
+.lg-glow.is-g1 {
+  --c: var(--lg-1);
+  --drift: lg-drift-1;
+  --t: 6s;
+  width: 40%;
+  top: 16%;
+  left: 14%;
+  mix-blend-mode: var(--lg-blend-1);
+  opacity: 0.75;
+}
+
+.lg-glow.is-g2 {
+  --c: var(--lg-2);
+  --drift: lg-drift-2;
+  --t: 7s;
+  width: 52%;
+  top: 20%;
+  left: 52%;
+  opacity: 0.95;
+}
+
+.lg-glow.is-g3 {
+  --c: var(--lg-3);
+  --drift: lg-drift-3;
+  --t: 9s;
+  width: 46%;
+  top: 50%;
+  left: 8%;
+  opacity: 0.9;
+}
+
+.lg-glow.is-g4 {
+  --c: var(--lg-4);
+  --drift: lg-drift-4;
+  --t: 11s;
+  width: 50%;
+  top: 52%;
+  left: 46%;
+  opacity: 0.95;
+}
+
+.lg-glow.is-g5 {
+  --c: var(--lg-5);
+  --drift: lg-drift-5;
+  --t: 13s;
+  width: 38%;
+  top: 32%;
+  left: 32%;
+  opacity: 0.9;
+}
+
+@keyframes lg-drift-1 {
+  33% { transform: translate(28%, 18%) scale(1.15); }
+  66% { transform: translate(8%, 42%) scale(0.9); }
+}
+
+@keyframes lg-drift-2 {
+  30% { transform: translate(-30%, 22%) scale(0.88); }
+  70% { transform: translate(-12%, -20%) scale(1.12); }
+}
+
+@keyframes lg-drift-3 {
+  40% { transform: translate(36%, -28%) scale(1.1); }
+  75% { transform: translate(14%, 6%) scale(0.92); }
+}
+
+@keyframes lg-drift-4 {
+  35% { transform: translate(-34%, -24%) scale(1.08); }
+  70% { transform: translate(6%, -36%) scale(0.95); }
+}
+
+@keyframes lg-drift-5 {
+  25% { transform: translate(-36%, 30%) scale(1.25); }
+  60% { transform: translate(34%, -10%) scale(0.85); }
+  85% { transform: translate(10%, 34%) scale(1.1); }
+}
+
+/* Film grain: static noise laid over the color with overlay, which lightens
+   the light and darkens the dark, so it reads as texture and not as haze. */
+.lg-grain {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2.4' intercept='-0.7'/%3E%3CfeFuncG type='linear' slope='2.4' intercept='-0.7'/%3E%3CfeFuncB type='linear' slope='2.4' intercept='-0.7'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px;
+  mix-blend-mode: overlay;
+  opacity: var(--lg-grain);
+}
+
+/* Set on any ancestor to hold it still (before boot, while hidden). */
+[data-still] .lg :is(.lg-swirl, .lg-glow) {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lg-swirl,
+  .lg-glow {
+    animation: none;
+  }
+}
