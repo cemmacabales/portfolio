@@ -1,214 +1,69 @@
-import { memo, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion, useInView, useReducedMotion } from 'framer-motion' // eslint-disable-line no-unused-vars
-import { ArrowUp, AudioLines } from 'lucide-react'
+import { AudioLines } from 'lucide-react'
 import memoji from '../assets/memoji-assistant.webp'
-import { TAIL_PATH } from './messageTail'
 import { usePageVisible } from '../hooks/useCycle'
 import { useBooted } from '../hooks/useBooted'
 import './AssistantTile.css'
 
-// Questions about Carl himself, each with a short version of the chat's
-// answer. Non-breaking spaces keep a sentence from starting at the end of a
-// line. The last one is where the preview comes to rest, so it's the one a
-// recruiter most needs to see.
-const EXCHANGES = [
-  {
-    q: 'Who is Carl?',
-    a: 'An AI and software engineer, Mapúa class of 2026, who ships both research and real\u00a0apps.',
-  },
-  {
-    q: 'Where is he from?',
-    a: 'He grew up in Al\u00a0Khobar, Saudi Arabia, and he’s based in Quezon\u00a0City now.',
-  },
-  {
-    q: 'What does he do for fun?',
-    a: 'Basketball, lifting, and games. He can also solve a Rubik’s cube with one\u00a0hand.',
-  },
-  {
-    q: 'Is Carl open to work?',
-    a: 'Yes: full-time, freelance, or research. AI/ML\u00a0first, full-stack too.',
-  },
+// "Ask me", the way a new Apple device says hello: one language at a time,
+// written in and let go. English first, then Filipino and Arabic (Carl grew
+// up in Al Khobar), then around the world. `dir` matters for the Arabic, whose
+// stroke has to run right to left; `lang` picks the right glyphs.
+const GREETINGS = [
+  { text: 'Ask me', lang: 'en' },
+  { text: 'Tanungin mo ako', lang: 'fil' },
+  { text: 'اسألني', lang: 'ar', dir: 'rtl' },
+  { text: '聞いてみて', lang: 'ja' },
+  { text: 'Pregúntame', lang: 'es' },
+  { text: '물어보세요', lang: 'ko' },
+  { text: 'Demande-moi', lang: 'fr' },
+  { text: 'मुझसे पूछो', lang: 'hi' },
+  { text: 'Frag mich', lang: 'de' },
+  { text: '问我吧', lang: 'zh' },
+  { text: 'Chiedimi', lang: 'it' },
+  { text: 'Pergunte-me', lang: 'pt' },
 ]
 
-// Beats, in ms. A reply is held long enough to read it.
-const BEAT = {
-  start: 700, // after the tile has risen in
-  key: 36, // per character typed into the field
-  aim: 420, // typed, before it sends
-  think: 480, // sent, before the dots
-  dots: 1250, // dots, before the reply
-  read: 1900, // hold on a reply, plus `perChar` for each character in it
-  perChar: 24,
-}
+// How long each greeting stays, written in and resting, before the next.
+const HOLD = 2600
+// The first one waits for the tile to rise in.
+const FIRST = 1400
 
-// Exchanges kept above the current one; older ones are long clipped.
-const KEEP = 3
-
-// Critically damped, as in the chat: quick, settled, no overshoot.
-const settle = { type: 'spring', stiffness: 520, damping: 42, mass: 0.8 }
-const morph = { type: 'spring', stiffness: 380, damping: 36 }
-
-function Tail({ side, layout = false }) {
-  return (
-    <motion.svg layout={layout} className="as-tail" viewBox="0 0 20 17" aria-hidden="true">
-      <path d={TAIL_PATH[side]} />
-    </motion.svg>
-  )
-}
-
-// Fades are CSS (see .as-row): a Framer opacity fade hands off from its Web
-// Animation to the inline style at the end, and that seam can drop a frame.
-
-// What the visitor "sends": it rises out of the field into the thread.
-const Question = memo(function Question({ text, still }) {
-  return (
-    <motion.span
-      layout="position"
-      className="as-row is-q"
-      initial={still ? false : { y: 34, scale: 0.9 }}
-      animate={{ y: 0, scale: 1 }}
-      transition={settle}
-      style={{ originX: 1, originY: 1 }}
-    >
-      <span className="as-bubble is-q">
-        {text}
-        <Tail side="right" />
-      </span>
-    </motion.span>
-  )
-})
-
-// Three dots that grow into the reply, the way Messages hands one to the other.
-const Reply = memo(function Reply({ text, typing, still }) {
-  return (
-    <motion.span
-      layout="position"
-      className="as-row is-a"
-      initial={still ? false : { scale: 0.6 }}
-      animate={{ scale: 1 }}
-      transition={settle}
-      style={{ originX: 0, originY: 1 }}
-    >
-      <motion.span
-        layout={!still}
-        transition={morph}
-        className={`as-bubble is-a${typing ? ' is-typing' : ''}`}
-        style={{ borderRadius: 18 }}
-      >
-        {typing ? (
-          <span className="as-dots">
-            <i />
-            <i />
-            <i />
-          </span>
-        ) : (
-          <motion.span layout={!still} transition={morph} className="as-text">
-            {text}
-          </motion.span>
-        )}
-        {!typing && <Tail side="left" layout={!still} />}
-      </motion.span>
-    </motion.span>
-  )
-})
-
-// The compose field types each question out by itself, so the thread above it
-// doesn't re-render (and re-measure) once per character.
-const Field = memo(function Field({ text, paused, onTyped }) {
-  const [count, setCount] = useState(0)
-  const [typing, setTyping] = useState(text)
-  if (text !== typing) {
-    setTyping(text)
-    setCount(0)
-  }
-
-  const done = text !== '' && count >= text.length
-  const typedRef = useRef(onTyped)
-  useEffect(() => {
-    typedRef.current = onTyped
-  })
-
-  useEffect(() => {
-    if (paused || !text) return
-    const timer = done
-      ? setTimeout(() => typedRef.current(), BEAT.aim)
-      : setTimeout(() => setCount((n) => n + 1), BEAT.key)
-    return () => clearTimeout(timer)
-  }, [text, count, done, paused])
-
-  const draft = text.slice(0, count)
-  return (
-    <span className="as-field" data-armed={draft ? '' : undefined}>
-      <span className="as-draft">
-        {draft ? (
-          <>
-            {draft}
-            <span className="as-caret" />
-          </>
-        ) : (
-          <span className="as-placeholder">Ask anything</span>
-        )}
-      </span>
-      <span className="as-send">
-        <AudioLines className="as-send-idle" size={17} strokeWidth={2} />
-        <ArrowUp className="as-send-go" size={17} strokeWidth={2.6} />
-      </span>
-    </span>
-  )
-})
+// Light that drifts under the grain. Each glow wanders its own path at its own
+// pace (see AssistantTile.css), so the mix never quite repeats.
+const GLOWS = ['g1', 'g2', 'g3', 'g4', 'g5']
 
 export default function AssistantTile({ variants, onClick }) {
   const ref = useRef(null)
-  const inView = useInView(ref, { amount: 0.4 })
+  const inView = useInView(ref, { amount: 0.3 })
   const reduce = useReducedMotion()
   const pageVisible = usePageVisible()
   const booted = useBooted()
-  const [hovered, setHovered] = useState(false)
-  // `step` is the exchange being asked; phases run idle → compose → sent →
-  // typing → replied, then the next step composes. It plays through once and
-  // rests on the last reply.
-  const [step, setStep] = useState(0)
-  const [phase, setPhase] = useState('idle')
+  const running = booted && inView && pageVisible && !reduce
 
-  const last = EXCHANGES.length - 1
-  const finished = step === last && phase === 'replied'
-  const running = booted && inView && pageVisible && !hovered && !reduce && !finished
+  // `shown` is the greeting on screen; `gone` is the one letting go behind it.
+  const [shown, setShown] = useState(0)
+  const [gone, setGone] = useState(null)
 
   useEffect(() => {
-    if (!running || phase === 'compose') return
-    const next = {
-      idle: [BEAT.start, () => setPhase('compose')],
-      sent: [BEAT.think, () => setPhase('typing')],
-      typing: [BEAT.dots, () => setPhase('replied')],
-      replied: [
-        BEAT.read + EXCHANGES[step].a.length * BEAT.perChar,
-        () => {
-          setStep(step + 1)
-          setPhase('compose')
-        },
-      ],
-    }[phase]
-    const timer = setTimeout(next[1], next[0])
-    return () => clearTimeout(timer)
-  }, [running, phase, step])
-
-  // Reduced motion shows one finished exchange and nothing moves.
-  const shownStep = reduce ? 0 : step
-  const shownPhase = reduce ? 'replied' : phase
-  const rows = []
-  for (let i = Math.max(0, shownStep - KEEP); i <= shownStep; i++) {
-    const current = i === shownStep
-    if (current && (shownPhase === 'idle' || shownPhase === 'compose')) break
-    rows.push(<Question key={`q${i}`} text={EXCHANGES[i].q} still={reduce} />)
-    if (current && shownPhase === 'sent') break
-    rows.push(
-      <Reply
-        key={`a${i}`}
-        text={EXCHANGES[i].a}
-        typing={current && shownPhase === 'typing'}
-        still={reduce}
-      />,
+    if (!running) return undefined
+    const id = setTimeout(
+      () => {
+        setGone(shown)
+        setShown((shown + 1) % GREETINGS.length)
+      },
+      gone === null && shown === 0 ? FIRST : HOLD,
     )
+    return () => clearTimeout(id)
+  }, [running, shown, gone])
+
+  // The cursor carries a little light of its own across the tile.
+  const onPointerMove = (event) => {
+    if (event.pointerType !== 'mouse') return
+    const box = ref.current.getBoundingClientRect()
+    ref.current.style.setProperty('--as-x', `${event.clientX - box.left}px`)
+    ref.current.style.setProperty('--as-y', `${event.clientY - box.top}px`)
   }
 
   return (
@@ -217,31 +72,49 @@ export default function AssistantTile({ variants, onClick }) {
       variants={variants}
       type="button"
       className="tile tile-mint"
+      data-still={reduce || !booted ? '' : undefined}
       onClick={onClick}
-      onPointerEnter={() => setHovered(true)}
-      onPointerLeave={() => setHovered(false)}
+      onPointerMove={onPointerMove}
     >
-      <span className="as-head">
-        <span className="as-avatar" aria-hidden="true">
-          <img src={memoji} alt="" width="288" height="288" draggable="false" />
-        </span>
-        <span className="as-copy">
-          <span className="as-title">Ask my assistant</span>
-          <span className="as-sub">It knows me, my work, and what I’m into.</span>
-        </span>
+      <span className="as-sky" aria-hidden="true">
+        {GLOWS.map((g) => (
+          <span key={g} className={`as-glow is-${g}`} />
+        ))}
+        <span className="as-glow is-cursor" />
+        <span className="as-grain" />
       </span>
 
-      <span className="as-thread" aria-hidden="true">
-        {rows}
+      <span className="as-avatar" aria-hidden="true">
+        <img src={memoji} alt="" width="288" height="288" draggable="false" />
       </span>
 
-      <span className="as-compose" aria-hidden="true">
-        <Field
-          text={!reduce && phase === 'compose' ? EXCHANGES[step].q : ''}
-          paused={!running}
-          onTyped={() => setPhase('sent')}
-        />
+      <span className="visually-hidden">Ask my assistant.</span>
+      <span className="as-hello" aria-hidden="true">
+        {gone !== null && !reduce && (
+          <Greeting key={`out${gone}`} greeting={GREETINGS[gone]} leaving />
+        )}
+        <Greeting key={`in${shown}`} greeting={GREETINGS[reduce ? 0 : shown]} still={shown === 0 && gone === null} />
+      </span>
+      <span className="as-sub">It knows me, my work, and what I’m into.</span>
+
+      <span className="as-field" aria-hidden="true">
+        <span className="as-placeholder">Ask anything</span>
+        <span className="as-mic">
+          <AudioLines size={17} strokeWidth={2} />
+        </span>
       </span>
     </motion.button>
+  )
+}
+
+// One greeting, stacked in the same cell as the one before it. Arriving, a soft
+// edge sweeps across it in reading direction, as if it's being written;
+// leaving, it lifts and blurs away.
+function Greeting({ greeting, leaving = false, still = false }) {
+  const state = leaving ? ' is-leaving' : still ? '' : ' is-arriving'
+  return (
+    <span className={`as-word${state}`} lang={greeting.lang} dir={greeting.dir}>
+      {greeting.text}
+    </span>
   )
 }
