@@ -336,10 +336,30 @@ export default function AiChatbot() {
     sync()
     vv?.addEventListener('resize', sync)
     vv?.addEventListener('scroll', sync)
+    // When the field takes focus, iOS slides the keyboard up and scrolls the
+    // field into view, but only reports where the viewport went once it's
+    // done, so the sheet dropped and then jumped back. For a moment after
+    // focus moves, the sheet follows the viewport frame by frame instead.
+    const sheet = sheetRef.current
+    let follow = 0
+    let until = 0
+    const step = () => {
+      sync()
+      follow = performance.now() < until ? requestAnimationFrame(step) : 0
+    }
+    const track = () => {
+      until = performance.now() + 900
+      if (!follow) follow = requestAnimationFrame(step)
+    }
+    sheet.addEventListener('focusin', track)
+    sheet.addEventListener('focusout', track)
     return () => {
       html.style.overflow = previous
       vv?.removeEventListener('resize', sync)
       vv?.removeEventListener('scroll', sync)
+      sheet.removeEventListener('focusin', track)
+      sheet.removeEventListener('focusout', track)
+      cancelAnimationFrame(follow)
       // Let the sheet finish closing before it snaps back to full height.
       setTimeout(() => {
         frame.style.removeProperty('--vvh')

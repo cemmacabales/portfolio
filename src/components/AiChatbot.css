@@ -24,6 +24,9 @@
 }
 
 .chat {
+  /* iOS draws a gray highlight over a tapped control and can leave it a
+     frame after the control is gone (a tapped question became a blank pill). */
+  -webkit-tap-highlight-color: transparent;
   --launch: 56px;
   --sheet-w: min(400px, calc(100vw - 32px));
   --sheet-h: min(680px, calc(100dvh - 48px));
@@ -734,6 +737,18 @@
   padding: 2px 0 14px;
 }
 
+/* The first stamp waits for "Carl's assistant" to finish flying from the
+   welcome card up to the header, which passes right over it. */
+.chat-thread > .chat-stamp:first-child {
+  animation: chat-stamp-in 0.3s var(--ease-out) 0.32s both;
+}
+
+@keyframes chat-stamp-in {
+  from {
+    opacity: 0;
+  }
+}
+
 .chat-stamp {
   margin: 4px 0 12px;
   font-size: 0.75rem;
@@ -1182,6 +1197,26 @@
     padding-bottom: max(12px, calc(env(safe-area-inset-bottom) - 8px));
   }
 
+  /* Behind the sheet, the page frosts over, so the margin around it (and
+     anything iOS shows while the keyboard settles) is calm canvas, not a
+     strip of the tiles underneath. */
+  .chat::before {
+    content: '';
+    position: fixed;
+    inset: -50vh 0;
+    background: color-mix(in oklch, var(--canvas) 78%, transparent);
+    -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(18px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--close-ms) var(--ease-sheet);
+  }
+
+  .chat[data-open='true']::before {
+    opacity: 1;
+    transition-duration: 0.45s;
+  }
+
   .chat-launcher-label {
     display: none;
   }
@@ -1285,6 +1320,10 @@
   }
 
   .chat-aurora[data-thinking='true'] .lg {
+    animation: none;
+  }
+
+  .chat-thread > .chat-stamp:first-child {
     animation: none;
   }
 
